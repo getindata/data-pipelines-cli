@@ -5,7 +5,13 @@ from setuptools import find_packages, setup
 with open("README.md") as f:
     README = f.read()
 
-INSTALL_REQUIREMENTS = ["click<8.0"]
+INSTALL_REQUIREMENTS = [
+    "click<8.0",
+    "questionary==1.10.0",
+    "pyyaml>=5.1, <6.0",
+    "types-PyYAML>=6.0",
+    "copier==5.1.0",
+]
 
 EXTRA_REQUIRE = {
     "tests": [
