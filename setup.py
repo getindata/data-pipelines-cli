@@ -11,15 +11,18 @@ INSTALL_REQUIREMENTS = [
     "pyyaml>=5.1, <6.0",
     "types-PyYAML>=6.0",
     "copier==5.1.0",
+    "dbt>=0.21, <0.22",
 ]
 
 EXTRA_REQUIRE = {
+    "docker": ["docker>=5.0"],
+    "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",
         "pre-commit==2.15.0",
         "tox==3.21.1",
-    ]
+    ],
 }
 
 setup(
