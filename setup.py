@@ -12,6 +12,7 @@ INSTALL_REQUIREMENTS = [
     "types-PyYAML>=6.0",
     "copier==5.1.0",
     "dbt>=0.21, <0.22",
+    "fsspec",
 ]
 
 EXTRA_REQUIRE = {
@@ -23,6 +24,8 @@ EXTRA_REQUIRE = {
         "pre-commit==2.15.0",
         "tox==3.21.1",
     ],
+    "gcp": ["gcsfs"],
+    "s3": ["s3fs"],
 }
 
 setup(

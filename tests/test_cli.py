@@ -10,6 +10,7 @@ from data_pipelines_cli.data_structures import (
     TemplateConfig,
     read_config_or_exit,
 )
+from data_pipelines_cli.filesystem_utils import FilesystemProvider
 
 
 class MyTestCase(unittest.TestCase):
@@ -25,6 +26,7 @@ class MyTestCase(unittest.TestCase):
                 template_path="https://example.com/git/example.git",
             ),
         },
+        blob_protocol=FilesystemProvider.GCP.value,
     )
     example_config_path = pathlib.Path(__file__).parent.joinpath("example_config.yml")
 
