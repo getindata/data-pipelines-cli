@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+### Modified
+- `profiles.yml` gets generated and saved in `build` directory in `dp compile`, instead of relying on a local one in the
+main project directory.
 
 ## [0.3.0] - 2021-12-06
 

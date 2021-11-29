@@ -13,6 +13,7 @@ INSTALL_REQUIREMENTS = [
     "copier==5.1.0",
     "dbt>=0.21, <0.22",
     "fsspec",
+    "dbt-airflow-manifest-parser>=0.14.0,<0.15",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
