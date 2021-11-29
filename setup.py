@@ -15,6 +15,11 @@ INSTALL_REQUIREMENTS = [
     "fsspec",
 ]
 
+EXTRA_FILESYSTEMS_REQUIRE = {
+    "gcp": ["gcsfs"],
+    "s3": ["s3fs"],
+}
+
 EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
@@ -23,9 +28,16 @@ EXTRA_REQUIRE = {
         "pytest-cov>=2.8.0, <3.0.0",
         "pre-commit==2.15.0",
         "tox==3.21.1",
+        "moto[s3]==2.2.16",
+        *(
+            [
+                require
+                for requires_list in EXTRA_FILESYSTEMS_REQUIRE.values()
+                for require in requires_list
+            ]
+        ),
     ],
-    "gcp": ["gcsfs"],
-    "s3": ["s3fs"],
+    **EXTRA_FILESYSTEMS_REQUIRE,
 }
 
 setup(

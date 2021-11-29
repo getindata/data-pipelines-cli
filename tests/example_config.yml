@@ -1,5 +1,4 @@
 username: testuser
-blob_protocol: gcp
 templates:
   template1:
     template_name: template1
