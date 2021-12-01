@@ -27,7 +27,7 @@ def _docker_push(docker_args: DockerArgs):
     docker_client = docker.from_env()
     for line in docker_client.images.push(
         repository=docker_args.repository,
-        tag=docker_args.docker_tag(),
+        tag=docker_args.commit_sha,
         stream=True,
     ):
         echo_subinfo(line)
