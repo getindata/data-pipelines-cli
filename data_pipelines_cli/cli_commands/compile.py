@@ -49,7 +49,7 @@ def _docker_build(docker_args: DockerArgs):
 
     echo_info("Building Docker image")
     docker_client = docker.from_env()
-    docker_tag = docker_args.docker_tag()
+    docker_tag = docker_args.docker_build_tag()
     _, logs_generator = docker_client.images.build(path=".", tag=docker_tag)
     click.echo(
         "".join(

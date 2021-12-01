@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix Docker SDK for Python's bug related to tagging, which prevented Docker from pushing images.
+
 ## [0.1.0] - 2021-12-01
 
 ### Added
