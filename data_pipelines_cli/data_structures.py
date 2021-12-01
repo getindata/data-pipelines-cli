@@ -51,5 +51,5 @@ class DockerArgs:
             sys.exit(1)
         self.commit_sha = commit_sha
 
-    def docker_tag(self) -> str:
+    def docker_build_tag(self) -> str:
         return f"{self.repository}:{self.commit_sha}"
