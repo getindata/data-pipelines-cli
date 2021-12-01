@@ -1,0 +1,8 @@
+username: testuser
+templates:
+  template1:
+    template_name: template1
+    template_path: https://example.com/xyz/abcd.git
+  template2:
+    template_name: template2
+    template_path: https://example.com/git/example.git
