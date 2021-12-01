@@ -8,6 +8,7 @@
 - `profiles.yml` gets generated and saved in `build` directory in `dp compile`, instead of relying on a local one in the
 main project directory.
 - `dp dbt <command>` generates `profiles.yml` in `build` directory by default.
+- `dp init` is expecting `config_path` argument to download config template with the help of the `copier` and save it in `$HOME/.dp.yml`.
 
 ### Removed
 - Support for manually created `profiles.yml` in main project directory.
