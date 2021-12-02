@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2021-12-02
+
+-   Fix: do not use styled `click.secho` for Docker push response, as it may not be a `str`
+
 ## [0.1.1] - 2021-12-01
 
 -   Fix Docker SDK for Python's bug related to tagging, which prevented Docker from pushing images.
@@ -13,7 +17,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.1.2...HEAD
+
+[0.1.2]: https://github.com/getindata/data-pipelines-cli/compare/0.1.1...0.1.2
 
 [0.1.1]: https://github.com/getindata/data-pipelines-cli/compare/0.1.0...0.1.1
 
