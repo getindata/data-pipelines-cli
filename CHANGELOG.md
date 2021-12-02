@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix: do not use styled `click.secho` for Docker push response, as it may not be a `str`
+
 ## [0.1.1] - 2021-12-01
 
 -   Fix Docker SDK for Python's bug related to tagging, which prevented Docker from pushing images.

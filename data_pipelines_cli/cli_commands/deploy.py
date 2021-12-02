@@ -5,12 +5,7 @@ from typing import Optional
 import click
 
 from ..cli_constants import BUILD_DIR, GS_BUCKET_ENV
-from ..cli_utils import (
-    echo_error,
-    echo_info,
-    echo_subinfo,
-    get_argument_or_environment_variable,
-)
+from ..cli_utils import echo_error, echo_info, get_argument_or_environment_variable
 from ..data_structures import DockerArgs
 
 
@@ -30,7 +25,7 @@ def _docker_push(docker_args: DockerArgs):
         tag=docker_args.commit_sha,
         stream=True,
     ):
-        echo_subinfo(line)
+        click.echo(line, nl=False)
 
 
 def _datahub_ingest():
