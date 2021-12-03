@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add support for GCP and S3 syncing in `dp deploy`
+
 ## [0.1.2] - 2021-12-02
 
 -   Fix: do not use styled `click.secho` for Docker push response, as it may not be a `str`
