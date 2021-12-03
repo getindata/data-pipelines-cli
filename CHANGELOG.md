@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2021-12-03
+
+-   Add support for GCP and S3 syncing in `dp deploy`
+
 ## [0.1.2] - 2021-12-02
 
 -   Fix: do not use styled `click.secho` for Docker push response, as it may not be a `str`
@@ -17,7 +21,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.2.0...HEAD
+
+[0.2.0]: https://github.com/getindata/data-pipelines-cli/compare/0.1.2...0.2.0
 
 [0.1.2]: https://github.com/getindata/data-pipelines-cli/compare/0.1.1...0.1.2
 
