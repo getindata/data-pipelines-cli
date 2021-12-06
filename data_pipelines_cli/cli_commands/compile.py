@@ -64,6 +64,9 @@ def _docker_build(docker_args: DockerArgs):
 def _dbt_compile(env: str) -> None:
     echo_info("Running dbt commands:")
 
+    echo_subinfo("dbt deps")
+    dbt(("deps",), env)
+
     echo_subinfo("dbt compile")
     dbt(("compile",), env)
 

@@ -4,8 +4,9 @@ from typing import Dict, Optional, Set, Union
 import fsspec
 from fsspec import AbstractFileSystem
 
+from data_pipelines_cli.cli_utils import echo_subinfo
 
-# -------------------------------- Synchronize --------------------------------
+
 class LocalRemoteSync:
     local_fs: AbstractFileSystem
     local_path_str: str
@@ -39,9 +40,9 @@ class LocalRemoteSync:
         for local_file in local_directory:
             local_file_suffix = local_file[len(self.local_path_str) :]
             self._local_directory_suffixes.add(local_file_suffix)
-            self.remote_fs.put_file(
-                local_file, self.remote_path_str + local_file_suffix
-            )
+            remote_path_with_suffix = self.remote_path_str + local_file_suffix
+            echo_subinfo(f"- Pushing {str(local_file)} to {remote_path_with_suffix}")
+            self.remote_fs.put_file(local_file, remote_path_with_suffix)
 
     def _delete(self):
         """Remove every file from remote that's not local"""
