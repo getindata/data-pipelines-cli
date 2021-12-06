@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Run `dbt deps` alongside rest of `dbt` commands in `dp compile`
+
 ## [0.2.0] - 2021-12-03
 
 -   Add support for GCP and S3 syncing in `dp deploy`
