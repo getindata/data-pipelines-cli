@@ -2,7 +2,6 @@ import io
 import json
 import os
 import pathlib
-import subprocess
 import sys
 from typing import Dict, Optional
 
@@ -10,7 +9,7 @@ import click
 import yaml
 
 from ..cli_constants import BUILD_DIR
-from ..cli_utils import echo_error, echo_info
+from ..cli_utils import echo_error, echo_info, subprocess_run
 from ..data_structures import DockerArgs
 from ..filesystem_utils import LocalRemoteSync
 
@@ -80,7 +79,7 @@ class DeployCommand:
             sys.exit(1)
 
         echo_info("Ingesting datahub metadata")
-        subprocess.run(
+        subprocess_run(
             [
                 "datahub",
                 "ingest",
