@@ -22,7 +22,7 @@ class LocalRemoteSync:
         self.local_path_str = str(local_path).rstrip("/")
         self.local_fs = fsspec.filesystem("file")
         self.remote_fs, self.remote_path_str = fsspec.core.url_to_fs(
-            remote_path, **remote_kwargs
+            remote_path.rstrip("/"), **remote_kwargs
         )
         self._local_directory_suffixes = None
 

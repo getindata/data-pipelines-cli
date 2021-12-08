@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - `dp run` and `dp test` commands.
+- File synchronization tests for Google Cloud Storage using `gcp-storage-emulator`.
 
 ### Modified
 - `profiles.yml` gets generated and saved in `build` directory in `dp compile`, instead of relying on a local one in the
