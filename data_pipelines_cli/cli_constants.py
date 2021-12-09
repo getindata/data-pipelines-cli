@@ -8,8 +8,8 @@ DOCKER_REPOSITORY_URL_TO_REPLACE: str = "<DOCKER_REPOSITORY_URL>"
 INGEST_ENDPOINT_TO_REPLACE: str = "<INGEST_ENDPOINT>"
 
 DEFAULT_GLOBAL_CONFIG: DataPipelinesConfig = {
-    "username": "",
     "templates": {},
+    "vars": {},
 }
 
 CONFIGURATION_PATH: pathlib.Path = pathlib.Path.home().joinpath(".dp.yml")

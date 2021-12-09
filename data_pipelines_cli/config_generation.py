@@ -42,7 +42,6 @@ class DbtProfile(TypedDict):
 
 
 def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
-    copy_config_dir_to_build_dir()
     dbt_env_config = read_config(BUILD_DIR.joinpath("dag"), env, "dbt.yml")
     dbt_target: str = dbt_env_config["target"]
     dbt_target_type: str = dbt_env_config["target_type"]
@@ -66,6 +65,7 @@ def generate_profiles_yml(env: str) -> pathlib.Path:
     :param env: str
     :return: Path to ``build/profiles/{env}``
     """
+    copy_config_dir_to_build_dir()
     echo_info("Generating .profiles.yml")
     profile = _generate_profile_dict(env)
     profiles_path = profiles_build_path(env)

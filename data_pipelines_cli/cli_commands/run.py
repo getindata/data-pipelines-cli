@@ -1,10 +1,10 @@
 import click
 
-from .compile import dbt
+from ..dbt_utils import run_dbt_command
 
 
 def run(env: str) -> None:
-    dbt(("run",), env, None)
+    run_dbt_command(("run",), env, None)
 
 
 @click.command(name="run")

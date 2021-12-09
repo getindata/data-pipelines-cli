@@ -1,7 +1,7 @@
 import pathlib
 import shutil
 import sys
-from typing import Optional, Tuple
+from typing import Optional
 
 import click
 
@@ -12,31 +12,15 @@ from ..cli_constants import (
     IMAGE_TAG_TO_REPLACE,
     INGEST_ENDPOINT_TO_REPLACE,
 )
-from ..cli_utils import (
-    echo_error,
-    echo_info,
-    echo_subinfo,
-    get_argument_or_environment_variable,
-    subprocess_run,
-)
+from ..cli_utils import echo_error, echo_info, get_argument_or_environment_variable
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
     generate_profiles_yml,
 )
 from ..data_structures import DockerArgs
+from ..dbt_utils import run_dbt_command
 from ..io_utils import replace
-
-
-def dbt(
-    command: Tuple[str, ...], env: str, profiles_path: Optional[pathlib.Path]
-) -> None:
-    command_str = " ".join(list(command))
-    echo_subinfo(f"dbt {command_str}")
-    profiles_path = profiles_path or generate_profiles_yml(env)
-    subprocess_run(
-        ["dbt", *command, "--profiles-dir", str(profiles_path), "--target", env]
-    )
 
 
 def _replace_image_tag(k8s_config: pathlib.Path, docker_args: DockerArgs) -> None:
@@ -80,10 +64,10 @@ def _docker_build(docker_args: DockerArgs) -> None:
 def _dbt_compile(env: str) -> None:
     profiles_path = generate_profiles_yml(env)
     echo_info("Running dbt commands:")
-    dbt(("deps",), env, profiles_path)
-    dbt(("compile",), env, profiles_path)
-    dbt(("docs", "generate"), env, profiles_path)
-    dbt(("source", "freshness"), env, profiles_path)
+    run_dbt_command(("deps",), env, profiles_path)
+    run_dbt_command(("compile",), env, profiles_path)
+    run_dbt_command(("docs", "generate"), env, profiles_path)
+    run_dbt_command(("source", "freshness"), env, profiles_path)
 
 
 def _copy_dbt_manifest() -> None:

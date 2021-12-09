@@ -5,6 +5,7 @@
 - `dp run` and `dp test` commands.
 - `dp clean` command for removing `build` and `target` directories.
 - File synchronization tests for Google Cloud Storage using `gcp-storage-emulator`.
+- Read vars from config files (`$HOME/.dp.yml`, `config/$ENV/dbt.yml`) and pass to `dbt`.
 
 ### Modified
 - `profiles.yml` gets generated and saved in `build` directory in `dp compile`, instead of relying on a local one in the
@@ -18,6 +19,7 @@ main project directory.
 ### Removed
 - Support for manually created `profiles.yml` in main project directory.
 - `dp template new` command.
+- `username` field from `$HOME/.dp.yml` file.
 
 ## [0.3.0] - 2021-12-06
 
