@@ -1,6 +1,7 @@
 import os
+import subprocess
 import sys
-from typing import Optional
+from typing import List, Optional
 
 import click
 
@@ -29,3 +30,11 @@ def get_argument_or_environment_variable(
         )
         sys.exit(1)
     return result
+
+
+def subprocess_run(args: List[str]):
+    try:
+        subprocess.run(args, check=True)
+    except subprocess.CalledProcessError as err:
+        echo_error(f"{args[0]} has exited with non-zero exit code: {err.returncode}")
+        sys.exit(1)

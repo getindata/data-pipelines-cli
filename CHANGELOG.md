@@ -1,9 +1,16 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- `dp run` and `dp test` commands.
+
 ### Modified
 - `profiles.yml` gets generated and saved in `build` directory in `dp compile`, instead of relying on a local one in the
 main project directory.
+- `dp dbt <command>` generates `profiles.yml` in `build` directory by default.
+
+### Removed
+- Support for manually created `profiles.yml` in main project directory.
 
 ## [0.3.0] - 2021-12-06
 

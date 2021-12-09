@@ -9,6 +9,10 @@ import data_pipelines_cli.config_generation as cgen
 from data_pipelines_cli.cli_constants import profiles_build_path
 
 
+def _noop():
+    pass
+
+
 class TestConfigGeneration(unittest.TestCase):
     envs_to_test = [("dev", "bigquery"), ("test", "bigquery"), ("snow", "snowflake")]
 
@@ -23,6 +27,9 @@ class TestConfigGeneration(unittest.TestCase):
             ), patch(
                 "data_pipelines_cli.config_generation.BUILD_DIR",
                 self.current_dir_path,
+            ), patch(
+                "data_pipelines_cli.config_generation.copy_config_dir_to_build_dir",
+                _noop,
             ):
 
                 cgen.generate_profiles_yml(env)
