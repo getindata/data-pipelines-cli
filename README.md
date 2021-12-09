@@ -18,6 +18,8 @@ echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' 
 dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 ```
 
+When finished, call `dp clean` to remove compilation related directories.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

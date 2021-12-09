@@ -1,5 +1,6 @@
 import click
 
+from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
 from .cli_commands.deploy import deploy_command
@@ -14,6 +15,7 @@ def cli() -> None:
     pass
 
 
+cli.add_command(clean_command)
 cli.add_command(compile_project_command)
 cli.add_command(create_command)
 cli.add_command(deploy_command)
