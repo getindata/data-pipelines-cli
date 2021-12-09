@@ -13,6 +13,7 @@ INSTALL_REQUIREMENTS = [
     "copier==5.1.0",
     "dbt>=0.21, <0.22",
     "fsspec",
+    "dbt-airflow-manifest-parser>=0.14.0,<0.15",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -46,13 +47,16 @@ setup(
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
+    license="Apache Software License (Apache 2.0)",
+    license_files=("LICENSE",),
     python_requires=">=3",
     classifiers=[
         "Development Status :: 1 - Planning",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    keywords="dbt airflow manifest parser python",
+    keywords="dbt airflow cli",
     author=u"Andrzej Swatowski",
     author_email="andrzej.swatowski@getindata.com",
     url="https://github.com/getindata/data-pipelines-cli/",

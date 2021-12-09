@@ -1,0 +1,14 @@
+bigquery:
+  outputs:
+    dev:
+      method: service-account
+      project: example-project
+      dataset: example-dataset
+      keyfile: /var/keyfile.json
+      timeout_seconds: 150
+      priority: interactive
+      location: us-west1
+      threads: 1
+      retries: 1
+      type: bigquery
+  target: dev

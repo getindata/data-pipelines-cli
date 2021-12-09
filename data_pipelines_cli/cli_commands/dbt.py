@@ -3,8 +3,12 @@ from typing import Tuple
 
 import click
 
+from data_pipelines_cli.cli_utils import echo_subinfo
+
 
 def dbt(command: Tuple[str, ...], target: str) -> None:
+    command_str = " ".join(list(command))
+    echo_subinfo(f"dbt {command_str}")
     subprocess.run(["dbt", *command, "--profiles-dir", ".", "--target", target])
 
 
