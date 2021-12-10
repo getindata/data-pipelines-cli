@@ -20,14 +20,17 @@ Thanks to the [copier](https://copier.readthedocs.io/en/stable/), you can levera
 easily modifiable configuration templates. Just create `copier.yml` file next to the `dp.yml.tmpl` one and configure
 the template questions (read more at [copier documentation](https://copier.readthedocs.io/en/stable/configuring/)).
 
-Then, run `dp init <CONFIG_REPOSITORY_URL>` to initialize `dp`. You can also drop `<CONFIG_REPOSITORY_URL>` argument,
-`dp` will get initialized with default example config (although keep in mind it is very basic).
+Then, run `dp init <CONFIG_REPOSITORY_URL>` to initialize **dp**. You can also drop `<CONFIG_REPOSITORY_URL>` argument,
+**dp** will get initialized with default example config (although keep in mind it is very basic).
 
 ### Project creation
 
-You can use `dp create <new-project-path>` to choose one of the templates added before and create the project in `<new-project-path>` directory.
+You can use `dp create <NEW_PROJECT_PATH>` to choose one of the templates added before and create the project in
+`<NEW_PROJECT_PATH>` directory. You can also use `dp create <NEW_PROJECT_PATH> <LINK_TO_TEMPLATE_REPOSITORY>` to point
+directly to a template repository. If `<LINK_TO_TEMPLATE_REPOSITORY>` proves to be a name of the template defined in
+**dp**'s config file, `dp create` will choose the template by the name instead of trying to download the repository.
 
-`dp template list` lists all added templates. `dp template new` allow you to add new templates. Beware, they will not be saved in your global configuration at `<CONFIG_REPOSITORY_URL>`, and may get lost when rerunning `dp init`.
+`dp template-list` lists all added templates.
 
 ### Project deployment
 
