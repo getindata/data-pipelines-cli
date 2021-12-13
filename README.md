@@ -44,6 +44,20 @@ dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 
 When finished, call `dp clean` to remove compilation related directories.
 
+### Variables
+You can put dictionary of variables to be passed to `dbt` in your `config/<ENV>/dbt.yml` file, following the convention
+presented in [the guide at dbt site](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml).
+E.g., if one of fields of `config/<SNOWFLAKE_ENV>/snowflake.yml` looks like this:
+```yaml
+schema: "{{ var('snowflake_schema') }}"
+```
+you should put following in your `config/<SNOWFLAKE_ENV>/dbt.yml` file:
+```yaml
+vars:
+  snowflake_schema: EXAMPLE_SCHEMA
+```
+and then run your `dp run --env <SNOWFLAKE_ENV>` (or any similar command).
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

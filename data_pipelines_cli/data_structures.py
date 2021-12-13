@@ -21,8 +21,8 @@ class TemplateConfig(TypedDict):
 
 
 class DataPipelinesConfig(TypedDict):
-    username: str
     templates: Dict[str, TemplateConfig]
+    vars: Dict[str, str]
 
 
 def read_config_or_exit() -> DataPipelinesConfig:

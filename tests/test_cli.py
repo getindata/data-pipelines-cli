@@ -17,7 +17,6 @@ from data_pipelines_cli.data_structures import (
 
 class ConfigTestCase(unittest.TestCase):
     example_config_dict = DataPipelinesConfig(
-        username="testuser",
         templates={
             "template1": TemplateConfig(
                 template_name="template1",
@@ -28,6 +27,7 @@ class ConfigTestCase(unittest.TestCase):
                 template_path="https://example.com/git/example.git",
             ),
         },
+        vars={"username": "testuser"},
     )
     example_config_path = pathlib.Path(__file__).parent.joinpath("example_config.yml")
 
@@ -61,7 +61,6 @@ class InitTestCase(unittest.TestCase):
         "config_template"
     )
     example_config_dict = DataPipelinesConfig(
-        username="test_user",
         templates={
             "my-template": TemplateConfig(
                 template_name="my-template",
@@ -71,6 +70,9 @@ class InitTestCase(unittest.TestCase):
                 template_name="local-template",
                 template_path="/var/tmp/Documents/project-template",
             ),
+        },
+        vars={
+            "username": "test_user",
         },
     )
 
