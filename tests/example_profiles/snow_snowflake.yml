@@ -1,0 +1,16 @@
+snowflake:
+  outputs:
+    snow:
+      account: account_id
+      database: DBT_EXAMPLE_DB
+      warehouse: EXAMPLE_WAREHOUSE
+      schema: EXAMPLE_SCHEMA
+
+      role: DBT_ROLE
+      user: EXAMPLE_USERNAME
+      password: EXAMPLE_PASSWORD
+
+      threads: 1
+      client_session_keep_alive: False
+      type: snowflake
+  target: snow

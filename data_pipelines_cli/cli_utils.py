@@ -1,19 +1,22 @@
+from __future__ import annotations
+
 import os
+import subprocess
 import sys
-from typing import Optional
+from typing import Any, List, Optional
 
 import click
 
 
-def echo_error(text: str, **kwargs):
+def echo_error(text: str, **kwargs: Any) -> None:
     click.secho(text, file=sys.stderr, fg="red", **kwargs)
 
 
-def echo_info(text: str, **kwargs):
+def echo_info(text: str, **kwargs: Any) -> None:
     click.secho(text, fg="blue", bold=True, **kwargs)
 
 
-def echo_subinfo(text: str, **kwargs):
+def echo_subinfo(text: str, **kwargs: Any) -> None:
     click.secho(text, fg="bright_blue", **kwargs)
 
 
@@ -29,3 +32,11 @@ def get_argument_or_environment_variable(
         )
         sys.exit(1)
     return result
+
+
+def subprocess_run(args: List[str]) -> subprocess.CompletedProcess[bytes]:
+    try:
+        return subprocess.run(args, check=True)
+    except subprocess.CalledProcessError as err:
+        echo_error(f"{args[0]} has exited with non-zero exit code: {err.returncode}")
+        sys.exit(1)

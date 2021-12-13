@@ -1,0 +1,11 @@
+account: account_id
+
+user: EXAMPLE_USERNAME
+password: EXAMPLE_PASSWORD
+
+role: DBT_ROLE
+database: DBT_EXAMPLE_DB
+warehouse: EXAMPLE_WAREHOUSE
+schema: EXAMPLE_SCHEMA
+threads: 1
+client_session_keep_alive: False

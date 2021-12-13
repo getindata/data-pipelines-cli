@@ -1,0 +1,9 @@
+method: service-account
+project: example-project
+dataset: example-dataset
+threads: 1
+keyfile: /var/keyfile.json
+timeout_seconds: 150
+priority: interactive
+location: us-west1
+retries: 1

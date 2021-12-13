@@ -35,7 +35,7 @@ class TestSynchronize(unittest.TestCase):
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=False)
 
-        remote_fs, _ = fsspec.core.url_to_fs(remote_path)
+        remote_fs, _ = fsspec.core.url_to_fs(remote_path, **remote_kwargs)
         for local_file in self.test_sync_directory_layout:
             self.assertIn(
                 str(pathlib.Path(MY_BUCKET).joinpath(local_file)),
@@ -49,7 +49,7 @@ class TestSynchronize(unittest.TestCase):
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=True)
 
-        remote_fs, _ = fsspec.core.url_to_fs(remote_path)
+        remote_fs, _ = fsspec.core.url_to_fs(remote_path, **remote_kwargs)
         for local_file in self.test_sync_directory_layout:
             self.assertIn(
                 str(pathlib.Path(MY_BUCKET).joinpath(local_file)),
@@ -123,5 +123,22 @@ class TestS3Synchronize(TestSynchronize):
         self._test_synchronize_with_delete("s3", key="testing", password="testing")
 
 
-# TODO: Although it would be nice to have unit tests for connecting with GCP,
-#  right now there's no elegant out-of-the-box mocking framework for GCS.
+class TestGoogleStorageSynchronize(TestSynchronize):
+    def setUp(self) -> None:
+        from gcp_storage_emulator.server import create_server
+
+        self.server = create_server(
+            "localhost", 9023, in_memory=True, default_bucket=MY_BUCKET
+        )
+        self.server.start()
+
+    def tearDown(self):
+        self.server.stop()
+
+    def test_synchronize(self):
+        self._test_synchronize("gs", endpoint_url="http://localhost:9023", token="anon")
+
+    def test_synchronize_with_delete(self):
+        self._test_synchronize_with_delete(
+            "gs", endpoint_url="http://localhost:9023", token="anon"
+        )

@@ -1,4 +1,5 @@
-username: testuser
+vars:
+  username: testuser
 templates:
   template1:
     template_name: template1
