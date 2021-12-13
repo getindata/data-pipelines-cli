@@ -3,7 +3,7 @@ import json
 import os
 import pathlib
 import sys
-from typing import Dict, Optional
+from typing import Dict, Optional, cast
 
 import click
 import yaml
@@ -45,12 +45,12 @@ class DeployCommand:
         self._sync_bucket()
 
     @staticmethod
-    def _get_project_name():
+    def _get_project_name() -> str:
         with open(pathlib.Path().joinpath("dbt_project.yml")) as f:
             dbt_project_config = yaml.safe_load(f)
             return dbt_project_config["name"]
 
-    def _docker_push(self):
+    def _docker_push(self) -> None:
         try:
             import docker
         except ModuleNotFoundError:
@@ -61,15 +61,16 @@ class DeployCommand:
 
         echo_info("Pushing Docker image")
         docker_client = docker.from_env()
+        docker_args = cast(DockerArgs, self.docker_args)
         for line in docker_client.images.push(
-            repository=self.docker_args.repository,
-            tag=self.docker_args.commit_sha,
+            repository=docker_args.repository,
+            tag=docker_args.commit_sha,
             stream=True,
         ):
             click.echo(line, nl=False)
 
     @staticmethod
-    def _datahub_ingest():
+    def _datahub_ingest() -> None:
         try:
             import datahub  # noqa: F401
         except ModuleNotFoundError:

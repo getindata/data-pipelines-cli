@@ -1,16 +1,21 @@
+from __future__ import annotations
+
+import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Optional
+from typing import Optional, Union
 
 import click
 
 
 # Python's `sed` equivalent, based on the following answer:
 # https://stackoverflow.com/a/31499114
-def replace(filename, pattern, replacement):
+def replace(
+    filename: Union[str, os.PathLike[str]], pattern: str, replacement: str
+) -> None:
     """
     Perform the pure-Python equivalent of in-place `sed` substitution: e.g.,
     `sed -i -e 's/'${pattern}'/'${replacement}' "${filename}"`.
