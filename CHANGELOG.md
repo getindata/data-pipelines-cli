@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2021-12-14
+
+### Fixed
+
+-   `_dbt_compile` is no longer removing replaced `<IMAGE_TAG>`.
+
 ## [0.5.0] - 2021-12-14
 
 ### Added
@@ -65,7 +71,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.5.1...HEAD
+
+[0.5.1]: https://github.com/getindata/data-pipelines-cli/compare/0.5.0...0.5.1
 
 [0.5.0]: https://github.com/getindata/data-pipelines-cli/compare/0.4.0...0.5.0
 
