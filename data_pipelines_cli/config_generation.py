@@ -89,14 +89,16 @@ def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
     }
 
 
-def generate_profiles_yml(env: str) -> pathlib.Path:
+def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
     """
     Generates and saves ``profiles.yml`` file at ``build/profiles/{env}``.
 
     :param env: str
+    :param copy_config_dir: bool
     :return: Path to ``build/profiles/{env}``
     """
-    copy_config_dir_to_build_dir()
+    if copy_config_dir:
+        copy_config_dir_to_build_dir()
     echo_info("Generating profiles.yml")
     profile = _generate_profile_dict(env)
     profiles_path = profiles_build_path(env)
