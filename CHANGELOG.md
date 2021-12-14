@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- `_dbt_compile` is no longer removing replaced `<IMAGE_TAG>`.
+
 ## [0.5.0] - 2021-12-14
 
 ### Added

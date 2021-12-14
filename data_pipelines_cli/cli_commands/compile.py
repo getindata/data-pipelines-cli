@@ -62,7 +62,7 @@ def _docker_build(docker_args: DockerArgs) -> None:
 
 
 def _dbt_compile(env: str) -> None:
-    profiles_path = generate_profiles_yml(env)
+    profiles_path = generate_profiles_yml(env, False)
     echo_info("Running dbt commands:")
     run_dbt_command(("deps",), env, profiles_path)
     run_dbt_command(("compile",), env, profiles_path)
