@@ -5,6 +5,9 @@
 ### Added
 - `echo_warning` function prints warning messages in yellow/orange color.
 
+### Modified
+- Docker image gets built at the end of `compile` command.
+
 ### Removed
 - Dropped `dbt-airflow-manifest-parser` dependency.
 

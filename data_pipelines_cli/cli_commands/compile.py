@@ -105,12 +105,12 @@ def compile_project(
     _replace_image_tag(k8s_config, docker_args)
     _replace_docker_repository_url(k8s_config, docker_args)
 
-    if docker_build:
-        _docker_build(docker_args)
     _dbt_compile(env)
     _copy_dbt_manifest()
-
     _replace_datahub_address(datahub_address)
+
+    if docker_build:
+        _docker_build(docker_args)
 
 
 @click.command(name="compile")
