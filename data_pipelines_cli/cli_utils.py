@@ -12,6 +12,10 @@ def echo_error(text: str, **kwargs: Any) -> None:
     click.secho(text, file=sys.stderr, fg="red", **kwargs)
 
 
+def echo_warning(text: str, **kwargs: Any) -> None:
+    click.secho(text, file=sys.stderr, fg="yellow", **kwargs)
+
+
 def echo_info(text: str, **kwargs: Any) -> None:
     click.secho(text, fg="blue", bold=True, **kwargs)
 

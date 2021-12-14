@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+- `echo_warning` function prints warning messages in yellow/orange color.
+
+### Removed
+- Dropped `dbt-airflow-manifest-parser` dependency.
+
 ## [0.4.0] - 2021-12-13
 
 ### Added

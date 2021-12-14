@@ -5,6 +5,7 @@ import yaml
 
 from data_pipelines_cli.cli_utils import (
     echo_error,
+    echo_warning,
     get_argument_or_environment_variable,
 )
 from data_pipelines_cli.io_utils import git_revision_hash
@@ -30,7 +31,7 @@ def read_config_or_exit() -> DataPipelinesConfig:
     from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
 
     if not CONFIGURATION_PATH.is_file():
-        echo_error(
+        echo_warning(
             "No configuration file found. Run 'dp init' to create it.",
         )
         sys.exit(1)
