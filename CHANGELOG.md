@@ -2,15 +2,20 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2021-12-14
+
 ### Added
-- `echo_warning` function prints warning messages in yellow/orange color.
+
+-   `echo_warning` function prints warning messages in yellow/orange color.
 
 ### Modified
-- Docker image gets built at the end of `compile` command.
-- **dbt**-related commands do not fail if no `$HOME/.dp.yml` exists (e.g., `dp run`).
+
+-   Docker image gets built at the end of `compile` command.
+-   **dbt**-related commands do not fail if no `$HOME/.dp.yml` exists (e.g., `dp run`).
 
 ### Removed
-- Dropped `dbt-airflow-manifest-parser` dependency.
+
+-   Dropped `dbt-airflow-manifest-parser` dependency.
 
 ## [0.4.0] - 2021-12-13
 
@@ -60,7 +65,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.5.0...HEAD
+
+[0.5.0]: https://github.com/getindata/data-pipelines-cli/compare/0.4.0...0.5.0
 
 [0.4.0]: https://github.com/getindata/data-pipelines-cli/compare/0.3.0...0.4.0
 
