@@ -5,7 +5,7 @@ import click
 import copier
 import questionary
 
-from data_pipelines_cli.cli_utils import echo_error
+from data_pipelines_cli.cli_utils import echo_error, echo_warning
 from data_pipelines_cli.data_structures import TemplateConfig, read_config_or_exit
 
 
@@ -52,7 +52,7 @@ def create(project_path: str, template_path: Optional[str]) -> None:
 @click.argument("template-path", nargs=-1)
 def create_command(project_path: str, template_path: Sequence[str]) -> None:
     if template_path and len(template_path) > 1:
-        echo_error(
+        echo_warning(
             "dp create expects at most two arguments -- project-path and template-path"
         )
     create(project_path, template_path[0] if template_path else None)
