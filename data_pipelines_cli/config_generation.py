@@ -1,13 +1,15 @@
+from __future__ import annotations
+
+import os
 import pathlib
 import shutil
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 import yaml
-from dbt_airflow_manifest_parser.config_utils import read_config
 
 from .cli_constants import BUILD_DIR, profiles_build_path
-from .cli_utils import echo_info, echo_subinfo
+from .cli_utils import echo_info, echo_subinfo, echo_warning
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict  # pylint: disable=no-name-in-module
@@ -36,16 +38,45 @@ def copy_config_dir_to_build_dir() -> None:
     _copy_src_dir_to_dst_dir(config_src_path, dag_dst_path)
 
 
+# Heavily based on `config_utils.py` from
+# https://github.com/getindata/dbt-airflow-manifest-parser
+def read_dictionary_from_config_directory(
+    dag_path: Union[str, os.PathLike[str]], env: str, file_name: str
+) -> Dict[str, Any]:
+    return dict(
+        _read_env_config(dag_path, "base", file_name),
+        **_read_env_config(dag_path, env, file_name),
+    )
+
+
+def _read_env_config(
+    dag_path: Union[str, os.PathLike[str]], env: str, file_name: str
+) -> Dict[str, Any]:
+    config_file_path = pathlib.Path(dag_path).joinpath("config", env, file_name)
+    if config_file_path.exists():
+        echo_info("Reading config from " + str(config_file_path))
+        return _read_yaml_file(config_file_path)
+    echo_warning("Missing config file: " + str(config_file_path))
+    return {}
+
+
+def _read_yaml_file(file_path: Union[str, os.PathLike[str]]) -> Dict[str, Any]:
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
+
+
 class DbtProfile(TypedDict):
     target: str
     outputs: Dict[str, Dict[str, Any]]
 
 
 def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
-    dbt_env_config = read_config(BUILD_DIR.joinpath("dag"), env, "dbt.yml")
+    dbt_env_config = read_dictionary_from_config_directory(
+        BUILD_DIR.joinpath("dag"), env, "dbt.yml"
+    )
     dbt_target: str = dbt_env_config["target"]
     dbt_target_type: str = dbt_env_config["target_type"]
-    target_type_config = read_config(
+    target_type_config = read_dictionary_from_config_directory(
         BUILD_DIR.joinpath("dag"), env, f"{dbt_target_type}.yml"
     )
     target_type_config["type"] = dbt_target_type
@@ -66,7 +97,7 @@ def generate_profiles_yml(env: str) -> pathlib.Path:
     :return: Path to ``build/profiles/{env}``
     """
     copy_config_dir_to_build_dir()
-    echo_info("Generating .profiles.yml")
+    echo_info("Generating profiles.yml")
     profile = _generate_profile_dict(env)
     profiles_path = profiles_build_path(env)
 
@@ -74,6 +105,6 @@ def generate_profiles_yml(env: str) -> pathlib.Path:
     with open(profiles_path, "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)
 
-    echo_subinfo(f"Generated .profiles.yml in {profiles_path}")
+    echo_subinfo(f"Generated profiles.yml in {profiles_path}")
 
     return profiles_path.parent

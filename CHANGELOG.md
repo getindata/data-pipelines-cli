@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+- `echo_warning` function prints warning messages in yellow/orange color.
+
+### Modified
+- Docker image gets built at the end of `compile` command.
+- **dbt**-related commands do not fail if no `$HOME/.dp.yml` exists (e.g., `dp run`).
+
+### Removed
+- Dropped `dbt-airflow-manifest-parser` dependency.
+
 ## [0.4.0] - 2021-12-13
 
 ### Added
