@@ -26,7 +26,7 @@ class DataPipelinesConfig(TypedDict):
     vars: Dict[str, str]
 
 
-def read_config_or_exit() -> DataPipelinesConfig:
+def read_config() -> Optional[DataPipelinesConfig]:
     # Avoiding a dependency loop between `cli_constants` and `data_structures`
     from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
 
@@ -34,10 +34,17 @@ def read_config_or_exit() -> DataPipelinesConfig:
         echo_warning(
             "No configuration file found. Run 'dp init' to create it.",
         )
-        sys.exit(1)
+        return None
 
     with open(CONFIGURATION_PATH, "r") as f:
         return yaml.safe_load(f)
+
+
+def read_config_or_exit() -> DataPipelinesConfig:
+    config = read_config()
+    if not config:
+        sys.exit(1)
+    return config
 
 
 class DockerArgs:

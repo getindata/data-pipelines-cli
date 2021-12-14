@@ -10,11 +10,11 @@ from .config_generation import (
     generate_profiles_yml,
     read_dictionary_from_config_directory,
 )
-from .data_structures import read_config_or_exit
+from .data_structures import DataPipelinesConfig, read_config
 
 
 def _read_dbt_vars_from_configs(dbt_env_config: Dict[str, Any]) -> str:
-    dp_config = read_config_or_exit()
+    dp_config = read_config() or DataPipelinesConfig(templates={}, vars={})
     dp_vars = dp_config.get("vars", {})
     dbt_vars: Dict[str, str] = dbt_env_config.get("vars", {})
     return yaml.dump(

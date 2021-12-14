@@ -7,6 +7,7 @@
 
 ### Modified
 - Docker image gets built at the end of `compile` command.
+- **dbt**-related commands do not fail if no `$HOME/.dp.yml` exists (e.g., `dp run`).
 
 ### Removed
 - Dropped `dbt-airflow-manifest-parser` dependency.
