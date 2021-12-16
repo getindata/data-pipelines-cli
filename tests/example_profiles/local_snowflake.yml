@@ -1,6 +1,6 @@
 snowflake:
   outputs:
-    snow:
+    local:
       account: account_id
       database: DBT_EXAMPLE_DB
       warehouse: EXAMPLE_WAREHOUSE
@@ -13,4 +13,4 @@ snowflake:
       threads: 1
       client_session_keep_alive: False
       type: snowflake
-  target: snow
+  target: local

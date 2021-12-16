@@ -6,7 +6,6 @@ from unittest.mock import patch
 import yaml
 
 import data_pipelines_cli.config_generation as cgen
-from data_pipelines_cli.cli_constants import profiles_build_path
 
 
 def _noop():
@@ -14,7 +13,11 @@ def _noop():
 
 
 class TestConfigGeneration(unittest.TestCase):
-    envs_to_test = [("dev", "bigquery"), ("test", "bigquery"), ("snow", "snowflake")]
+    envs_to_test = [
+        ("dev", "bigquery"),
+        ("staging", "bigquery"),
+        ("local", "snowflake"),
+    ]
 
     def setUp(self) -> None:
         self.maxDiff = None
@@ -32,9 +35,9 @@ class TestConfigGeneration(unittest.TestCase):
                 _noop,
             ):
 
-                cgen.generate_profiles_yml(env)
-                self.profiles_path = profiles_build_path(env)
-
+                self.profiles_path = cgen.generate_profiles_yml(env).joinpath(
+                    "profiles.yml"
+                )
                 with open(self.profiles_path, "r") as generated, open(
                     self.current_dir_path.joinpath(
                         "example_profiles", f"{env}_{profile_type}.yml"

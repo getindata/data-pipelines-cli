@@ -8,7 +8,12 @@ from typing import Any, Dict, Union
 
 import yaml
 
-from .cli_constants import BUILD_DIR, profiles_build_path
+from .cli_constants import (
+    AVAILABLE_ENVS,
+    BUILD_DIR,
+    PROFILE_NAME_ENV_EXECUTION,
+    get_dbt_profiles_env_name,
+)
 from .cli_utils import echo_info, echo_subinfo, echo_warning
 
 if sys.version_info >= (3, 8):
@@ -54,7 +59,6 @@ def _read_env_config(
 ) -> Dict[str, Any]:
     config_file_path = pathlib.Path(dag_path).joinpath("config", env, file_name)
     if config_file_path.exists():
-        echo_info("Reading config from " + str(config_file_path))
         return _read_yaml_file(config_file_path)
     echo_warning("Missing config file: " + str(config_file_path))
     return {}
@@ -81,6 +85,14 @@ def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
     )
     target_type_config["type"] = dbt_target_type
 
+    if dbt_target not in AVAILABLE_ENVS:
+        echo_warning(
+            f"dbt target {dbt_target} is not one of {AVAILABLE_ENVS}. "
+            "It can cause errors when running or deploying your project. "
+            f"Consider changing target in your 'config/{env}/dbt.yml' to "
+            f"{PROFILE_NAME_ENV_EXECUTION}."
+        )
+
     return {
         dbt_target_type: {
             "target": dbt_target,
@@ -91,7 +103,8 @@ def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
 
 def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
     """
-    Generates and saves ``profiles.yml`` file at ``build/profiles/{env}``.
+    Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
+    ``build/profiles/env_execution``, depending on `env` argument.
 
     :param env: str
     :param copy_config_dir: bool
@@ -101,8 +114,9 @@ def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Pat
         copy_config_dir_to_build_dir()
     echo_info("Generating profiles.yml")
     profile = _generate_profile_dict(env)
-    profiles_path = profiles_build_path(env)
 
+    profile_name = get_dbt_profiles_env_name(env)
+    profiles_path = BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
     profiles_path.parent.mkdir(parents=True, exist_ok=True)
     with open(profiles_path, "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)

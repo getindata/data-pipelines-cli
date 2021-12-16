@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2021-12-16
+
+### Modified
+
+-   **dp** saves generated `profiles.yml` in either `build/local` or `build/env_execution` directories. **dbt** gets executed with `env_execution` as the target.
+
 ## [0.5.1] - 2021-12-14
 
 ### Fixed
@@ -71,7 +77,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.5.1...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.6.0...HEAD
+
+[0.6.0]: https://github.com/getindata/data-pipelines-cli/compare/0.5.1...0.6.0
 
 [0.5.1]: https://github.com/getindata/data-pipelines-cli/compare/0.5.0...0.5.1
 
