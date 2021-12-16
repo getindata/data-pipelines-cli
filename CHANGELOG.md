@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Modified
+- **dp** saves generated `profiles.yml` in either `build/local` or `build/env_execution` directories. **dbt** gets executed with `env_execution` as the target.
+
 ## [0.5.1] - 2021-12-14
 
 ### Fixed

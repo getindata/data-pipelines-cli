@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import yaml
 
-from .cli_constants import BUILD_DIR
+from .cli_constants import BUILD_DIR, get_dbt_profiles_env_name
 from .cli_utils import echo_subinfo, subprocess_run
 from .config_generation import (
     generate_profiles_yml,
@@ -42,7 +42,7 @@ def run_dbt_command(
             "--profiles-dir",
             str(profiles_path),
             "--target",
-            env,
+            get_dbt_profiles_env_name(env),
             "--vars",
             dbt_vars,
         ]

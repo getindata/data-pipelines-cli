@@ -1,5 +1,5 @@
 target: env_execution
 target_type: bigquery
 vars:
-  variable_1: 123
-  variable_2: "var2"
+  variable_1: 1337
+  variable_2: "var21"
