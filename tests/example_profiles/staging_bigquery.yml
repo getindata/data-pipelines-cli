@@ -1,9 +1,9 @@
 bigquery:
   outputs:
-    test:
+    env_execution:
       method: service-account
-      project: test-project
-      dataset: test-dataset
+      project: example-project
+      dataset: example-dataset
       keyfile: /var/keyfile.json
       timeout_seconds: 150
       priority: interactive
@@ -11,4 +11,4 @@ bigquery:
       threads: 1
       retries: 1
       type: bigquery
-  target: test
+  target: env_execution
