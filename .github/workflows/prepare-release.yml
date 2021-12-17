@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.9]
+        python-version: [3.7]
     env:
       PYTHON_PACKAGE: data_pipelines_cli
     steps:
@@ -36,6 +36,11 @@ jobs:
         uses: thomaseizinger/keep-a-changelog-new-release@v1
         with:
           version: ${{ steps.bump_version.outputs.package_version }}
+      - name: Ensure source docs are updated
+        uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+          build-command: "make apidoc html"
       - name: Create a new release branch
         run: |
           git config user.name github-actions
@@ -54,5 +59,6 @@ jobs:
           PULL_REQUEST_ASSIGNEES: " p-pekala"
       - name: Commit the changes
         run: |
+          git add docs
           git commit -am "FIX #${{ steps.open_pr.outputs.pull_request_number }}  - Bump version and CHANGELOG for release ${{ steps.bump_version.outputs.package_version }}"
           git push
