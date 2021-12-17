@@ -38,6 +38,12 @@ EXTRA_REQUIRE = {
             ]
         ),
     ],
+    "docs": [
+        "sphinx==4.3.1",
+        "sphinx-rtd-theme==1.0.0",
+        "sphinx-click>=3.0,<3.1",
+        "myst-parser>=0.16, <0.17",
+    ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
 
@@ -60,7 +66,7 @@ setup(
     author=u"Andrzej Swatowski",
     author_email="andrzej.swatowski@getindata.com",
     url="https://github.com/getindata/data-pipelines-cli/",
-    packages=find_packages(exclude=["examples", "tests"]),
+    packages=find_packages(exclude=["docs", "tests"]),
     include_package_data=True,
     install_requires=INSTALL_REQUIREMENTS,
     extras_require=EXTRA_REQUIRE,

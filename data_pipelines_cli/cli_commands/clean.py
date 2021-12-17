@@ -19,10 +19,11 @@ def _remove_build_dir() -> None:
 
 
 def clean() -> None:
+    """Deletes local working directories"""
     _dbt_clean()
     _remove_build_dir()
 
 
-@click.command(name="clean")
+@click.command(name="clean", help="Delete local working directories")
 def clean_command() -> None:
     clean()

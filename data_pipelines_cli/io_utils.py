@@ -18,7 +18,7 @@ def replace(
 ) -> None:
     """
     Perform the pure-Python equivalent of in-place `sed` substitution: e.g.,
-    `sed -i -e 's/'${pattern}'/'${replacement}' "${filename}"`.
+    ``sed -i -e 's/'${pattern}'/'${replacement}' "${filename}"``.
 
     Beware however, it uses Python regex dialect instead of `sed`'s one.
     It can introduce regex-related bugs.
@@ -42,6 +42,13 @@ def replace(
 
 
 def git_revision_hash() -> Optional[str]:
+    """
+    Tries to get current Git revision hash, if Git is installed and any
+    revision exists.
+
+    :return: Git revision hash, if possible.
+    :rtype: Optional[str]
+    """
     try:
         rev_process = subprocess.run(
             ["git", "rev-parse", "HEAD"], check=True, capture_output=True

@@ -10,9 +10,14 @@ from .cli_utils import echo_subinfo
 
 
 class LocalRemoteSync:
+    """Synchronizes local directory with a cloud storage's one"""
+
     local_fs: AbstractFileSystem
+    """FS representing local directory"""
     local_path_str: str
+    """Path to local directory"""
     remote_path_str: str
+    """Path/URI of the cloud storage directory"""
     _local_directory_suffixes: Set[str]
 
     def __init__(
@@ -29,6 +34,14 @@ class LocalRemoteSync:
         self._local_directory_suffixes = set()
 
     def sync(self, delete: bool = True) -> None:
+        """
+        Sends local files to the remote directory and (optionally) deletes
+        unnecessary ones.
+
+        :param delete: Whether to delete remote files that are \
+        no longer present in local directory
+        :type delete: bool
+        """
         self._push_sync()
         if delete:
             self._delete()

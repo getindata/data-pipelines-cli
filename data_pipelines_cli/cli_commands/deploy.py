@@ -15,10 +15,18 @@ from ..filesystem_utils import LocalRemoteSync
 
 
 class DeployCommand:
+    """A class used to push and deploy the project to the remote machine"""
+
     docker_args: Optional[DockerArgs]
+    """Arguments required by the Docker to make a push to the repository.
+    If set to `None`, :meth:`deploy` will not make a push"""
     datahub_ingest: bool
+    """Whether to ingest DataHub metadata"""
     blob_address_path: str
+    """URI of the cloud storage to send build artifacts to"""
     provider_kwargs_dict: Dict[str, str]
+    """Dictionary of arguments required by a specific cloud storage provider,
+    e.g. path to a token, username, password, etc."""
 
     def __init__(
         self,
@@ -36,6 +44,7 @@ class DeployCommand:
         self.provider_kwargs_dict = provider_kwargs_dict
 
     def deploy(self) -> None:
+        """Push and deploy the project to the remote machine"""
         if self.docker_args:
             self._docker_push()
 
@@ -96,7 +105,7 @@ class DeployCommand:
         ).sync(delete=True)
 
 
-@click.command(name="deploy")
+@click.command(name="deploy", help="Push and deploy the project to the remote machine")
 @click.argument("address")
 @click.option(
     "--blob-args",
@@ -105,9 +114,19 @@ class DeployCommand:
     help="Path to JSON or YAML file with arguments that should be passed to "
     "your Bucket/blob provider",
 )
-@click.option("--repository", default=None)
-@click.option("--docker-push", is_flag=True, default=False)
-@click.option("--datahub-ingest", is_flag=True, default=False)
+@click.option("--repository", default=None, help="Path to the Docker repository")
+@click.option(
+    "--docker-push",
+    is_flag=True,
+    default=False,
+    help="Whether to push a Docker image to the repository",
+)
+@click.option(
+    "--datahub-ingest",
+    is_flag=True,
+    default=False,
+    help="Whether to ingest DataHub metadata",
+)
 def deploy_command(
     address: str,
     blob_args: io.TextIOWrapper,

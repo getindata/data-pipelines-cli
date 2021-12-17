@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Add documentation in the style of [Read the Docs](https://readthedocs.org/).
+
 ## [0.6.0] - 2021-12-16
 
 ### Modified
