@@ -53,6 +53,23 @@ def echo_subinfo(text: str, **kwargs: Any) -> None:
 
 
 def get_argument_or_environment_variable(
+    argument: Optional[str], environment_variable_name: str
+) -> Optional[str]:
+    """
+    Given *argument* is not `None`, returns its value. Otherwise, searches
+    for *environment_variable_name* amongst environment variables and returns
+    it.
+
+    :param argument: Optional value passed to the CLI as the *argument_name*
+    :type argument: Optional[str]
+    :param environment_variable_name: Name of the environment variable to search for
+    :type environment_variable_name: str
+    :return: Value of the *argument* or specified environment variable
+    """
+    return argument or os.environ.get(environment_variable_name)
+
+
+def get_argument_or_environment_variable_or_exit(
     argument: Optional[str], argument_name: str, environment_variable_name: str
 ) -> str:
     """
@@ -69,7 +86,7 @@ def get_argument_or_environment_variable(
     :type environment_variable_name: str
     :return: Value of the *argument* or specified environment variable
     """
-    result = argument or os.environ.get(environment_variable_name)
+    result = get_argument_or_environment_variable(argument, environment_variable_name)
     if not result:
         echo_error(
             f"Could not get {environment_variable_name}. Either set it as an "

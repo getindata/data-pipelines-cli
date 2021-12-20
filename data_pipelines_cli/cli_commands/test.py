@@ -14,6 +14,12 @@ def test(env: str) -> None:
 
 
 @click.command(name="test", help="Run tests of the project on the local machine")
-@click.option("--env", default="local", type=str, help="Name of the environment")
+@click.option(
+    "--env",
+    default="local",
+    type=str,
+    show_default=True,
+    help="Name of the environment",
+)
 def test_command(env: str) -> None:
     test(env)

@@ -6,7 +6,7 @@ import yaml
 from data_pipelines_cli.cli_utils import (
     echo_error,
     echo_warning,
-    get_argument_or_environment_variable,
+    get_argument_or_environment_variable_or_exit,
 )
 from data_pipelines_cli.io_utils import git_revision_hash
 
@@ -78,9 +78,9 @@ class DockerArgs:
     commit_sha: str
     """Long hash of the current Git revision. Used as an image tag"""
 
-    def __init__(self, repository: Optional[str]):
-        self.repository = get_argument_or_environment_variable(
-            repository, "repository", "REPOSITORY_URL"
+    def __init__(self, docker_repository_uri: Optional[str]):
+        self.repository = get_argument_or_environment_variable_or_exit(
+            docker_repository_uri, "repository", "REPOSITORY_URL"
         )
         commit_sha = git_revision_hash()
         if not commit_sha:

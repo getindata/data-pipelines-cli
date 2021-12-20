@@ -30,13 +30,12 @@ class DeployCommand:
 
     def __init__(
         self,
-        repository: Optional[str],
+        docker_push: Optional[str],
         blob_address: str,
         provider_kwargs_dict: Dict[str, str],
-        docker_push: bool,
         datahub_ingest: bool,
     ):
-        self.docker_args = DockerArgs(repository) if docker_push else None
+        self.docker_args = DockerArgs(docker_push) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.blob_address_path = os.path.join(
             blob_address, "dags", DeployCommand._get_project_name()
@@ -114,13 +113,7 @@ class DeployCommand:
     help="Path to JSON or YAML file with arguments that should be passed to "
     "your Bucket/blob provider",
 )
-@click.option("--repository", default=None, help="Path to the Docker repository")
-@click.option(
-    "--docker-push",
-    is_flag=True,
-    default=False,
-    help="Whether to push a Docker image to the repository",
-)
+@click.option("--docker-push", default=None, help="Path to the Docker repository")
 @click.option(
     "--datahub-ingest",
     is_flag=True,
@@ -130,8 +123,7 @@ class DeployCommand:
 def deploy_command(
     address: str,
     blob_args: io.TextIOWrapper,
-    repository: Optional[str],
-    docker_push: bool,
+    docker_push: Optional[str],
     datahub_ingest: bool,
 ) -> None:
     try:
@@ -140,9 +132,8 @@ def deploy_command(
         provider_kwargs_dict = yaml.safe_load(blob_args)
 
     DeployCommand(
-        repository,
+        docker_push,
         address,
         provider_kwargs_dict,
-        docker_push,
         datahub_ingest,
     ).deploy()
