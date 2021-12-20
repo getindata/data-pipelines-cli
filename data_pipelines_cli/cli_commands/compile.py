@@ -93,6 +93,18 @@ def compile_project(
     docker_build: bool,
     env: str,
 ) -> None:
+    """
+    Create local working directories and build artifacts
+
+    :param repository: URI of the Docker repository
+    :type repository: Optional[str]
+    :param datahub: URI of the DataHub ingestion endpoint
+    :type datahub: Optional[str]
+    :param docker_build: Whether to build a Docker image
+    :type docker_build: bool
+    :param env: Name of the environment
+    :type env: str
+    """
     datahub_address = get_argument_or_environment_variable(
         datahub, "datahub", DATAHUB_URL_ENV
     )
@@ -113,11 +125,18 @@ def compile_project(
         _docker_build(docker_args)
 
 
-@click.command(name="compile")
-@click.option("--env", required=True)
-@click.option("--repository", default=None)
-@click.option("--datahub", default=None)
-@click.option("--docker-build", is_flag=True, default=False)
+@click.command(
+    name="compile", help="Create local working directories and build artifacts"
+)
+@click.option("--env", required=True, help="Name of the environment")
+@click.option("--repository", default=None, help="URI of the Docker repository")
+@click.option("--datahub", default=None, help="URI of the DataHub ingestion endpoint")
+@click.option(
+    "--docker-build",
+    is_flag=True,
+    default=False,
+    help="Whether to build a Docker image",
+)
 def compile_project_command(
     env: str,
     repository: Optional[str],

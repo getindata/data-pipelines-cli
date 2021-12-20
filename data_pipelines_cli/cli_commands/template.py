@@ -5,6 +5,7 @@ from data_pipelines_cli.data_structures import read_config_or_exit
 
 
 def list_templates() -> None:
+    """Print a list of all templates saved in the config file"""
     config = read_config_or_exit()
 
     click.echo("AVAILABLE TEMPLATES:\n")
@@ -12,6 +13,8 @@ def list_templates() -> None:
         click.echo(yaml.dump(tc))
 
 
-@click.command(name="template-list")
+@click.command(
+    name="template-list", help="Print a list of all templates saved in the config file"
+)
 def list_templates_command() -> None:
     list_templates()

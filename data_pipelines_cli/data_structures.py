@@ -17,16 +17,31 @@ else:
 
 
 class TemplateConfig(TypedDict):
+    """POD representing value referenced in the `templates` section of
+    the `.dp.yml` config file"""
+
     template_name: str
+    """Name of the template"""
     template_path: str
+    """Local path or Git URI to the template repository"""
 
 
 class DataPipelinesConfig(TypedDict):
+    """POD representing `.dp.yml` config file"""
+
     templates: Dict[str, TemplateConfig]
+    """Dictionary of saved templates to use in `dp create` command"""
     vars: Dict[str, str]
+    """Variables to be passed to dbt as `--vars` argument"""
 
 
 def read_config() -> Optional[DataPipelinesConfig]:
+    """
+    Parses `.dp.yml` config file, if it exists
+
+    :return: POD representing `.dp.yml` config file, if it exists
+    :rtype: Optional[DataPipelinesConfig]
+    """
     # Avoiding a dependency loop between `cli_constants` and `data_structures`
     from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
 
@@ -41,6 +56,14 @@ def read_config() -> Optional[DataPipelinesConfig]:
 
 
 def read_config_or_exit() -> DataPipelinesConfig:
+    """
+    Parses `.dp.yml` config file, if it exists. Otherwise, exits program with
+    a system exit status set to 1.
+
+    :return: POD representing `.dp.yml` config file
+    :rtype: DataPipelinesConfig
+    """
+
     config = read_config()
     if not config:
         sys.exit(1)
@@ -48,8 +71,12 @@ def read_config_or_exit() -> DataPipelinesConfig:
 
 
 class DockerArgs:
+    """Arguments required by the Docker to make a push to the repository"""
+
     repository: str
+    """URI of the Docker images repository"""
     commit_sha: str
+    """Long hash of the current Git revision. Used as an image tag"""
 
     def __init__(self, repository: Optional[str]):
         self.repository = get_argument_or_environment_variable(
@@ -62,4 +89,8 @@ class DockerArgs:
         self.commit_sha = commit_sha
 
     def docker_build_tag(self) -> str:
+        """
+        :return: Tag for Docker Python API build command.
+        :rtype: str
+        """
         return f"{self.repository}:{self.commit_sha}"

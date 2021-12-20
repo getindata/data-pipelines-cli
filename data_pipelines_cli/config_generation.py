@@ -31,12 +31,14 @@ def _copy_src_dir_to_dst_dir(src_dir: pathlib.Path, dst_dir: pathlib.Path) -> No
 
 
 def copy_dag_dir_to_build_dir() -> None:
+    """Recursively copies `dag` directory to `build/dag` working directory"""
     dag_src_path = pathlib.Path.cwd().joinpath("dag")
     dag_dst_path = BUILD_DIR.joinpath("dag")
     _copy_src_dir_to_dst_dir(dag_src_path, dag_dst_path)
 
 
 def copy_config_dir_to_build_dir() -> None:
+    """Recursively copies `config` directory to `build/dag/config` working directory"""
     config_src_path = pathlib.Path.cwd().joinpath("config")
     dag_dst_path = BUILD_DIR.joinpath("dag", "config")
     echo_info(f"Copying 'config' directory to {dag_dst_path}")
@@ -46,18 +48,32 @@ def copy_config_dir_to_build_dir() -> None:
 # Heavily based on `config_utils.py` from
 # https://github.com/getindata/dbt-airflow-manifest-parser
 def read_dictionary_from_config_directory(
-    dag_path: Union[str, os.PathLike[str]], env: str, file_name: str
+    config_path: Union[str, os.PathLike[str]], env: str, file_name: str
 ) -> Dict[str, Any]:
+    """
+    Reads dictionaries out of *file_name* in both `base` and *env* directories,
+    and compiles them into one. Values from *env* directory get precedence over
+    `base` ones
+
+    :param config_path: Path to the `config` directory
+    :type config_path: Union[str, os.PathLike[str]]
+    :param env: Name of the environment
+    :type env: str
+    :param file_name: Name of the YAML file to parse dictionary from
+    :type file_name: str
+    :return: Compiled dictionary
+    :rtype: Dict[str, Any]
+    """
     return dict(
-        _read_env_config(dag_path, "base", file_name),
-        **_read_env_config(dag_path, env, file_name),
+        _read_env_config(config_path, "base", file_name),
+        **_read_env_config(config_path, env, file_name),
     )
 
 
 def _read_env_config(
-    dag_path: Union[str, os.PathLike[str]], env: str, file_name: str
+    config_path: Union[str, os.PathLike[str]], env: str, file_name: str
 ) -> Dict[str, Any]:
-    config_file_path = pathlib.Path(dag_path).joinpath("config", env, file_name)
+    config_file_path = pathlib.Path(config_path).joinpath("config", env, file_name)
     if config_file_path.exists():
         return _read_yaml_file(config_file_path)
     echo_warning("Missing config file: " + str(config_file_path))
@@ -70,8 +86,12 @@ def _read_yaml_file(file_path: Union[str, os.PathLike[str]]) -> Dict[str, Any]:
 
 
 class DbtProfile(TypedDict):
+    """POD representing dbt's `profiles.yml` file"""
+
     target: str
+    """Name of the `target` for dbt to run"""
     outputs: Dict[str, Dict[str, Any]]
+    """Dictionary of a warehouse data and credentials, referenced by `target` name"""
 
 
 def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:

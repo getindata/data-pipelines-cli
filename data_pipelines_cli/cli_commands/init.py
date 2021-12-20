@@ -21,6 +21,12 @@ def _download_global_config(config_path: str) -> DataPipelinesConfig:
 
 
 def init(config_path: Optional[str]) -> None:
+    """
+    Configure the tool for the first time
+
+    :param config_path: URI of the repository with a template of the config file
+    :type config_path: Optional[str]
+    """
     if CONFIGURATION_PATH.is_file():
         overwrite_confirm = questionary.confirm(
             "dp config already exists. Do you want to overwrite it?",
@@ -38,7 +44,7 @@ def init(config_path: Optional[str]) -> None:
         yaml.dump(config, f, default_flow_style=False)
 
 
-@click.command(name="init")
+@click.command(name="init", help="Configure the tool for the first time")
 @click.argument("config_path", nargs=-1)
 def init_command(config_path: Sequence[str]) -> None:
     init(config_path[0] if config_path else None)

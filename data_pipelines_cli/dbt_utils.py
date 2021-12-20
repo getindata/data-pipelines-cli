@@ -25,6 +25,16 @@ def _read_dbt_vars_from_configs(dbt_env_config: Dict[str, Any]) -> str:
 def run_dbt_command(
     command: Tuple[str, ...], env: str, profiles_path: Optional[pathlib.Path]
 ) -> None:
+    """
+    Runs dbt subprocess in a context of specified *env*
+
+    :param command: Tuple representing dbt command and its optional arguments
+    :type command: Tuple[str, ...]
+    :param env: Name of the environment
+    :type env: str
+    :param profiles_path: Path to the directory containing `profiles.yml` file
+    :type profiles_path: Optional[pathlib.Path]
+    """
     command_str = " ".join(list(command))
     echo_subinfo(f"dbt {command_str}")
 

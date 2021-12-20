@@ -38,13 +38,21 @@ def _get_template_path(
 
 
 def create(project_path: str, template_path: Optional[str]) -> None:
+    """
+    Create a new project using a template
+
+    :param project_path: Path to a directory to create
+    :type project_path: str
+    :param template_path: Path or URI to the repository of the project template
+    :type template_path: Optional[str]
+    """
     config = read_config_or_exit()
     config_templates = config["templates"]
     src_template_path = _get_template_path(config_templates, template_path)
     copier.copy(src_path=src_template_path, dst_path=project_path)
 
 
-@click.command(name="create")
+@click.command(name="create", help="Create a new project using a template")
 @click.argument(
     "project-path",
     type=click.Path(writable=True, path_type=str, dir_okay=True, file_okay=False),
