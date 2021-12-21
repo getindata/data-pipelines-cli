@@ -12,6 +12,7 @@ INSTALL_REQUIREMENTS = [
     "types-PyYAML>=6.0",
     "copier==5.1.0",
     "dbt>=0.21, <0.22",
+    "Jinja2>=2.11,<2.12",
     "fsspec",
 ]
 

@@ -51,3 +51,12 @@ class DockerNotInstalledError(DependencyNotInstalledError):
 
     def __init__(self) -> None:
         super().__init__("docker")
+
+
+class JinjaVarKeyError(DataPipelinesError):
+    def __init__(self, key: str) -> None:
+        self.message = (
+            f"Variable {key} cannot be found neither in 'dbt.yml' and "
+            "'$HOME/.dp.yml' vars nor in environment variables, causing Jinja "
+            "template rendering to fail."
+        )

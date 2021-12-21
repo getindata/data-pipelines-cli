@@ -165,6 +165,16 @@ case, you can try to run just the ``dp deploy "gs://<YOUR_GS_PATH>"`` command an
 Please refer to the documentation of the specific ``fsspec``'s implementation for more information about the required
 keyword arguments.
 
+Preparing dbt environment
+-------------------------
+
+Sometimes you would like to use standalone **dbt** or an application that interfaces with it (like VS Code plugin).
+``dp prepare-env`` prepares your local environment to be more conformant with a standalone **dbt** requirements, e.g.
+by saving ``profiles.yml`` in the home directory.
+
+However, be aware that most of the time you do not need to do so, and you can comfortably use ``dp run`` and ``dp test``
+commands to interface with the **dbt** instead.
+
 Clean project
 -------------
 

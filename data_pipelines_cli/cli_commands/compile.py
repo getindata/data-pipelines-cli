@@ -111,9 +111,9 @@ def _replace_k8s_settings(docker_args: DockerArgs) -> None:
 
 def compile_project(
     env: str,
-    docker_repository_uri: Optional[str],
-    datahub_gms_uri: Optional[str],
-    docker_build: bool,
+    docker_repository_uri: Optional[str] = None,
+    datahub_gms_uri: Optional[str] = None,
+    docker_build: bool = False,
 ) -> None:
     """
     Create local working directories and build artifacts
