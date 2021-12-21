@@ -1,6 +1,5 @@
 import pathlib
 import shutil
-import sys
 from typing import Optional
 
 import click
@@ -12,12 +11,7 @@ from ..cli_constants import (
     IMAGE_TAG_TO_REPLACE,
     INGEST_ENDPOINT_TO_REPLACE,
 )
-from ..cli_utils import (
-    echo_error,
-    echo_info,
-    echo_warning,
-    get_argument_or_environment_variable,
-)
+from ..cli_utils import echo_info, echo_warning, get_argument_or_environment_variable
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
@@ -25,6 +19,7 @@ from ..config_generation import (
 )
 from ..data_structures import DockerArgs
 from ..dbt_utils import run_dbt_command
+from ..errors import DockerNotInstalledError
 from ..io_utils import replace
 
 
@@ -44,13 +39,15 @@ def _replace_docker_repository_url(
 
 
 def _docker_build(docker_args: DockerArgs) -> None:
+    """
+    :param docker_args: Arguments required by the Docker to make a push to \
+        the repository
+    :raises DataPipelinesError: Docker not installed
+    """
     try:
         import docker
     except ModuleNotFoundError:
-        echo_error(
-            "'docker' not installed. Run 'pip install data-pipelines-cli[docker]'"
-        )
-        sys.exit(1)
+        raise DockerNotInstalledError()
 
     echo_info("Building Docker image")
     docker_client = docker.from_env()
@@ -121,6 +118,7 @@ def compile_project(
     :type docker_build: bool
     :param env: Name of the environment
     :type env: str
+    :raises DataPipelinesError:
     """
     copy_dag_dir_to_build_dir()
     copy_config_dir_to_build_dir()

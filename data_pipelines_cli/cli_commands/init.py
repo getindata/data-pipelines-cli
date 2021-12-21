@@ -1,5 +1,4 @@
 import pathlib
-import sys
 import tempfile
 from typing import Optional, Sequence
 
@@ -10,6 +9,7 @@ import yaml
 
 from ..cli_constants import CONFIGURATION_PATH, DEFAULT_GLOBAL_CONFIG
 from ..data_structures import DataPipelinesConfig
+from ..errors import DataPipelinesError
 
 
 def _download_global_config(config_path: str) -> DataPipelinesConfig:
@@ -26,6 +26,7 @@ def init(config_path: Optional[str]) -> None:
 
     :param config_path: URI of the repository with a template of the config file
     :type config_path: Optional[str]
+    :raises DataPipelinesError: user do not want to overwrite existing config file
     """
     if CONFIGURATION_PATH.is_file():
         overwrite_confirm = questionary.confirm(
@@ -33,7 +34,7 @@ def init(config_path: Optional[str]) -> None:
             default=False,
         ).ask()
         if not overwrite_confirm:
-            sys.exit(1)
+            raise DataPipelinesError("Could not overwrite existing config")
 
     if config_path:
         config = _download_global_config(config_path)

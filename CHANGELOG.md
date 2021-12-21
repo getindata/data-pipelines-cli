@@ -4,6 +4,7 @@
 
 ### Added
 - Add documentation in the style of [Read the Docs](https://readthedocs.org/).
+- Exception classes in `errors.py`, deriving from `DataPipelinesError` base exception class.
 
 ### Changed
 - `dp compile`:
@@ -11,6 +12,8 @@
   - `--datahub` is changed to `--datahub-gms-uri`, `--repository` is changed to `--docker-repository-uri`.
 - `dp deploy`'s `--docker-push` is not a flag anymore and requires a Docker repository URI parameter; `--repository` got removed then.
 - `dp run` and `dp test` run `dbt deps` before actual **dbt** command.
+- Functions raise exceptions instead of exiting using `sys.exit(1)`; `cli.cli()` entrypoint is expecting exception and exits only there.
+- `dp deploy` raises an exception if there is no Docker image to push or `build/config/dag` directory does not exist.
 
 ## [0.6.0] - 2021-12-16
 

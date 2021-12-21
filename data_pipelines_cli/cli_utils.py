@@ -7,6 +7,8 @@ from typing import Any, List, Optional
 
 import click
 
+from data_pipelines_cli.errors import DataPipelinesError, SubprocessNonZeroExitError
+
 
 def echo_error(text: str, **kwargs: Any) -> None:
     """
@@ -69,14 +71,13 @@ def get_argument_or_environment_variable(
     return argument or os.environ.get(environment_variable_name)
 
 
-def get_argument_or_environment_variable_or_exit(
+def get_argument_or_environment_variable_or_throw(
     argument: Optional[str], argument_name: str, environment_variable_name: str
 ) -> str:
     """
-    Given *argument* is not `None`, returns its value. Otherwise, searches
+    Given *argument* is not ``None``, returns its value. Otherwise, searches
     for *environment_variable_name* amongst environment variables and returns
-    it. If such a variable is not set, exits program with system exit status
-    set to 1.
+    it. If such a variable is not set, raises :exc:`.DataPipelinesError`.
 
     :param argument: Optional value passed to the CLI as the *argument_name*
     :type argument: Optional[str]
@@ -85,30 +86,31 @@ def get_argument_or_environment_variable_or_exit(
     :param environment_variable_name: Name of the environment variable to search for
     :type environment_variable_name: str
     :return: Value of the *argument* or specified environment variable
+    :raises DataPipelinesError: *argument* is ``None`` and \
+        *environment_variable_name* is not set
     """
     result = get_argument_or_environment_variable(argument, environment_variable_name)
     if not result:
-        echo_error(
+        raise DataPipelinesError(
             f"Could not get {environment_variable_name}. Either set it as an "
             f"environment variable {environment_variable_name} or pass as a "
             f"`--{argument_name}` CLI argument"
         )
-        sys.exit(1)
     return result
 
 
 def subprocess_run(args: List[str]) -> subprocess.CompletedProcess[bytes]:
     """
     Runs subprocess and returns its state if completed with a success. If not,
-    exits the program with system exit status set to 1.
+    raises :exc:`.SubprocessNonZeroExitError`.
 
     :param args: List of strings representing subprocess and its arguments
     :type args: List[str]
     :return: State of the completed process
     :rtype: subprocess.CompletedProcess[bytes]
+    :raises SubprocessNonZeroExitError: subprocess exited with non-zero exit code
     """
     try:
         return subprocess.run(args, check=True)
     except subprocess.CalledProcessError as err:
-        echo_error(f"{args[0]} has exited with non-zero exit code: {err.returncode}")
-        sys.exit(1)
+        raise SubprocessNonZeroExitError(args[0], err.returncode)
