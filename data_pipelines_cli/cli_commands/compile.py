@@ -1,6 +1,5 @@
 import pathlib
 import shutil
-import sys
 from typing import Optional
 
 import click
@@ -12,7 +11,7 @@ from ..cli_constants import (
     IMAGE_TAG_TO_REPLACE,
     INGEST_ENDPOINT_TO_REPLACE,
 )
-from ..cli_utils import echo_error, echo_info, get_argument_or_environment_variable
+from ..cli_utils import echo_info, echo_warning, get_argument_or_environment_variable
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
@@ -20,6 +19,7 @@ from ..config_generation import (
 )
 from ..data_structures import DockerArgs
 from ..dbt_utils import run_dbt_command
+from ..errors import DockerNotInstalledError
 from ..io_utils import replace
 
 
@@ -39,13 +39,15 @@ def _replace_docker_repository_url(
 
 
 def _docker_build(docker_args: DockerArgs) -> None:
+    """
+    :param docker_args: Arguments required by the Docker to make a push to \
+        the repository
+    :raises DataPipelinesError: Docker not installed
+    """
     try:
         import docker
     except ModuleNotFoundError:
-        echo_error(
-            "'docker' not installed. Run 'pip install data-pipelines-cli[docker]'"
-        )
-        sys.exit(1)
+        raise DockerNotInstalledError()
 
     echo_info("Building Docker image")
     docker_client = docker.from_env()
@@ -78,59 +80,82 @@ def _copy_dbt_manifest() -> None:
     )
 
 
-def _replace_datahub_address(datahub_address: str) -> None:
-    echo_info(f"Replacing INGEST_ENDPOINT with datahub address = {datahub_address}")
+def _try_replace_datahub_address(datahub_gms_uri: Optional[str]) -> None:
+    datahub_gms_uri = get_argument_or_environment_variable(
+        datahub_gms_uri, DATAHUB_URL_ENV
+    )
+    if not datahub_gms_uri:
+        echo_warning(
+            "'--datahub-gms-uri' argument not provided, "
+            f"{INGEST_ENDPOINT_TO_REPLACE} will not be replaced"
+        )
+        return
+
+    echo_info(
+        f"Replacing {INGEST_ENDPOINT_TO_REPLACE} with DataHub URI = {datahub_gms_uri}"
+    )
     replace(
         BUILD_DIR.joinpath("dag", "config", "base", "datahub.yml"),
         INGEST_ENDPOINT_TO_REPLACE,
-        datahub_address,
+        datahub_gms_uri,
     )
 
 
 def compile_project(
-    repository: Optional[str],
-    datahub: Optional[str],
+    docker_repository_uri: Optional[str],
+    datahub_gms_uri: Optional[str],
     docker_build: bool,
     env: str,
 ) -> None:
     """
     Create local working directories and build artifacts
 
-    :param repository: URI of the Docker repository
-    :type repository: Optional[str]
-    :param datahub: URI of the DataHub ingestion endpoint
-    :type datahub: Optional[str]
+    :param docker_repository_uri: URI of the Docker repository
+    :type docker_repository_uri: Optional[str]
+    :param datahub_gms_uri: URI of the DataHub ingestion endpoint
+    :type datahub_gms_uri: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
     :param env: Name of the environment
     :type env: str
+    :raises DataPipelinesError:
     """
-    datahub_address = get_argument_or_environment_variable(
-        datahub, "datahub", DATAHUB_URL_ENV
-    )
-    docker_args = DockerArgs(repository)
-
     copy_dag_dir_to_build_dir()
     copy_config_dir_to_build_dir()
 
+    docker_args = None
     k8s_config: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
-    _replace_image_tag(k8s_config, docker_args)
-    _replace_docker_repository_url(k8s_config, docker_args)
+    if docker_repository_uri:
+        docker_args = DockerArgs(docker_repository_uri)
+        _replace_image_tag(k8s_config, docker_args)
+        _replace_docker_repository_url(k8s_config, docker_args)
 
     _dbt_compile(env)
     _copy_dbt_manifest()
-    _replace_datahub_address(datahub_address)
+    _try_replace_datahub_address(datahub_gms_uri)
 
-    if docker_build:
+    if docker_build and docker_args:
         _docker_build(docker_args)
 
 
 @click.command(
-    name="compile", help="Create local working directories and build artifacts"
+    name="compile",
+    help="Create local working directories and build artifacts",
 )
-@click.option("--env", required=True, help="Name of the environment")
-@click.option("--repository", default=None, help="URI of the Docker repository")
-@click.option("--datahub", default=None, help="URI of the DataHub ingestion endpoint")
+@click.option(
+    "--env",
+    default="local",
+    type=str,
+    show_default=True,
+    required=True,
+    help="Name of the environment",
+)
+@click.option(
+    "--docker-repository-uri", default=None, help="URI of the Docker repository"
+)
+@click.option(
+    "--datahub-gms-uri", default=None, help="URI of the DataHub ingestion endpoint"
+)
 @click.option(
     "--docker-build",
     is_flag=True,
@@ -139,8 +164,8 @@ def compile_project(
 )
 def compile_project_command(
     env: str,
-    repository: Optional[str],
-    datahub: Optional[str],
+    docker_repository_uri: Optional[str],
+    datahub_gms_uri: Optional[str],
     docker_build: bool,
 ) -> None:
-    compile_project(repository, datahub, docker_build, env)
+    compile_project(docker_repository_uri, datahub_gms_uri, docker_build, env)

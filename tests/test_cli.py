@@ -11,7 +11,7 @@ from data_pipelines_cli.cli_constants import DEFAULT_GLOBAL_CONFIG
 from data_pipelines_cli.data_structures import (
     DataPipelinesConfig,
     TemplateConfig,
-    read_config_or_exit,
+    read_config_or_throw,
 )
 
 
@@ -36,7 +36,7 @@ class ConfigTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
             self.example_config_path,
         ):
-            self.assertEqual(self.example_config_dict, read_config_or_exit())
+            self.assertEqual(self.example_config_dict, read_config_or_throw())
 
     def test_list_templates(self):
         runner = CliRunner()
@@ -91,7 +91,7 @@ class InitTestCase(unittest.TestCase):
                 input="test_user\n/var/tmp",
             )
             self.assertEqual(0, result.exit_code)
-            self.assertEqual(self.example_config_dict, read_config_or_exit())
+            self.assertEqual(self.example_config_dict, read_config_or_throw())
 
     def test_global_config(self):
         runner = CliRunner()
@@ -104,4 +104,4 @@ class InitTestCase(unittest.TestCase):
         ):
             result = runner.invoke(init_command)
             self.assertEqual(0, result.exit_code)
-            self.assertEqual(DEFAULT_GLOBAL_CONFIG, read_config_or_exit())
+            self.assertEqual(DEFAULT_GLOBAL_CONFIG, read_config_or_throw())

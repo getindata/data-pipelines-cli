@@ -65,6 +65,14 @@ data\_pipelines\_cli.dbt\_utils module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.errors module
+----------------------------------
+
+.. automodule:: data_pipelines_cli.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.filesystem\_utils module
 ---------------------------------------------
 

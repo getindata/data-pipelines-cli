@@ -2,15 +2,19 @@ import io
 import json
 import os
 import pathlib
-import sys
 from typing import Dict, Optional, cast
 
 import click
 import yaml
 
 from ..cli_constants import BUILD_DIR
-from ..cli_utils import echo_error, echo_info, subprocess_run
+from ..cli_utils import echo_info, subprocess_run
 from ..data_structures import DockerArgs
+from ..errors import (
+    DataPipelinesError,
+    DependencyNotInstalledError,
+    DockerNotInstalledError,
+)
 from ..filesystem_utils import LocalRemoteSync
 
 
@@ -30,13 +34,12 @@ class DeployCommand:
 
     def __init__(
         self,
-        repository: Optional[str],
+        docker_push: Optional[str],
         blob_address: str,
         provider_kwargs_dict: Dict[str, str],
-        docker_push: bool,
         datahub_ingest: bool,
-    ):
-        self.docker_args = DockerArgs(repository) if docker_push else None
+    ) -> None:
+        self.docker_args = DockerArgs(docker_push) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.blob_address_path = os.path.join(
             blob_address, "dags", DeployCommand._get_project_name()
@@ -44,7 +47,11 @@ class DeployCommand:
         self.provider_kwargs_dict = provider_kwargs_dict
 
     def deploy(self) -> None:
-        """Push and deploy the project to the remote machine"""
+        """Push and deploy the project to the remote machine
+
+        :raises DependencyNotInstalledError: DataHub or Docker not installed
+        :raises DataPipelinesError: Error while pushing Docker image
+        """
         if self.docker_args:
             self._docker_push()
 
@@ -60,13 +67,14 @@ class DeployCommand:
             return dbt_project_config["name"]
 
     def _docker_push(self) -> None:
+        """
+        :raises DockerNotInstalledError: Docker not installed
+        :raises DataPipelinesError: Error while pushing Docker image
+        """
         try:
             import docker
         except ModuleNotFoundError:
-            echo_error(
-                "'docker' not installed. Run 'pip install data-pipelines-cli[docker]'"
-            )
-            sys.exit(1)
+            raise DockerNotInstalledError()
 
         echo_info("Pushing Docker image")
         docker_client = docker.from_env()
@@ -75,18 +83,24 @@ class DeployCommand:
             repository=docker_args.repository,
             tag=docker_args.commit_sha,
             stream=True,
+            decode=True,
         ):
-            click.echo(line, nl=False)
+            click.echo(line)
+
+            if "error" in line or b"error" in line:
+                raise DataPipelinesError(
+                    "Error raised when pushing Docker image. Ensure that "
+                    "Docker image you try to push exists. Maybe try running "
+                    "'dp compile' first?"
+                )
 
     @staticmethod
     def _datahub_ingest() -> None:
+        """:raises DependencyNotInstalledError: DataHub not installed"""
         try:
             import datahub  # noqa: F401
         except ModuleNotFoundError:
-            echo_error(
-                "'datahub' not installed. Run 'pip install data-pipelines-cli[datahub]'"
-            )
-            sys.exit(1)
+            raise DependencyNotInstalledError("datahub")
 
         echo_info("Ingesting datahub metadata")
         subprocess_run(
@@ -105,7 +119,11 @@ class DeployCommand:
         ).sync(delete=True)
 
 
-@click.command(name="deploy", help="Push and deploy the project to the remote machine")
+@click.command(
+    name="deploy",
+    help="Push and deploy the project to the remote machine",
+    no_args_is_help=True,
+)
 @click.argument("address")
 @click.option(
     "--blob-args",
@@ -114,13 +132,7 @@ class DeployCommand:
     help="Path to JSON or YAML file with arguments that should be passed to "
     "your Bucket/blob provider",
 )
-@click.option("--repository", default=None, help="Path to the Docker repository")
-@click.option(
-    "--docker-push",
-    is_flag=True,
-    default=False,
-    help="Whether to push a Docker image to the repository",
-)
+@click.option("--docker-push", default=None, help="Path to the Docker repository")
 @click.option(
     "--datahub-ingest",
     is_flag=True,
@@ -130,8 +142,7 @@ class DeployCommand:
 def deploy_command(
     address: str,
     blob_args: io.TextIOWrapper,
-    repository: Optional[str],
-    docker_push: bool,
+    docker_push: Optional[str],
     datahub_ingest: bool,
 ) -> None:
     try:
@@ -140,9 +151,8 @@ def deploy_command(
         provider_kwargs_dict = yaml.safe_load(blob_args)
 
     DeployCommand(
-        repository,
+        docker_push,
         address,
         provider_kwargs_dict,
-        docker_push,
         datahub_ingest,
     ).deploy()

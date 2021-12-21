@@ -1,22 +1,24 @@
-import sys
 from typing import Dict, Optional, Sequence
 
 import click
 import copier
 import questionary
 
-from data_pipelines_cli.cli_utils import echo_error, echo_warning
-from data_pipelines_cli.data_structures import TemplateConfig, read_config_or_exit
+from data_pipelines_cli.cli_utils import echo_warning
+from data_pipelines_cli.data_structures import TemplateConfig, read_config_or_throw
+from data_pipelines_cli.errors import DataPipelinesError
 
 
 def _choose_template(config_templates: Dict[str, TemplateConfig]) -> TemplateConfig:
+    """
+    :raises DataPipelinesError: no template found in *config_templates*
+    """
     if len(config_templates) == 0:
-        echo_error(
+        raise DataPipelinesError(
             "No template provided. Either run 'dp create <project_path> "
             "<link_to_template>' to use template from the link, or add template "
             "to `~/.dp.yml` file",
         )
-        sys.exit(1)
 
     template_name = questionary.select("", choices=list(config_templates.keys())).ask()
     template_config = config_templates[template_name]
@@ -27,6 +29,7 @@ def _choose_template(config_templates: Dict[str, TemplateConfig]) -> TemplateCon
 def _get_template_path(
     config_templates: Dict[str, TemplateConfig], template_path: Optional[str]
 ) -> str:
+    """:raises DataPipelinesError: no template found in *config_templates*"""
     if template_path:
         if template_path in config_templates.keys():
             to_return = config_templates[template_path]["template_path"]
@@ -45,8 +48,9 @@ def create(project_path: str, template_path: Optional[str]) -> None:
     :type project_path: str
     :param template_path: Path or URI to the repository of the project template
     :type template_path: Optional[str]
+    :raises DataPipelinesError: no template found in `.dp.yml` config file
     """
-    config = read_config_or_exit()
+    config = read_config_or_throw()
     config_templates = config["templates"]
     src_template_path = _get_template_path(config_templates, template_path)
     copier.copy(src_path=src_template_path, dst_path=project_path)
