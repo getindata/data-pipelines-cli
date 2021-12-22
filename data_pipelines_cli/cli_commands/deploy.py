@@ -2,7 +2,7 @@ import io
 import json
 import os
 import pathlib
-from typing import Dict, Optional, cast
+from typing import Any, Dict, Optional, cast
 
 import click
 import yaml
@@ -28,7 +28,7 @@ class DeployCommand:
     """Whether to ingest DataHub metadata"""
     blob_address_path: str
     """URI of the cloud storage to send build artifacts to"""
-    provider_kwargs_dict: Dict[str, str]
+    provider_kwargs_dict: Dict[str, Any]
     """Dictionary of arguments required by a specific cloud storage provider,
     e.g. path to a token, username, password, etc."""
 
@@ -36,7 +36,7 @@ class DeployCommand:
         self,
         docker_push: Optional[str],
         blob_address: str,
-        provider_kwargs_dict: Dict[str, str],
+        provider_kwargs_dict: Dict[str, Any],
         datahub_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(docker_push) if docker_push else None
@@ -62,7 +62,7 @@ class DeployCommand:
 
     @staticmethod
     def _get_project_name() -> str:
-        with open(pathlib.Path().joinpath("dbt_project.yml")) as f:
+        with open(pathlib.Path().cwd().joinpath("dbt_project.yml")) as f:
             dbt_project_config = yaml.safe_load(f)
             return dbt_project_config["name"]
 
@@ -87,7 +87,7 @@ class DeployCommand:
         ):
             click.echo(line)
 
-            if "error" in line or b"error" in line:
+            if "error" in line:
                 raise DataPipelinesError(
                     "Error raised when pushing Docker image. Ensure that "
                     "Docker image you try to push exists. Maybe try running "
@@ -148,6 +148,7 @@ def deploy_command(
     try:
         provider_kwargs_dict = json.load(blob_args)
     except json.JSONDecodeError:
+        blob_args.seek(0)
         provider_kwargs_dict = yaml.safe_load(blob_args)
 
     DeployCommand(

@@ -1,4 +1,6 @@
 import pathlib
+import random
+import string
 import unittest
 
 import boto3
@@ -6,6 +8,8 @@ import botocore
 import fsspec
 import moto
 from moto import mock_s3
+
+from data_pipelines_cli.errors import DataPipelinesError
 
 MY_BUCKET = "my_bucket"
 
@@ -21,6 +25,20 @@ class MockedAWSResponse(botocore.awsrequest.AWSResponse):
         return self.text
 
 
+class TestError(unittest.TestCase):
+    def test_wrong_local_path(self):
+        from data_pipelines_cli.filesystem_utils import LocalRemoteSync
+
+        wrong_local_path = pathlib.Path(__file__).parent.joinpath(
+            "".join(random.choices(string.ascii_letters + string.digits, k=25))
+        )
+        remote_path = "".join(
+            random.choices(string.ascii_letters + string.digits + "/", k=25)
+        )
+        with self.assertRaises(DataPipelinesError):
+            LocalRemoteSync(wrong_local_path, remote_path, {}).sync(delete=False)
+
+
 class TestSynchronize(unittest.TestCase):
     test_sync_2nd_directory_layout = [
         "test2.txt",
@@ -31,7 +49,9 @@ class TestSynchronize(unittest.TestCase):
     def _test_synchronize(self, protocol: str, **remote_kwargs):
         from data_pipelines_cli.filesystem_utils import LocalRemoteSync
 
-        local_path = pathlib.Path(__file__).parent.joinpath("test_sync_directory")
+        local_path = pathlib.Path(__file__).parent.joinpath(
+            "goldens", "test_sync_directory"
+        )
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=False)
 
@@ -45,7 +65,9 @@ class TestSynchronize(unittest.TestCase):
     def _test_synchronize_with_delete(self, protocol: str, **remote_kwargs):
         from data_pipelines_cli.filesystem_utils import LocalRemoteSync
 
-        local_path = pathlib.Path(__file__).parent.joinpath("test_sync_directory")
+        local_path = pathlib.Path(__file__).parent.joinpath(
+            "goldens", "test_sync_directory"
+        )
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=True)
 
@@ -56,7 +78,9 @@ class TestSynchronize(unittest.TestCase):
                 remote_fs.find(MY_BUCKET),
             )
 
-        local_path_2 = pathlib.Path(__file__).parent.joinpath("test_sync_2nd_directory")
+        local_path_2 = pathlib.Path(__file__).parent.joinpath(
+            "goldens", "test_sync_2nd_directory"
+        )
         LocalRemoteSync(
             local_path_2,
             remote_path,

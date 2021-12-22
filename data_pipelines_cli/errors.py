@@ -22,7 +22,9 @@ class NoConfigFileError(DataPipelinesError):
     """Exception raised if `.dp.yml` does not exist"""
 
     def __init__(self) -> None:
-        self.message = "`.dp.yml` config file does not exists"
+        self.message = (
+            "`.dp.yml` config file does not exists. Run 'dp init' to create it."
+        )
 
 
 class SubprocessNonZeroExitError(DataPipelinesError):
@@ -31,6 +33,16 @@ class SubprocessNonZeroExitError(DataPipelinesError):
     def __init__(self, subprocess_name: str, exit_code: int) -> None:
         self.message = (
             f"{subprocess_name} has exited with non-zero exit code: {exit_code}"
+        )
+
+
+class SubprocessNotFound(DataPipelinesError):
+    """Exception raised if subprocess cannot be found"""
+
+    def __init__(self, subprocess_name: str) -> None:
+        self.message = (
+            f"{subprocess_name} cannot be found. "
+            "Ensure it is installed and listed in your $PATH."
         )
 
 

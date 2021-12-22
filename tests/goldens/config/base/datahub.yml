@@ -1,0 +1,3 @@
+sink:
+  config:
+    server: "https://<INGEST_ENDPOINT>:8080"

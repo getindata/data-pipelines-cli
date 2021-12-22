@@ -19,12 +19,14 @@ from ..config_generation import (
 )
 from ..data_structures import DockerArgs
 from ..dbt_utils import run_dbt_command
-from ..errors import DockerNotInstalledError
+from ..errors import DataPipelinesError, DockerNotInstalledError
 from ..io_utils import replace
 
 
 def _replace_image_tag(k8s_config: pathlib.Path, docker_args: DockerArgs) -> None:
-    echo_info(f"Replacing <IMAGE_TAG> with commit SHA = {docker_args.commit_sha}")
+    echo_info(
+        f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}"
+    )
     replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.commit_sha)
 
 
@@ -32,7 +34,7 @@ def _replace_docker_repository_url(
     k8s_config: pathlib.Path, docker_args: DockerArgs
 ) -> None:
     echo_info(
-        "Replacing <DOCKER_REPOSITORY_URL> with repository URL = "
+        f"Replacing {DOCKER_REPOSITORY_URL_TO_REPLACE} with repository URL = "
         f"{docker_args.repository}"
     )
     replace(k8s_config, DOCKER_REPOSITORY_URL_TO_REPLACE, docker_args.repository)
@@ -81,13 +83,13 @@ def _copy_dbt_manifest() -> None:
 
 
 def _try_replace_datahub_address(datahub_gms_uri: Optional[str]) -> None:
-    datahub_gms_uri = get_argument_or_environment_variable(
-        datahub_gms_uri, DATAHUB_URL_ENV
-    )
-    if not datahub_gms_uri:
+    try:
+        datahub_gms_uri = get_argument_or_environment_variable(
+            datahub_gms_uri, "datahub-gms-uri", DATAHUB_URL_ENV
+        )
+    except DataPipelinesError as err:
         echo_warning(
-            "'--datahub-gms-uri' argument not provided, "
-            f"{INGEST_ENDPOINT_TO_REPLACE} will not be replaced"
+            f"{err.message}\n{INGEST_ENDPOINT_TO_REPLACE} will not be replaced"
         )
         return
 
@@ -99,6 +101,12 @@ def _try_replace_datahub_address(datahub_gms_uri: Optional[str]) -> None:
         INGEST_ENDPOINT_TO_REPLACE,
         datahub_gms_uri,
     )
+
+
+def _replace_k8s_settings(docker_args: DockerArgs) -> None:
+    k8s_config: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
+    _replace_image_tag(k8s_config, docker_args)
+    _replace_docker_repository_url(k8s_config, docker_args)
 
 
 def compile_project(
@@ -124,11 +132,9 @@ def compile_project(
     copy_config_dir_to_build_dir()
 
     docker_args = None
-    k8s_config: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
     if docker_repository_uri:
         docker_args = DockerArgs(docker_repository_uri)
-        _replace_image_tag(k8s_config, docker_args)
-        _replace_docker_repository_url(k8s_config, docker_args)
+        _replace_k8s_settings(docker_args)
 
     _dbt_compile(env)
     _copy_dbt_manifest()

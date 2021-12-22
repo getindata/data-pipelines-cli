@@ -5,6 +5,7 @@
 ### Added
 - Add documentation in the style of [Read the Docs](https://readthedocs.org/).
 - Exception classes in `errors.py`, deriving from `DataPipelinesError` base exception class.
+- Unit tests to massively improve code coverage.
 
 ### Changed
 - `dp compile`:
