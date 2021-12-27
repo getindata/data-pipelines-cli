@@ -15,6 +15,7 @@ from .errors import DataPipelinesError
 
 
 @click.group()
+@click.version_option(prog_name="dp")
 def _cli() -> None:
     pass
 
