@@ -10,7 +10,7 @@
 
 ### Changed
 - `dp compile`:
-  - `--env` option has a default value: `local`,
+  - `--env` option has a default value: `base`,
   - `--datahub` is changed to `--datahub-gms-uri`, `--repository` is changed to `--docker-repository-uri`.
 - `dp deploy`'s `--docker-push` is not a flag anymore and requires a Docker repository URI parameter; `--repository` got removed then.
 - `dp run` and `dp test` run `dbt deps` before actual **dbt** command.

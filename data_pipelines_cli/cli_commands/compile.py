@@ -110,22 +110,22 @@ def _replace_k8s_settings(docker_args: DockerArgs) -> None:
 
 
 def compile_project(
+    env: str,
     docker_repository_uri: Optional[str],
     datahub_gms_uri: Optional[str],
     docker_build: bool,
-    env: str,
 ) -> None:
     """
     Create local working directories and build artifacts
 
+    :param env: Name of the environment
+    :type env: str
     :param docker_repository_uri: URI of the Docker repository
     :type docker_repository_uri: Optional[str]
     :param datahub_gms_uri: URI of the DataHub ingestion endpoint
     :type datahub_gms_uri: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
-    :param env: Name of the environment
-    :type env: str
     :raises DataPipelinesError:
     """
     copy_dag_dir_to_build_dir()
@@ -150,7 +150,7 @@ def compile_project(
 )
 @click.option(
     "--env",
-    default="local",
+    default="base",
     type=str,
     show_default=True,
     required=True,
@@ -174,4 +174,4 @@ def compile_project_command(
     datahub_gms_uri: Optional[str],
     docker_build: bool,
 ) -> None:
-    compile_project(docker_repository_uri, datahub_gms_uri, docker_build, env)
+    compile_project(env, docker_repository_uri, datahub_gms_uri, docker_build)
