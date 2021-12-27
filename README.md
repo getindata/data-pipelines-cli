@@ -6,7 +6,7 @@ CLI for data platform
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [dp (data-pipelines-cli)](https://pypi.org/project/data-pipelines-cli/):
 
 ```bash
-pip install data-pipelines-cli[docker,datahub,gcp]
+pip install data-pipelines-cli[docker,datahub,gcs]
 ```
 
 ## Usage

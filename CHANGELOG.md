@@ -16,6 +16,7 @@
 - `dp run` and `dp test` run `dbt deps` before actual **dbt** command.
 - Functions raise exceptions instead of exiting using `sys.exit(1)`; `cli.cli()` entrypoint is expecting exception and exits only there.
 - `dp deploy` raises an exception if there is no Docker image to push or `build/config/dag` directory does not exist.
+- Rename `gcp` to `gcs` in requirements (now one should run `pip install data-pipelines-cli[gcs]`).
 
 ## [0.6.0] - 2021-12-16
 
