@@ -148,7 +148,12 @@ Project deployment
 
 ``dp deploy`` will sync with your bucket provider. The provider will be chosen automatically based on the remote URL.
 ``dp deploy`` also requires the user to point to JSON or YAML file with provider-specific data like access tokens or project
-names. E.g., to connect with Google Cloud Storage, one should run:
+names. The *provider-specific data* should be interpreted as the ``**kwargs`` (keyword arguments) expected by a specific
+`fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_'s FileSystem implementation. One would most likely want to
+look at the `S3FileSystem <https://s3fs.readthedocs.io/en/latest/api.html#s3fs.core.S3FileSystem>`_ or
+`GCSFileSystem <https://gcsfs.readthedocs.io/en/latest/api.html#gcsfs.core.GCSFileSystem>`_ documentation.
+
+E.g., to connect with Google Cloud Storage, one should run:
 
 .. code-block:: bash
 
