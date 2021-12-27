@@ -1,8 +1,17 @@
 # data-pipelines-cli
 
+[![Python Version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/getindata/data-pipelines-cli)
+[![PyPI Version](https://badge.fury.io/py/data-pipelines-cli.svg)](https://pypi.org/project/data-pipelines-cli/)
+[![Downloads](https://pepy.tech/badge/data-pipelines-cli)](https://pepy.tech/project/data-pipelines-cli)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/maintainability)](https://codeclimate.com/github/getindata/data-pipelines-cli/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/test_coverage)](https://codeclimate.com/github/getindata/data-pipelines-cli/test_coverage)
+[![Documentation Status](https://readthedocs.org/projects/data-pipelines-cli/badge/?version=latest)](https://data-pipelines-cli.readthedocs.io/en/latest/?badge=latest)
+
 CLI for data platform
 
-**Read the full documentation at [https://data-pipelines-cli.readthedocs.io/](https://data-pipelines-cli.readthedocs.io/en/latest/index.html).**
+## Documentation
+
+Read the full documentation at [https://data-pipelines-cli.readthedocs.io/](https://data-pipelines-cli.readthedocs.io/en/latest/index.html)
 
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [dp (data-pipelines-cli)](https://pypi.org/project/data-pipelines-cli/):
