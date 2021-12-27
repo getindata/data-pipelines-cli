@@ -36,7 +36,7 @@ class DeployCommand:
         self,
         docker_push: Optional[str],
         blob_address: str,
-        provider_kwargs_dict: Dict[str, Any],
+        provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(docker_push) if docker_push else None
@@ -44,7 +44,7 @@ class DeployCommand:
         self.blob_address_path = os.path.join(
             blob_address, "dags", DeployCommand._get_project_name()
         )
-        self.provider_kwargs_dict = provider_kwargs_dict
+        self.provider_kwargs_dict = provider_kwargs_dict or {}
 
     def deploy(self) -> None:
         """Push and deploy the project to the remote machine
@@ -127,7 +127,7 @@ class DeployCommand:
 @click.argument("address")
 @click.option(
     "--blob-args",
-    required=True,
+    required=False,
     type=click.File("r"),
     help="Path to JSON or YAML file with arguments that should be passed to "
     "your Bucket/blob provider",
@@ -141,15 +141,18 @@ class DeployCommand:
 )
 def deploy_command(
     address: str,
-    blob_args: io.TextIOWrapper,
+    blob_args: Optional[io.TextIOWrapper],
     docker_push: Optional[str],
     datahub_ingest: bool,
 ) -> None:
-    try:
-        provider_kwargs_dict = json.load(blob_args)
-    except json.JSONDecodeError:
-        blob_args.seek(0)
-        provider_kwargs_dict = yaml.safe_load(blob_args)
+    if blob_args:
+        try:
+            provider_kwargs_dict = json.load(blob_args)
+        except json.JSONDecodeError:
+            blob_args.seek(0)
+            provider_kwargs_dict = yaml.safe_load(blob_args)
+    else:
+        provider_kwargs_dict = None
 
     DeployCommand(
         docker_push,

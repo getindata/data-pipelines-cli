@@ -2,6 +2,8 @@
 
 CLI for data platform
 
+**Read the full documentation at [https://data-pipelines-cli.readthedocs.io/](https://data-pipelines-cli.readthedocs.io/en/latest/index.html).**
+
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [dp (data-pipelines-cli)](https://pypi.org/project/data-pipelines-cli/):
 
@@ -39,12 +41,15 @@ directly to a template repository. If `<LINK_TO_TEMPLATE_REPOSITORY>` proves to 
 ### Project deployment
 
 `dp deploy` will sync with your bucket provider. The provider will be chosen automatically based on the remote URL.
-`dp deploy` also requires the user to point to JSON or YAML file with provider-specific data like access tokens or project
+Usually, it is worth pointing `dp deploy` to JSON or YAML file with provider-specific data like access tokens or project
 names. E.g., to connect with Google Cloud Storage, one should run:
 ```bash
 echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' > gs_args.json
 dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 ```
+However, in some cases you do not need to do so, e.g. when using `gcloud` with properly set local credentials. In such
+case, you can try to run just the `dp deploy "gs://<YOUR_GS_PATH>"` command. Please refer to
+[documentation](https://data-pipelines-cli.readthedocs.io/en/latest/usage.html#project-deployment) for more information.
 
 When finished, call `dp clean` to remove compilation related directories.
 
