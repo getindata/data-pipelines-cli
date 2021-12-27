@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcp": ["gcsfs"],
+    "gcs": ["gcsfs"],
     "s3": ["s3fs"],
 }
 

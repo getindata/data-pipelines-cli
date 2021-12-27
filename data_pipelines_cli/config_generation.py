@@ -121,6 +121,11 @@ def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
     }
 
 
+def get_profiles_yml_path(env: str) -> pathlib.Path:
+    profile_name = get_dbt_profiles_env_name(env)
+    return BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
+
+
 def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
     """
     Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
@@ -135,8 +140,7 @@ def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Pat
     echo_info("Generating profiles.yml")
     profile = _generate_profile_dict(env)
 
-    profile_name = get_dbt_profiles_env_name(env)
-    profiles_path = BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
+    profiles_path = get_profiles_yml_path(env)
     profiles_path.parent.mkdir(parents=True, exist_ok=True)
     with open(profiles_path, "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)

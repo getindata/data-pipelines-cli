@@ -81,7 +81,7 @@ def get_argument_or_environment_variable(
         raise DataPipelinesError(
             f"Could not get {environment_variable_name}. Either set it as an "
             f"environment variable {environment_variable_name} or pass as a "
-            f"`--{argument_name}` CLI argument"
+            f"`--{argument_name}` CLI argument."
         )
     return result
 

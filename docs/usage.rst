@@ -147,13 +147,23 @@ Project deployment
 ------------------
 
 ``dp deploy`` will sync with your bucket provider. The provider will be chosen automatically based on the remote URL.
-``dp deploy`` also requires the user to point to JSON or YAML file with provider-specific data like access tokens or project
-names. E.g., to connect with Google Cloud Storage, one should run:
+Usually, it is worth pointing ``dp deploy`` to a JSON or YAML file with provider-specific data like access tokens or project
+names. The *provider-specific data* should be interpreted as the ``**kwargs`` (keyword arguments) expected by a specific
+`fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_'s FileSystem implementation. One would most likely want to
+look at the `S3FileSystem <https://s3fs.readthedocs.io/en/latest/api.html#s3fs.core.S3FileSystem>`_ or
+`GCSFileSystem <https://gcsfs.readthedocs.io/en/latest/api.html#gcsfs.core.GCSFileSystem>`_ documentation.
+
+E.g., to connect with Google Cloud Storage, one should run:
 
 .. code-block:: bash
 
  echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' > gs_args.json
  dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
+
+However, in some cases you do not need to do so, e.g. when using **gcloud** with properly set local credentials. In such
+case, you can try to run just the ``dp deploy "gs://<YOUR_GS_PATH>"`` command and let ``gcsfs`` search for the credentials.
+Please refer to the documentation of the specific ``fsspec``'s implementation for more information about the required
+keyword arguments.
 
 Clean project
 -------------
