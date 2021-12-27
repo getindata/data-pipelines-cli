@@ -30,6 +30,9 @@ class RunTestCommandTestCase(unittest.TestCase):
             ), tempfile.TemporaryDirectory() as tmp_dir, patch(
                 "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
             ), patch(
+                "data_pipelines_cli.cli_commands.compile.BUILD_DIR",
+                pathlib.Path(tmp_dir),
+            ), patch(
                 "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
             ), patch(
                 "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
@@ -55,6 +58,9 @@ class RunTestCommandTestCase(unittest.TestCase):
                     "pathlib.Path.cwd", lambda: self.goldens_dir_path
                 ), tempfile.TemporaryDirectory() as tmp_dir, patch(
                     "data_pipelines_cli.config_generation.BUILD_DIR",
+                    pathlib.Path(tmp_dir),
+                ), patch(
+                    "data_pipelines_cli.cli_commands.compile.BUILD_DIR",
                     pathlib.Path(tmp_dir),
                 ), patch(
                     "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
