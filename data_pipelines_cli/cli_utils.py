@@ -7,7 +7,11 @@ from typing import Any, List, Optional
 
 import click
 
-from data_pipelines_cli.errors import DataPipelinesError, SubprocessNonZeroExitError
+from data_pipelines_cli.errors import (
+    DataPipelinesError,
+    SubprocessNonZeroExitError,
+    SubprocessNotFound,
+)
 
 
 def echo_error(text: str, **kwargs: Any) -> None:
@@ -55,23 +59,6 @@ def echo_subinfo(text: str, **kwargs: Any) -> None:
 
 
 def get_argument_or_environment_variable(
-    argument: Optional[str], environment_variable_name: str
-) -> Optional[str]:
-    """
-    Given *argument* is not `None`, returns its value. Otherwise, searches
-    for *environment_variable_name* amongst environment variables and returns
-    it.
-
-    :param argument: Optional value passed to the CLI as the *argument_name*
-    :type argument: Optional[str]
-    :param environment_variable_name: Name of the environment variable to search for
-    :type environment_variable_name: str
-    :return: Value of the *argument* or specified environment variable
-    """
-    return argument or os.environ.get(environment_variable_name)
-
-
-def get_argument_or_environment_variable_or_throw(
     argument: Optional[str], argument_name: str, environment_variable_name: str
 ) -> str:
     """
@@ -89,7 +76,7 @@ def get_argument_or_environment_variable_or_throw(
     :raises DataPipelinesError: *argument* is ``None`` and \
         *environment_variable_name* is not set
     """
-    result = get_argument_or_environment_variable(argument, environment_variable_name)
+    result = argument or os.environ.get(environment_variable_name)
     if not result:
         raise DataPipelinesError(
             f"Could not get {environment_variable_name}. Either set it as an "
@@ -112,5 +99,7 @@ def subprocess_run(args: List[str]) -> subprocess.CompletedProcess[bytes]:
     """
     try:
         return subprocess.run(args, check=True)
+    except FileNotFoundError:
+        raise SubprocessNotFound(args[0])
     except subprocess.CalledProcessError as err:
         raise SubprocessNonZeroExitError(args[0], err.returncode)

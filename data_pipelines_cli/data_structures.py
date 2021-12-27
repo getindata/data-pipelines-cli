@@ -5,7 +5,7 @@ import yaml
 
 from data_pipelines_cli.cli_utils import (
     echo_warning,
-    get_argument_or_environment_variable_or_throw,
+    get_argument_or_environment_variable,
 )
 from data_pipelines_cli.errors import DataPipelinesError, NoConfigFileError
 from data_pipelines_cli.io_utils import git_revision_hash
@@ -35,12 +35,14 @@ class DataPipelinesConfig(TypedDict):
     """Variables to be passed to dbt as `--vars` argument"""
 
 
-def read_config() -> Optional[DataPipelinesConfig]:
+def read_config() -> DataPipelinesConfig:
     """
-    Parses `.dp.yml` config file, if it exists
+    Parses `.dp.yml` config file, if it exists. Otherwise, raises
+    :exc:`.NoConfigFileError`
 
     :return: POD representing `.dp.yml` config file, if it exists
-    :rtype: Optional[DataPipelinesConfig]
+    :rtype: DataPipelinesConfig
+    :raises NoConfigFileError: `.dp.yml` file not found
     """
     # Avoiding a dependency loop between `cli_constants` and `data_structures`
     from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
@@ -49,26 +51,10 @@ def read_config() -> Optional[DataPipelinesConfig]:
         echo_warning(
             "No configuration file found. Run 'dp init' to create it.",
         )
-        return None
+        raise NoConfigFileError()
 
     with open(CONFIGURATION_PATH, "r") as f:
         return yaml.safe_load(f)
-
-
-def read_config_or_throw() -> DataPipelinesConfig:
-    """
-    Parses `.dp.yml` config file, if it exists. Otherwise, raises
-    :exc:`.NoConfigFileError`
-
-    :return: POD representing `.dp.yml` config file
-    :rtype: DataPipelinesConfig
-    :raises NoConfigFileError: `.dp.yml` file not found
-    """
-
-    config = read_config()
-    if not config:
-        raise NoConfigFileError()
-    return config
 
 
 class DockerArgs:
@@ -83,7 +69,7 @@ class DockerArgs:
     """Long hash of the current Git revision. Used as an image tag"""
 
     def __init__(self, docker_repository_uri: Optional[str]) -> None:
-        self.repository = get_argument_or_environment_variable_or_throw(
+        self.repository = get_argument_or_environment_variable(
             docker_repository_uri, "repository", "REPOSITORY_URL"
         )
         commit_sha = git_revision_hash()

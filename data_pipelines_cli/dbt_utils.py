@@ -8,10 +8,14 @@ from .cli_constants import BUILD_DIR, get_dbt_profiles_env_name
 from .cli_utils import echo_subinfo, subprocess_run
 from .config_generation import read_dictionary_from_config_directory
 from .data_structures import DataPipelinesConfig, read_config
+from .errors import NoConfigFileError
 
 
 def _read_dbt_vars_from_configs(dbt_env_config: Dict[str, Any]) -> str:
-    dp_config = read_config() or DataPipelinesConfig(templates={}, vars={})
+    try:
+        dp_config = read_config()
+    except NoConfigFileError:
+        dp_config = DataPipelinesConfig(templates={}, vars={})
     dp_vars = dp_config.get("vars", {})
     dbt_vars: Dict[str, str] = dbt_env_config.get("vars", {})
     return yaml.dump(
@@ -31,6 +35,8 @@ def run_dbt_command(
     :type env: str
     :param profiles_path: Path to the directory containing `profiles.yml` file
     :type profiles_path: pathlib.Path
+    :raises SubprocessNotFound: dbt not installed
+    :raises SubprocessNonZeroExitError: dbt exited with error
     """
     command_str = " ".join(list(command))
     echo_subinfo(f"dbt {command_str}")

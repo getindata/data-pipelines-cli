@@ -1,0 +1,9 @@
+{
+    "name": "manifest",
+    "description": "manifest for testing",
+    "keywords": ["key", "word"],
+    "author": "Lorem Ipsum",
+    "version": "1.2.3.4",
+    "true": false,
+    "number": 7312
+}

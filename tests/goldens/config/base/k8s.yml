@@ -1,0 +1,7 @@
+image:
+  repository: <DOCKER_REPOSITORY_URL>
+  tag: <IMAGE_TAG>
+variable1: 1337
+var2: "Hello, world!"
+envs:
+  SOME_BOOLEAN: true
