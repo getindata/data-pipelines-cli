@@ -1,0 +1,9 @@
+method: service-account
+project: example-project
+dataset: "{{ var('variable_2') }}-dataset"
+threads: "{{ var('variable_1') }}"
+keyfile: "{{ env_var('BIGQUERY_KEYFILE') }}"
+timeout_seconds: 150
+priority: interactive
+location: us-west1
+retries: 1

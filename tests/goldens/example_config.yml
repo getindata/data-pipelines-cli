@@ -7,3 +7,6 @@ templates:
   template2:
     template_name: template2
     template_path: https://example.com/git/example.git
+  create_test:
+    template_name: create_test
+    template_path: source_path

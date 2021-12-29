@@ -12,11 +12,12 @@ INSTALL_REQUIREMENTS = [
     "types-PyYAML>=6.0",
     "copier==5.1.0",
     "dbt>=0.21, <0.22",
+    "Jinja2>=2.11,<2.12",
     "fsspec",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcp": ["gcsfs"],
+    "gcs": ["gcsfs"],
     "s3": ["s3fs"],
 }
 
@@ -49,7 +50,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.6.0",
+    version="0.7.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

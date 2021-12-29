@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import os
+import pathlib
 from typing import Dict, Set, Union
 
 import fsspec
 from fsspec import AbstractFileSystem
 
 from .cli_utils import echo_subinfo
+from .errors import DataPipelinesError
 
 
 class LocalRemoteSync:
@@ -25,7 +27,12 @@ class LocalRemoteSync:
         local_path: Union[str, os.PathLike[str]],
         remote_path: str,
         remote_kwargs: Dict[str, str],
-    ):
+    ) -> None:
+        if not pathlib.Path(local_path).exists():
+            raise DataPipelinesError(
+                f"{local_path} does not exists. Run 'dp compile' before."
+            )
+
         self.local_path_str = str(local_path).rstrip("/")
         self.local_fs = fsspec.filesystem("file")
         self.remote_fs, self.remote_path_str = fsspec.core.url_to_fs(

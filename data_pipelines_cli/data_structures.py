@@ -4,10 +4,10 @@ from typing import Dict, Optional
 import yaml
 
 from data_pipelines_cli.cli_utils import (
-    echo_error,
     echo_warning,
     get_argument_or_environment_variable,
 )
+from data_pipelines_cli.errors import DataPipelinesError, NoConfigFileError
 from data_pipelines_cli.io_utils import git_revision_hash
 
 if sys.version_info >= (3, 8):
@@ -35,12 +35,14 @@ class DataPipelinesConfig(TypedDict):
     """Variables to be passed to dbt as `--vars` argument"""
 
 
-def read_config() -> Optional[DataPipelinesConfig]:
+def read_config() -> DataPipelinesConfig:
     """
-    Parses `.dp.yml` config file, if it exists
+    Parses `.dp.yml` config file, if it exists. Otherwise, raises
+    :exc:`.NoConfigFileError`
 
     :return: POD representing `.dp.yml` config file, if it exists
-    :rtype: Optional[DataPipelinesConfig]
+    :rtype: DataPipelinesConfig
+    :raises NoConfigFileError: `.dp.yml` file not found
     """
     # Avoiding a dependency loop between `cli_constants` and `data_structures`
     from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
@@ -49,43 +51,30 @@ def read_config() -> Optional[DataPipelinesConfig]:
         echo_warning(
             "No configuration file found. Run 'dp init' to create it.",
         )
-        return None
+        raise NoConfigFileError()
 
     with open(CONFIGURATION_PATH, "r") as f:
         return yaml.safe_load(f)
 
 
-def read_config_or_exit() -> DataPipelinesConfig:
-    """
-    Parses `.dp.yml` config file, if it exists. Otherwise, exits program with
-    a system exit status set to 1.
-
-    :return: POD representing `.dp.yml` config file
-    :rtype: DataPipelinesConfig
-    """
-
-    config = read_config()
-    if not config:
-        sys.exit(1)
-    return config
-
-
 class DockerArgs:
-    """Arguments required by the Docker to make a push to the repository"""
+    """Arguments required by the Docker to make a push to the repository
+
+    :raises DataPipelinesError: *repository* variable not set or git hash not found
+    """
 
     repository: str
     """URI of the Docker images repository"""
     commit_sha: str
     """Long hash of the current Git revision. Used as an image tag"""
 
-    def __init__(self, repository: Optional[str]):
+    def __init__(self, docker_repository_uri: Optional[str]) -> None:
         self.repository = get_argument_or_environment_variable(
-            repository, "repository", "REPOSITORY_URL"
+            docker_repository_uri, "repository", "REPOSITORY_URL"
         )
         commit_sha = git_revision_hash()
         if not commit_sha:
-            echo_error("Could not get git revision hash.")
-            sys.exit(1)
+            raise DataPipelinesError("Could not get git revision hash.")
         self.commit_sha = commit_sha
 
     def docker_build_tag(self) -> str:

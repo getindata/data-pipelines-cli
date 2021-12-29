@@ -3,12 +3,12 @@ bigquery:
     env_execution:
       method: service-account
       project: example-project
-      dataset: example-dataset
-      keyfile: /var/keyfile.json
+      dataset: "{{ var('variable_2') }}-dataset"
+      keyfile: "{{ env_var('BIGQUERY_KEYFILE') }}"
       timeout_seconds: 150
       priority: interactive
       location: us-west1
-      threads: 1
+      threads: "{{ var('variable_1') }}"
       retries: 1
       type: bigquery
   target: env_execution

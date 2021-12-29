@@ -94,7 +94,22 @@ class DbtProfile(TypedDict):
     """Dictionary of a warehouse data and credentials, referenced by `target` name"""
 
 
-def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
+def generate_profiles_dict(env: str, copy_config_dir: bool) -> Dict[str, DbtProfile]:
+    """
+    Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
+    ``build/profiles/env_execution``, depending on `env` argument.
+
+    :param env: Name of the environment
+    :type env: str
+    :param copy_config_dir: Whether to copy ``config`` directory to ``build`` \
+        working directory
+    :type copy_config_dir: bool
+    :return: Dictionary representing data to be saved in ``profiles.yml``
+    :rtype: Dict[str, DbtProfile]
+    """
+    if copy_config_dir:
+        copy_config_dir_to_build_dir()
+
     dbt_env_config = read_dictionary_from_config_directory(
         BUILD_DIR.joinpath("dag"), env, "dbt.yml"
     )
@@ -121,26 +136,40 @@ def _generate_profile_dict(env: str) -> Dict[str, DbtProfile]:
     }
 
 
+def get_profiles_yml_build_path(env: str) -> pathlib.Path:
+    """
+    Returns path to ``build/profiles/<profile_name>/profiles.yml``,
+    depending on `env` argument.
+
+    :param env: Name of the environment
+    :type env: str
+    :return:
+    :rtype: pathlib.Path
+    """
+    profile_name = get_dbt_profiles_env_name(env)
+    return BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
+
+
 def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
     """
     Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
     ``build/profiles/env_execution``, depending on `env` argument.
 
-    :param env: str
-    :param copy_config_dir: bool
+    :param env: Name of the environment
+    :type env: str
+    :param copy_config_dir: Whether to copy ``config`` directory to ``build`` \
+        working directory
+    :type copy_config_dir: bool
     :return: Path to ``build/profiles/{env}``
+    :rtype: pathlib.Path
     """
-    if copy_config_dir:
-        copy_config_dir_to_build_dir()
     echo_info("Generating profiles.yml")
-    profile = _generate_profile_dict(env)
+    profile = generate_profiles_dict(env, copy_config_dir)
 
-    profile_name = get_dbt_profiles_env_name(env)
-    profiles_path = BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
+    profiles_path = get_profiles_yml_build_path(env)
     profiles_path.parent.mkdir(parents=True, exist_ok=True)
     with open(profiles_path, "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)
-
     echo_subinfo(f"Generated profiles.yml in {profiles_path}")
 
     return profiles_path.parent

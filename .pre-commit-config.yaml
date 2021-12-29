@@ -6,17 +6,25 @@ repos:
     - id: isort
 
 - repo: https://github.com/psf/black
-  rev: 21.11b1
+  rev: 21.12b0
   hooks:
     - id: black
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.5.0
+  rev: v4.1.0
   hooks:
     - id: trailing-whitespace
       args: [--markdown-linebreak-ext=md]
     - id: check-merge-conflict
     - id: debug-statements
+    - id: name-tests-test
+      args: ['--django']  # PyCharm requires tests to have 'test' as prefix, not a suffix
+    - id: check-json
+    - id: check-yaml
+
+- repo: https://github.com/pycqa/flake8
+  rev: 4.0.1
+  hooks:
     - id: flake8
       additional_dependencies: [
         'flake8-blind-except',
@@ -25,7 +33,7 @@ repos:
       ]
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.910-1
+  rev: v0.930
   hooks:
     - id: mypy
       additional_dependencies:
