@@ -2,22 +2,26 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2021-12-29
+
 ### Added
-- Add documentation in the style of [Read the Docs](https://readthedocs.org/).
-- Exception classes in `errors.py`, deriving from `DataPipelinesError` base exception class.
-- Unit tests to massively improve code coverage.
-- `--version` flag to **dp** command.
-- Add `dp prepare-env` command that prepares local environment for standalone **dbt** (right now, it only generates and saves `profiles.yml` in `$HOME/.dbt`).
+
+-   Add documentation in the style of [Read the Docs](https://readthedocs.org/).
+-   Exception classes in `errors.py`, deriving from `DataPipelinesError` base exception class.
+-   Unit tests to massively improve code coverage.
+-   `--version` flag to **dp** command.
+-   Add `dp prepare-env` command that prepares local environment for standalone **dbt** (right now, it only generates and saves `profiles.yml` in `$HOME/.dbt`).
 
 ### Changed
-- `dp compile`:
-  - `--env` option has a default value: `base`,
-  - `--datahub` is changed to `--datahub-gms-uri`, `--repository` is changed to `--docker-repository-uri`.
-- `dp deploy`'s `--docker-push` is not a flag anymore and requires a Docker repository URI parameter; `--repository` got removed then.
-- `dp run` and `dp test` run `dp compile` before actual **dbt** command.
-- Functions raise exceptions instead of exiting using `sys.exit(1)`; `cli.cli()` entrypoint is expecting exception and exits only there.
-- `dp deploy` raises an exception if there is no Docker image to push or `build/config/dag` directory does not exist.
-- Rename `gcp` to `gcs` in requirements (now one should run `pip install data-pipelines-cli[gcs]`).
+
+-   `dp compile`:
+    -   `--env` option has a default value: `base`,
+    -   `--datahub` is changed to `--datahub-gms-uri`, `--repository` is changed to `--docker-repository-uri`.
+-   `dp deploy`'s `--docker-push` is not a flag anymore and requires a Docker repository URI parameter; `--repository` got removed then.
+-   `dp run` and `dp test` run `dp compile` before actual **dbt** command.
+-   Functions raise exceptions instead of exiting using `sys.exit(1)`; `cli.cli()` entrypoint is expecting exception and exits only there.
+-   `dp deploy` raises an exception if there is no Docker image to push or `build/config/dag` directory does not exist.
+-   Rename `gcp` to `gcs` in requirements (now one should run `pip install data-pipelines-cli[gcs]`).
 
 ## [0.6.0] - 2021-12-16
 
@@ -94,7 +98,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.7.0...HEAD
+
+[0.7.0]: https://github.com/getindata/data-pipelines-cli/compare/0.6.0...0.7.0
 
 [0.6.0]: https://github.com/getindata/data-pipelines-cli/compare/0.5.1...0.6.0
 
