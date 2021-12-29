@@ -10,6 +10,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 1
 
    data_pipelines_cli.cli_commands
 
