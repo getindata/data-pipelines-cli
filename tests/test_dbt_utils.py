@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import yaml
 
-from data_pipelines_cli.dbt_utils import _read_dbt_vars_from_configs, run_dbt_command
+from data_pipelines_cli.dbt_utils import read_dbt_vars_from_configs, run_dbt_command
 from data_pipelines_cli.errors import NoConfigFileError
 
 
@@ -69,7 +69,7 @@ class DbtUtilsTest(unittest.TestCase):
             pathlib.Path(tmp_dir).joinpath("non_existing_config_file"),
         ):
             try:
-                result = _read_dbt_vars_from_configs({})
-                self.assertEqual("{}", result.rstrip())
+                result = read_dbt_vars_from_configs("env")
+                self.assertDictEqual({}, result)
             except NoConfigFileError:
                 self.fail("_read_dbt_vars_from_configs() raised NoConfigFileError!")

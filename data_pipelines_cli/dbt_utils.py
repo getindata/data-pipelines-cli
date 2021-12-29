@@ -11,16 +11,34 @@ from .data_structures import DataPipelinesConfig, read_config
 from .errors import NoConfigFileError
 
 
-def _read_dbt_vars_from_configs(dbt_env_config: Dict[str, Any]) -> str:
+def read_dbt_vars_from_configs(env: str) -> Dict[str, Any]:
+    """
+    Reads `vars` field from dp configuration file (``$HOME/.dp.yml``), base
+    ``dbt.yml`` config (``config/base/dbt.yml``) and environment-specific config
+    (``config/{env}/dbt.yml``) and compiles into one dictionary.
+
+    :param env: Name of the environment
+    :type env: str
+    :return: Dictionary with `vars` and their keys
+    :rtype: Dict[str, Any]
+    """
+    dbt_env_config = read_dictionary_from_config_directory(
+        BUILD_DIR.joinpath("dag"), env, "dbt.yml"
+    )
+
     try:
         dp_config = read_config()
     except NoConfigFileError:
         dp_config = DataPipelinesConfig(templates={}, vars={})
     dp_vars = dp_config.get("vars", {})
     dbt_vars: Dict[str, str] = dbt_env_config.get("vars", {})
-    return yaml.dump(
-        dict(dp_vars, **dbt_vars), default_flow_style=True, width=sys.maxsize
-    )
+
+    return dict(dp_vars, **dbt_vars)
+
+
+def _dump_dbt_vars_from_configs_to_string(env: str) -> str:
+    dbt_vars = read_dbt_vars_from_configs(env)
+    return yaml.dump(dbt_vars, default_flow_style=True, width=sys.maxsize)
 
 
 def run_dbt_command(
@@ -44,7 +62,7 @@ def run_dbt_command(
     dbt_env_config = read_dictionary_from_config_directory(
         BUILD_DIR.joinpath("dag"), env, "dbt.yml"
     )
-    dbt_vars = _read_dbt_vars_from_configs(dbt_env_config)
+    dbt_vars = _dump_dbt_vars_from_configs_to_string(env)
     subprocess_run(
         [
             "dbt",

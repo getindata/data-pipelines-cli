@@ -45,3 +45,6 @@ checks:
 plugins:
   pylint:
     enabled: true
+    checks:
+      import-error:
+        enabled: false

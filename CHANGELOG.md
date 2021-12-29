@@ -7,6 +7,7 @@
 - Exception classes in `errors.py`, deriving from `DataPipelinesError` base exception class.
 - Unit tests to massively improve code coverage.
 - `--version` flag to **dp** command.
+- Add `dp prepare-env` command that prepares local environment for standalone **dbt** (right now, it only generates and saves `profiles.yml` in `$HOME/.dbt`).
 
 ### Changed
 - `dp compile`:

@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 import tempfile
@@ -70,7 +71,7 @@ class CompileCommandTestCase(unittest.TestCase):
                 goldens_dir_path.joinpath("target", "manifest.json"), "r"
             ) as golden_manifest:
                 self.assertDictEqual(
-                    yaml.safe_load(golden_manifest), yaml.safe_load(tmp_manifest)
+                    json.load(golden_manifest), json.load(tmp_manifest)
                 )
             with open(
                 tmp_dir_path.joinpath("dag", "config", "base", "datahub.yml"), "r"
