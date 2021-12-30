@@ -12,7 +12,11 @@ from click.testing import CliRunner
 
 from data_pipelines_cli.cli import _cli
 from data_pipelines_cli.cli_commands.deploy import DeployCommand
-from data_pipelines_cli.errors import DataPipelinesError, DependencyNotInstalledError
+from data_pipelines_cli.errors import (
+    AirflowDagsPathKeyError,
+    DataPipelinesError,
+    DependencyNotInstalledError,
+)
 
 
 def _noop():
@@ -58,12 +62,6 @@ class DeployCommandTestCase(unittest.TestCase):
         shutil.rmtree(self.dbt_project_config_dir)
         os.remove(self.blob_json_filename)
 
-    def test_deploy_no_args(self):
-        runner = CliRunner()
-        result = runner.invoke(_cli, ["deploy"])
-        self.assertEqual(0, result.exit_code, msg=result.exception)
-        self.assertRegex(result.output, r"^Usage: .* deploy .*")
-
     def test_blob_args_types(self):
         for dump, format_name in [(json.dump, "json"), (yaml.dump, "yaml")]:
             with self.subTest(format=format_name):
@@ -73,19 +71,16 @@ class DeployCommandTestCase(unittest.TestCase):
                     dump(self.provider_args, tmp_file)
 
                 result_provider_kwargs = {}
-                result_blob_address = ""
 
                 def mock_init(
                     _self,
                     _docker_push,
-                    blob_address,
+                    _blob_address,
                     provider_kwargs_dict,
                     _datahub_ingest,
                 ):
                     nonlocal result_provider_kwargs
-                    nonlocal result_blob_address
                     result_provider_kwargs = provider_kwargs_dict
-                    result_blob_address = blob_address
 
                 with patch(
                     "data_pipelines_cli.cli_commands.deploy.DeployCommand.__init__",
@@ -95,11 +90,10 @@ class DeployCommandTestCase(unittest.TestCase):
                     lambda _self: _noop,
                 ):
                     result = runner.invoke(
-                        _cli, ["deploy", self.storage_uri, "--blob-args", tmp_file.name]
+                        _cli, ["deploy", "--blob-args", tmp_file.name]
                     )
                 self.assertEqual(0, result.exit_code, msg=result.exception)
                 self.assertDictEqual(self.provider_args, result_provider_kwargs)
-                self.assertEqual(self.storage_uri, result_blob_address)
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     def test_sync_bucket(self):
@@ -110,18 +104,18 @@ class DeployCommandTestCase(unittest.TestCase):
         with patch("pathlib.Path.cwd", lambda _: self.dbt_project_config_dir):
             result = runner.invoke(
                 _cli,
-                ["deploy", self.storage_uri, "--blob-args", self.blob_json_filename],
+                [
+                    "deploy",
+                    "--dags-path",
+                    self.storage_uri,
+                    "--blob-args",
+                    self.blob_json_filename,
+                ],
             )
         self.assertEqual(0, result.exit_code, msg=result.exception)
         self.assertEqual(
             2,
-            len(
-                os.listdir(
-                    pathlib.Path(self.storage_uri).joinpath(
-                        "dags", self.dbt_project_config["name"]
-                    )
-                )
-            ),
+            len(os.listdir(self.storage_uri)),
         )
 
     def test_no_module_cli(self):
@@ -138,6 +132,7 @@ class DeployCommandTestCase(unittest.TestCase):
                         _cli,
                         [
                             "deploy",
+                            "--dags-path",
                             self.storage_uri,
                             "--blob-args",
                             self.blob_json_filename,
@@ -178,6 +173,33 @@ class DeployCommandTestCase(unittest.TestCase):
                 DeployCommand(
                     "rep", self.storage_uri, self.provider_args, False
                 ).deploy()
+
+    @patch(
+        "data_pipelines_cli.cli_commands.deploy.BUILD_DIR",
+        pathlib.Path("/tmp/some/non/ex/i/sting/path"),
+    )
+    def test_no_airflow_address(self):
+        with self.assertRaises(AirflowDagsPathKeyError):
+            DeployCommand(None, None, None, False)
+
+    def test_airflow_address(self):
+        with tempfile.TemporaryDirectory() as tmp_dir, patch(
+            "data_pipelines_cli.cli_commands.deploy.BUILD_DIR", pathlib.Path(tmp_dir)
+        ):
+            tmp_airflow_path = pathlib.Path(tmp_dir).joinpath(
+                "dag", "config", "base", "airflow.yml"
+            )
+            tmp_airflow_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(
+                self.goldens_dir_path.joinpath("config", "base", "airflow.yml"),
+                tmp_airflow_path,
+            )
+
+            deploy_command = DeployCommand(None, None, None, False)
+        self.assertEqual(
+            "gcs://test-sync-project/sync-dir/dags/my-project-name",
+            deploy_command.blob_address_path,
+        )
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     def test_docker_run(self):

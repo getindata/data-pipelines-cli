@@ -158,12 +158,25 @@ E.g., to connect with Google Cloud Storage, one should run:
 .. code-block:: bash
 
  echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' > gs_args.json
- dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
+ dp deploy --dags-path "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 
 However, in some cases you do not need to do so, e.g. when using **gcloud** with properly set local credentials. In such
-case, you can try to run just the ``dp deploy "gs://<YOUR_GS_PATH>"`` command and let ``gcsfs`` search for the credentials.
+case, you can try to run just the ``dp deploy --dags-path "gs://<YOUR_GS_PATH>"`` command and let ``gcsfs`` search for
+the credentials.
 Please refer to the documentation of the specific ``fsspec``'s implementation for more information about the required
 keyword arguments.
+
+``dags-path`` as config argument
+++++++++++++++++++++++++++++++++
+
+You can also list your path in ``config/base/airflow.yml`` file, as a ``dags_path`` argument:
+
+.. code-block:: yaml
+
+ dags_path: gs://<YOUR_GS_PATH>
+ # ... rest of the 'airflow.yml' file
+
+In such case, you do not have to provide ``--dags-path`` flag, and you can just call ``dp deploy`` instead.
 
 Preparing dbt environment
 -------------------------
