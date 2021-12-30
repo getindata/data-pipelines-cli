@@ -21,6 +21,9 @@ class DbtUtilsTest(unittest.TestCase):
     dbt_config = {
         "target": "env_execution",
         "target_type": "bigquery",
+        "vars": {
+            "var1": 2,
+        },
     }
     goldens_dir_path = pathlib.Path(__file__).parent.joinpath("goldens")
 

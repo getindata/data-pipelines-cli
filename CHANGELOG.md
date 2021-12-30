@@ -4,6 +4,7 @@
 
 ### Changed
 - `dp init` and `dp create` automatically adds `.git` suffix to given template paths, if necessary.
+- When reading dbt variables, global-scoped variables take precedence over project-scoped ones (it was another way around before).
 
 ## [0.7.0] - 2021-12-29
 
