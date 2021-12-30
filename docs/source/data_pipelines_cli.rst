@@ -89,3 +89,10 @@ data\_pipelines\_cli.io\_utils module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.vcs\_utils module
+--------------------------------------
+
+.. automodule:: data_pipelines_cli.vcs_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

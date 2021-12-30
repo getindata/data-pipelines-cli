@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- `dp init` and `dp create` automatically adds `.git` suffix to given template paths, if necessary.
+
 ## [0.7.0] - 2021-12-29
 
 ### Added
