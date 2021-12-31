@@ -39,4 +39,4 @@ install `dp (data-pipelines-cli) <https://pypi.org/project/data-pipelines-cli/>`
    usage
    cli
    api
-   changelog_link
+   changelog

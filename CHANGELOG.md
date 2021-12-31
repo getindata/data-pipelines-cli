@@ -5,6 +5,7 @@
 ### Changed
 - `dp init` and `dp create` automatically adds `.git` suffix to given template paths, if necessary.
 - When reading dbt variables, global-scoped variables take precedence over project-scoped ones (it was another way around before).
+- Address argument for `dp deploy` is no longer mandatory. It should be either placed in `airflow.yml` file as value of `dags_path` key, or provided with `--dags-path` flag.
 
 ## [0.7.0] - 2021-12-29
 

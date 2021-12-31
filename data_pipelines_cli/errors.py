@@ -56,7 +56,16 @@ class DockerNotInstalledError(DependencyNotInstalledError):
 class JinjaVarKeyError(DataPipelinesError):
     def __init__(self, key: str) -> None:
         self.message = (
-            f"Variable {key} cannot be found neither in 'dbt.yml' and "
+            f"Variable '{key}' cannot be found neither in 'dbt.yml' and "
             "'$HOME/.dp.yml' vars nor in environment variables, causing Jinja "
             "template rendering to fail."
+        )
+
+
+class AirflowDagsPathKeyError(DataPipelinesError):
+    """Exception raised if there is no ``dags_path`` in `airflow.yml` file."""
+
+    def __init__(self) -> None:
+        self.message = (
+            "Variable 'dags_path' cannot be found in 'airflow.yml' config file."
         )
