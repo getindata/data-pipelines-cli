@@ -33,7 +33,7 @@ def read_dbt_vars_from_configs(env: str) -> Dict[str, Any]:
     dp_vars = dp_config.get("vars", {})
     dbt_vars: Dict[str, str] = dbt_env_config.get("vars", {})
 
-    return dict(dp_vars, **dbt_vars)
+    return dict(dbt_vars, **dp_vars)
 
 
 def _dump_dbt_vars_from_configs_to_string(env: str) -> str:
