@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- `--env` flag to `dp deploy`.
+
+### Changed
+
+- Docker repository URI gets read out of `build/config/{env}/k8s.yml`.
+
+### Removed
+
+- `--docker-repository-uri` and `--datahub-gms-uri` from `dp compile` and `dp deploy` commands.
+- `dp compile` no longer replaces `<INGEST_ENDPOINT>` in `datahub.yml`, or `<DOCKER_REPOSITORY_URL>` in `k8s.yml`
+
 ## [0.8.0] - 2021-12-31
 
 ### Changed
