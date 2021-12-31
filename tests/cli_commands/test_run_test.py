@@ -35,6 +35,8 @@ class RunTestCommandTestCase(unittest.TestCase):
             ), patch(
                 "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
             ), patch(
+                "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
+            ), patch(
                 "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
             ):
                 runner = CliRunner()
@@ -64,6 +66,8 @@ class RunTestCommandTestCase(unittest.TestCase):
                     pathlib.Path(tmp_dir),
                 ), patch(
                     "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
+                ), patch(
+                    "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
                 ), patch(
                     "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
                 ):
