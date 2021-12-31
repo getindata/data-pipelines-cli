@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 1
 
    data_pipelines_cli.cli_commands
 
@@ -96,3 +95,4 @@ data\_pipelines\_cli.vcs\_utils module
    :members:
    :undoc-members:
    :show-inheritance:
+
