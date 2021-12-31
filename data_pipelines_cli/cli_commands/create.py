@@ -7,6 +7,7 @@ import questionary
 from data_pipelines_cli.cli_utils import echo_warning
 from data_pipelines_cli.data_structures import TemplateConfig, read_config
 from data_pipelines_cli.errors import DataPipelinesError
+from data_pipelines_cli.vcs_utils import add_suffix_to_git_template_path
 
 
 def _choose_template(config_templates: Dict[str, TemplateConfig]) -> TemplateConfig:
@@ -34,7 +35,7 @@ def _get_template_path(
         if template_path in config_templates.keys():
             to_return = config_templates[template_path]["template_path"]
         else:
-            to_return = template_path
+            to_return = add_suffix_to_git_template_path(template_path)
     else:
         to_return = _choose_template(config_templates)["template_path"]
     return to_return

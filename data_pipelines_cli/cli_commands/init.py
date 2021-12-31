@@ -10,9 +10,12 @@ import yaml
 from ..cli_constants import CONFIGURATION_PATH, DEFAULT_GLOBAL_CONFIG
 from ..data_structures import DataPipelinesConfig
 from ..errors import DataPipelinesError
+from ..vcs_utils import add_suffix_to_git_template_path
 
 
 def _download_global_config(config_path: str) -> DataPipelinesConfig:
+    config_path = add_suffix_to_git_template_path(config_path)
+
     with tempfile.TemporaryDirectory() as tmp:
         copier.copy(config_path, tmp, quiet=True)
         with open(pathlib.Path(tmp).joinpath("dp.yml")) as config_file:

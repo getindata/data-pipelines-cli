@@ -48,3 +48,6 @@ plugins:
     checks:
       import-error:
         enabled: false
+      bad-continuation:
+        enabled: false
+

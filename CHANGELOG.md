@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2021-12-31
+
+### Changed
+
+-   `dp init` and `dp create` automatically adds `.git` suffix to given template paths, if necessary.
+-   When reading dbt variables, global-scoped variables take precedence over project-scoped ones (it was another way around before).
+-   Address argument for `dp deploy` is no longer mandatory. It should be either placed in `airflow.yml` file as value of `dags_path` key, or provided with `--dags-path` flag.
+
 ## [0.7.0] - 2021-12-29
 
 ### Added
@@ -98,7 +106,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.8.0...HEAD
+
+[0.8.0]: https://github.com/getindata/data-pipelines-cli/compare/0.7.0...0.8.0
 
 [0.7.0]: https://github.com/getindata/data-pipelines-cli/compare/0.6.0...0.7.0
 

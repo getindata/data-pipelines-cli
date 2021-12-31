@@ -1,0 +1,21 @@
+default_args:
+  owner: Test Team
+  depends_on_past: False
+  start_date: 2021-10-31T01:23:45
+  email_on_failure: False
+  email_on_retry: False
+  retries: 0
+  retry_delay: 5m
+
+dag:
+  dag_id: experimental-dag
+  description: 'Some DAG'
+  schedule_interval: '0 12 * * *'
+  catchup: False
+  max_active_runs: 1
+  concurrency: 2
+
+dags_path: gcs://test-sync-project/sync-dir/dags/my-project-name
+
+use_task_group: True
+manifest_file_name: manifest.json

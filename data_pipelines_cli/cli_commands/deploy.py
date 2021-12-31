@@ -1,7 +1,5 @@
 import io
 import json
-import os
-import pathlib
 from typing import Any, Dict, Optional, cast
 
 import click
@@ -9,8 +7,10 @@ import yaml
 
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info, subprocess_run
+from ..config_generation import read_dictionary_from_config_directory
 from ..data_structures import DockerArgs
 from ..errors import (
+    AirflowDagsPathKeyError,
     DataPipelinesError,
     DependencyNotInstalledError,
     DockerNotInstalledError,
@@ -35,16 +35,23 @@ class DeployCommand:
     def __init__(
         self,
         docker_push: Optional[str],
-        blob_address: str,
+        dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(docker_push) if docker_push else None
         self.datahub_ingest = datahub_ingest
-        self.blob_address_path = os.path.join(
-            blob_address, "dags", DeployCommand._get_project_name()
-        )
         self.provider_kwargs_dict = provider_kwargs_dict or {}
+
+        try:
+            self.blob_address_path = (
+                dags_path
+                or read_dictionary_from_config_directory(
+                    BUILD_DIR.joinpath("dag"), "base", "airflow.yml"
+                )["dags_path"]
+            )
+        except KeyError as key_error:
+            raise AirflowDagsPathKeyError from key_error
 
     def deploy(self) -> None:
         """Push and deploy the project to the remote machine
@@ -59,12 +66,6 @@ class DeployCommand:
             self._datahub_ingest()
 
         self._sync_bucket()
-
-    @staticmethod
-    def _get_project_name() -> str:
-        with open(pathlib.Path().cwd().joinpath("dbt_project.yml")) as f:
-            dbt_project_config = yaml.safe_load(f)
-            return dbt_project_config["name"]
 
     def _docker_push(self) -> None:
         """
@@ -122,9 +123,8 @@ class DeployCommand:
 @click.command(
     name="deploy",
     help="Push and deploy the project to the remote machine",
-    no_args_is_help=True,
 )
-@click.argument("address")
+@click.option("--dags-path", required=False, help="Remote storage URI")
 @click.option(
     "--blob-args",
     required=False,
@@ -140,7 +140,7 @@ class DeployCommand:
     help="Whether to ingest DataHub metadata",
 )
 def deploy_command(
-    address: str,
+    dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
     docker_push: Optional[str],
     datahub_ingest: bool,
@@ -156,7 +156,7 @@ def deploy_command(
 
     DeployCommand(
         docker_push,
-        address,
+        dags_path,
         provider_kwargs_dict,
         datahub_ingest,
     ).deploy()

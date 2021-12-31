@@ -54,10 +54,10 @@ Usually, it is worth pointing `dp deploy` to JSON or YAML file with provider-spe
 names. E.g., to connect with Google Cloud Storage, one should run:
 ```bash
 echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' > gs_args.json
-dp deploy "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
+dp deploy --dags-path "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 ```
 However, in some cases you do not need to do so, e.g. when using `gcloud` with properly set local credentials. In such
-case, you can try to run just the `dp deploy "gs://<YOUR_GS_PATH>"` command. Please refer to
+case, you can try to run just the `dp deploy --dags-path "gs://<YOUR_GS_PATH>"` command. Please refer to
 [documentation](https://data-pipelines-cli.readthedocs.io/en/latest/usage.html#project-deployment) for more information.
 
 When finished, call `dp clean` to remove compilation related directories.
