@@ -49,7 +49,7 @@ jobs:
           git config user.email github-actions@github.com
           git add docs
           git commit -am "TEST APIDOC"
-          git push
+          git push origin prepare-package-wip
 
       - name: Report coverage
         uses: paambaati/codeclimate-action@v2.7.5
