@@ -2,14 +2,8 @@ import pathlib
 
 from data_pipelines_cli.data_structures import DataPipelinesConfig
 
-#: DataHub URL environment variable to search for
-DATAHUB_URL_ENV: str = "DATAHUB_URL"
 #:
 IMAGE_TAG_TO_REPLACE: str = "<IMAGE_TAG>"
-#:
-DOCKER_REPOSITORY_URL_TO_REPLACE: str = "<DOCKER_REPOSITORY_URL>"
-#:
-INGEST_ENDPOINT_TO_REPLACE: str = "<INGEST_ENDPOINT>"
 #: Name of the environment and dbt target to use for a local machine
 PROFILE_NAME_LOCAL_ENVIRONMENT = "local"
 #: Name of the dbt target to use for a remote machine

@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2022-01-03
+
+### Added
+
+-   `--env` flag to `dp deploy`.
+
+### Changed
+
+-   Docker repository URI gets read out of `build/config/{env}/k8s.yml`.
+
+### Removed
+
+-   `--docker-repository-uri` and `--datahub-gms-uri` from `dp compile` and `dp deploy` commands.
+-   `dp compile` no longer replaces `<INGEST_ENDPOINT>` in `datahub.yml`, or `<DOCKER_REPOSITORY_URL>` in `k8s.yml`
+
 ## [0.8.0] - 2021-12-31
 
 ### Changed
@@ -106,7 +121,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.9.0...HEAD
+
+[0.9.0]: https://github.com/getindata/data-pipelines-cli/compare/0.8.0...0.9.0
 
 [0.8.0]: https://github.com/getindata/data-pipelines-cli/compare/0.7.0...0.8.0
 

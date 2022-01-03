@@ -1,12 +1,9 @@
 import sys
-from typing import Dict, Optional
+from typing import Dict
 
 import yaml
 
-from data_pipelines_cli.cli_utils import (
-    echo_warning,
-    get_argument_or_environment_variable,
-)
+from data_pipelines_cli.cli_utils import echo_warning
 from data_pipelines_cli.errors import DataPipelinesError, NoConfigFileError
 from data_pipelines_cli.io_utils import git_revision_hash
 
@@ -68,10 +65,8 @@ class DockerArgs:
     commit_sha: str
     """Long hash of the current Git revision. Used as an image tag"""
 
-    def __init__(self, docker_repository_uri: Optional[str]) -> None:
-        self.repository = get_argument_or_environment_variable(
-            docker_repository_uri, "repository", "REPOSITORY_URL"
-        )
+    def __init__(self, env: str) -> None:
+        self.repository = self._get_docker_repository_uri_from_k8s_config(env)
         commit_sha = git_revision_hash()
         if not commit_sha:
             raise DataPipelinesError("Could not get git revision hash.")
@@ -83,3 +78,21 @@ class DockerArgs:
         :rtype: str
         """
         return f"{self.repository}:{self.commit_sha}"
+
+    @staticmethod
+    def _get_docker_repository_uri_from_k8s_config(env: str) -> str:
+        # Avoiding a dependency loop between `cli_constants` and `data_structures`
+        from data_pipelines_cli.cli_constants import BUILD_DIR
+        from data_pipelines_cli.config_generation import (
+            read_dictionary_from_config_directory,
+        )
+
+        k8s_config = read_dictionary_from_config_directory(
+            BUILD_DIR.joinpath("dag"), env, "k8s.yml"
+        )
+        try:
+            return k8s_config["image"]["repository"]
+        except KeyError as key_error:
+            raise DataPipelinesError(
+                f"Could not find 'repository' variable in build/config/{env}/k8s.yml."
+            ) from key_error

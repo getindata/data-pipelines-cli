@@ -34,12 +34,13 @@ class DeployCommand:
 
     def __init__(
         self,
-        docker_push: Optional[str],
+        env: str,
+        docker_push: bool,
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
     ) -> None:
-        self.docker_args = DockerArgs(docker_push) if docker_push else None
+        self.docker_args = DockerArgs(env) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
 
@@ -124,6 +125,7 @@ class DeployCommand:
     name="deploy",
     help="Push and deploy the project to the remote machine",
 )
+@click.option("--env", default="base", type=str, help="Name of the environment")
 @click.option("--dags-path", required=False, help="Remote storage URI")
 @click.option(
     "--blob-args",
@@ -132,7 +134,13 @@ class DeployCommand:
     help="Path to JSON or YAML file with arguments that should be passed to "
     "your Bucket/blob provider",
 )
-@click.option("--docker-push", default=None, help="Path to the Docker repository")
+@click.option(
+    "--docker-push",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Whether to push image to the Docker repository",
+)
 @click.option(
     "--datahub-ingest",
     is_flag=True,
@@ -140,9 +148,10 @@ class DeployCommand:
     help="Whether to ingest DataHub metadata",
 )
 def deploy_command(
+    env: str,
     dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
-    docker_push: Optional[str],
+    docker_push: bool,
     datahub_ingest: bool,
 ) -> None:
     if blob_args:
@@ -155,6 +164,7 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
+        env,
         docker_push,
         dags_path,
         provider_kwargs_dict,

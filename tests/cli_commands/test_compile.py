@@ -41,12 +41,18 @@ class CompileCommandTestCase(unittest.TestCase):
         self.all_subprocess_run_args += args
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
-    def test_no_args(self):
+    @patch("data_pipelines_cli.data_structures.git_revision_hash")
+    def test_no_args(self, mock_git_revision_hash):
+        commit_sha = "aaa9876aaa"
+        mock_git_revision_hash.return_value = commit_sha
+
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
@@ -83,38 +89,10 @@ class CompileCommandTestCase(unittest.TestCase):
                 )
             with open(
                 tmp_dir_path.joinpath("dag", "config", "base", "k8s.yml"), "r"
-            ) as tmp_k8s, open(
-                goldens_dir_path.joinpath("config", "base", "k8s.yml")
-            ) as golden_k8s:
-                self.assertDictEqual(
-                    yaml.safe_load(golden_k8s), yaml.safe_load(tmp_k8s)
-                )
-
-    @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
-    @patch("data_pipelines_cli.data_structures.git_revision_hash")
-    def test_docker_uri_no_build(self, mock_git_revision_hash):
-        commit_sha = "aaa9876aaa"
-        mock_git_revision_hash.return_value = commit_sha
-
-        runner = CliRunner()
-        with tempfile.TemporaryDirectory() as tmp_dir, patch(
-            "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
-        ):
-            result = runner.invoke(_cli, ["compile", "--docker-repository-uri", "rep"])
-            self.assertEqual(0, result.exit_code, msg=result.exception)
-
-            tmp_dir_path = pathlib.Path(tmp_dir)
-            with open(
-                tmp_dir_path.joinpath("dag", "config", "base", "k8s.yml"), "r"
             ) as tmp_k8s:
                 self.assertDictEqual(
-                    self._k8s_content("rep", "aaa9876aaa"), yaml.safe_load(tmp_k8s)
+                    self._k8s_content("my_docker_repository_uri", "aaa9876aaa"),
+                    yaml.safe_load(tmp_k8s),
                 )
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
@@ -131,13 +109,15 @@ class CompileCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
+            "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
         ):
             result = runner.invoke(
                 _cli,
-                ["compile", "--docker-repository-uri", "rep", "--docker-build"],
+                ["compile", "--docker-build"],
             )
         self.assertEqual(1, result.exit_code)
         self.assertIsInstance(result.exception, DockerNotInstalledError)
@@ -168,23 +148,7 @@ class CompileCommandTestCase(unittest.TestCase):
         ), tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
-        ):
-            result = runner.invoke(
-                _cli, ["compile", "--docker-repository-uri", "rep", "--docker-build"]
-            )
-            self.assertEqual(0, result.exit_code, msg=result.exception)
-            self.assertEqual("rep:aaa9876aaa", docker_tag)
-
-    @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
-    def test_datahub_uri(self):
-        runner = CliRunner()
-        with tempfile.TemporaryDirectory() as tmp_dir, patch(
-            "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
+            "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
@@ -192,16 +156,6 @@ class CompileCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
         ):
-            result = runner.invoke(
-                _cli, ["compile", "--datahub-gms-uri", "DaTaHuBuRi.example.io"]
-            )
+            result = runner.invoke(_cli, ["compile", "--docker-build"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
-
-            tmp_dir_path = pathlib.Path(tmp_dir)
-            with open(
-                tmp_dir_path.joinpath("dag", "config", "base", "datahub.yml"), "r"
-            ) as tmp_datahub:
-                self.assertDictEqual(
-                    self._datahub_content("DaTaHuBuRi.example.io"),
-                    yaml.safe_load(tmp_datahub),
-                )
+            self.assertEqual("my_docker_repository_uri:aaa9876aaa", docker_tag)
