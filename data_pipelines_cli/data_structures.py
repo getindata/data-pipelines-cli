@@ -1,5 +1,5 @@
 import sys
-from typing import Dict
+from typing import Any, Dict, List
 
 import yaml
 
@@ -14,8 +14,10 @@ else:
 
 
 class TemplateConfig(TypedDict):
-    """POD representing value referenced in the `templates` section of
-    the `.dp.yml` config file"""
+    """
+    POD representing value referenced in the `templates` section of
+    the `.dp.yml` config file.
+    """
 
     template_name: str
     """Name of the template"""
@@ -24,7 +26,7 @@ class TemplateConfig(TypedDict):
 
 
 class DataPipelinesConfig(TypedDict):
-    """POD representing `.dp.yml` config file"""
+    """POD representing `.dp.yml` config file."""
 
     templates: Dict[str, TemplateConfig]
     """Dictionary of saved templates to use in `dp create` command"""
@@ -34,8 +36,8 @@ class DataPipelinesConfig(TypedDict):
 
 def read_config() -> DataPipelinesConfig:
     """
-    Parses `.dp.yml` config file, if it exists. Otherwise, raises
-    :exc:`.NoConfigFileError`
+    Parse `.dp.yml` config file, if it exists. Otherwise, raises
+    :exc:`.NoConfigFileError`.
 
     :return: POD representing `.dp.yml` config file, if it exists
     :rtype: DataPipelinesConfig
@@ -55,7 +57,7 @@ def read_config() -> DataPipelinesConfig:
 
 
 class DockerArgs:
-    """Arguments required by the Docker to make a push to the repository
+    """Arguments required by the Docker to make a push to the repository.
 
     :raises DataPipelinesError: *repository* variable not set or git hash not found
     """
@@ -74,7 +76,9 @@ class DockerArgs:
 
     def docker_build_tag(self) -> str:
         """
-        :return: Tag for Docker Python API build command.
+        Prepare a tag for Docker Python API build command.
+
+        :return: Tag for Docker Python API build command
         :rtype: str
         """
         return f"{self.repository}:{self.commit_sha}"
@@ -96,3 +100,38 @@ class DockerArgs:
             raise DataPipelinesError(
                 f"Could not find 'repository' variable in build/config/{env}/k8s.yml."
             ) from key_error
+
+
+class DbtTableColumn(TypedDict, total=False):
+    """POD representing a single column from 'schema.yml' file."""
+
+    name: str
+    description: str
+    meta: Dict[str, Any]
+    quote: bool
+    tests: List[str]
+    tags: List[str]
+
+
+class DbtModel(TypedDict, total=False):
+    """POD representing a single model from 'schema.yml' file."""
+
+    name: str
+    description: str
+    meta: Dict[str, Any]
+    identifier: str
+    tests: List[str]
+    tags: List[str]
+    columns: List[DbtTableColumn]
+
+
+class DbtSource(TypedDict, total=False):
+    """POD representing a single source from 'schema.yml' file."""
+
+    name: str
+    description: str
+    database: str
+    schema: str
+    meta: Dict[str, Any]
+    tags: List[str]
+    tables: List[DbtModel]

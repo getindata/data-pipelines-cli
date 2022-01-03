@@ -110,7 +110,7 @@ class DeployCommandTestCase(unittest.TestCase):
         # 'filesystem_utils.LocalRemoteSync' here. It gets tested in
         # a dedicated 'test_filesystem_utils' file.
         runner = CliRunner()
-        with patch("pathlib.Path.cwd", lambda _: self.dbt_project_config_dir):
+        with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir):
             result = runner.invoke(
                 _cli,
                 [
@@ -135,7 +135,7 @@ class DeployCommandTestCase(unittest.TestCase):
             with self.subTest(dep=module_name):
                 runner = CliRunner()
                 with patch.dict("sys.modules", **{module_name: None}), patch(
-                    "pathlib.Path.cwd", lambda _: self.dbt_project_config_dir
+                    "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
                 ), patch(
                     "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
                 ):
@@ -155,7 +155,7 @@ class DeployCommandTestCase(unittest.TestCase):
 
     def test_no_datahub_method(self):
         with patch.dict("sys.modules", datahub=None), patch(
-            "pathlib.Path.cwd", lambda _: self.dbt_project_config_dir
+            "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ):
             with self.assertRaises(DependencyNotInstalledError):
                 DeployCommand(
@@ -164,7 +164,7 @@ class DeployCommandTestCase(unittest.TestCase):
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     def test_datahub_run(self):
-        with patch("pathlib.Path.cwd", lambda _: self.dbt_project_config_dir), patch(
+        with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.subprocess_run", self._mock_run
         ), patch.dict("sys.modules", datahub=MagicMock()):
             DeployCommand(
@@ -182,7 +182,7 @@ class DeployCommandTestCase(unittest.TestCase):
 
     def test_no_docker_method(self):
         with patch.dict("sys.modules", docker=None), patch(
-            "pathlib.Path.cwd", lambda _: self.dbt_project_config_dir
+            "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
                 DeployCommand(
@@ -233,7 +233,7 @@ class DeployCommandTestCase(unittest.TestCase):
         docker_mock.configure_mock(**{"from_env": lambda: docker_client_mock})
 
         with patch.dict("sys.modules", docker=docker_mock), patch(
-            "pathlib.Path.cwd", lambda _: self.dbt_project_config_dir
+            "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("docker.from_env", lambda: docker_client_mock), patch(
             "data_pipelines_cli.data_structures.git_revision_hash", lambda: "sha1234"
         ), patch(
@@ -263,9 +263,9 @@ class DeployCommandTestCase(unittest.TestCase):
         docker_mock = MagicMock()
         docker_mock.configure_mock(**{"from_env": lambda: docker_client_mock})
 
-        with patch(
-            "pathlib.Path.cwd", lambda _: self.dbt_project_config_dir
-        ), patch.dict("sys.modules", docker=docker_mock), patch(
+        with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch.dict(
+            "sys.modules", docker=docker_mock
+        ), patch(
             "data_pipelines_cli.data_structures.git_revision_hash", lambda: "sha1234"
         ), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir

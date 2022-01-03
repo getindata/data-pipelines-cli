@@ -1,0 +1,21 @@
+name: 'my_test_project_1337'
+version: '1.2.3'
+config-version: 2
+
+profile: 'bigquery'
+
+source-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+data-paths: ["data"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_modules"
+
+models:
+  my_test_project_1337:
+    +materialized: view

@@ -5,6 +5,7 @@
 ### Added
 
 -   `dp update` command
+-   `dp publish` command for creation of dbt package out of the project.
 
 ### Changed
 
