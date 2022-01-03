@@ -37,6 +37,20 @@ jobs:
         run: |
           tox -e py37
 
+      - name: Ensure source docs are updated
+        uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+          build-command: "make apidoc html"
+
+      - name: Commit the changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add docs
+          git commit -am "TEST APIDOC"
+          git push
+
       - name: Report coverage
         uses: paambaati/codeclimate-action@v2.7.5
         env:
