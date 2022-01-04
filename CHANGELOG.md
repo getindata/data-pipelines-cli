@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Docker response in `deploy` and `compile` gets printed as processed strings instead of plain dictionaries.
+
 ## [0.10.0] - 2022-01-12
 
 ### Changed

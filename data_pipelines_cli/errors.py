@@ -69,3 +69,10 @@ class AirflowDagsPathKeyError(DataPipelinesError):
         self.message = (
             "Variable 'dags_path' cannot be found in 'airflow.yml' config file."
         )
+
+
+class DockerErrorResponseError(DataPipelinesError):
+    """Exception raised if there is an error response from Docker client."""
+
+    def __init__(self, error_msg: str) -> None:
+        self.message = "Error raised when using Docker.\n" + error_msg
