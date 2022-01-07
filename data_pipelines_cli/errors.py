@@ -27,6 +27,16 @@ class NoConfigFileError(DataPipelinesError):
         )
 
 
+class NotAProjectDirectoryError(DataPipelinesError):
+    """Exception raised if `.copier-answers.yml` file does not exist in given dir"""
+
+    def __init__(self, project_path: str) -> None:
+        self.message = (
+            f"Given path {project_path} is not a data-pipelines project directory."
+            " Run 'dp create' first to create a project"
+        )
+
+
 class SubprocessNonZeroExitError(DataPipelinesError):
     """Exception raised if subprocess exits with non-zero exit code"""
 

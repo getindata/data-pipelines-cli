@@ -11,6 +11,7 @@ from .cli_commands.prepare_env import prepare_env_command
 from .cli_commands.run import run_command
 from .cli_commands.template import list_templates_command
 from .cli_commands.test import test_command
+from .cli_commands.update import update_command
 from .cli_utils import echo_error
 from .errors import DataPipelinesError
 
@@ -38,3 +39,4 @@ _cli.add_command(prepare_env_command)
 _cli.add_command(run_command)
 _cli.add_command(list_templates_command)
 _cli.add_command(test_command)
+_cli.add_command(update_command)
