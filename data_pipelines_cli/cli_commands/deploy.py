@@ -21,7 +21,7 @@ from ..filesystem_utils import LocalRemoteSync
 
 
 class DeployCommand:
-    """A class used to push and deploy the project to the remote machine"""
+    """A class used to push and deploy the project to the remote machine."""
 
     docker_args: Optional[DockerArgs]
     """Arguments required by the Docker to make a push to the repository.
@@ -57,7 +57,7 @@ class DeployCommand:
             raise AirflowDagsPathKeyError from key_error
 
     def deploy(self) -> None:
-        """Push and deploy the project to the remote machine
+        """Push and deploy the project to the remote machine.
 
         :raises DependencyNotInstalledError: DataHub or Docker not installed
         :raises DataPipelinesError: Error while pushing Docker image

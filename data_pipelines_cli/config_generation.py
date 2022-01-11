@@ -31,14 +31,14 @@ def _copy_src_dir_to_dst_dir(src_dir: pathlib.Path, dst_dir: pathlib.Path) -> No
 
 
 def copy_dag_dir_to_build_dir() -> None:
-    """Recursively copies `dag` directory to `build/dag` working directory"""
+    """Recursively copy `dag` directory to `build/dag` working directory."""
     dag_src_path = pathlib.Path.cwd().joinpath("dag")
     dag_dst_path = BUILD_DIR.joinpath("dag")
     _copy_src_dir_to_dst_dir(dag_src_path, dag_dst_path)
 
 
 def copy_config_dir_to_build_dir() -> None:
-    """Recursively copies `config` directory to `build/dag/config` working directory"""
+    """Recursively copy `config` directory to `build/dag/config` working directory."""
     config_src_path = pathlib.Path.cwd().joinpath("config")
     dag_dst_path = BUILD_DIR.joinpath("dag", "config")
     echo_info(f"Copying 'config' directory to {dag_dst_path}")
@@ -51,9 +51,9 @@ def read_dictionary_from_config_directory(
     config_path: Union[str, os.PathLike[str]], env: str, file_name: str
 ) -> Dict[str, Any]:
     """
-    Reads dictionaries out of *file_name* in both `base` and *env* directories,
-    and compiles them into one. Values from *env* directory get precedence over
-    `base` ones
+    Read dictionaries out of *file_name* in both `base` and *env* directories,
+    and compile them into one. Values from *env* directory get precedence over
+    `base` ones.
 
     :param config_path: Path to the `config` directory
     :type config_path: Union[str, os.PathLike[str]]
@@ -86,7 +86,7 @@ def _read_yaml_file(file_path: Union[str, os.PathLike[str]]) -> Dict[str, Any]:
 
 
 class DbtProfile(TypedDict):
-    """POD representing dbt's `profiles.yml` file"""
+    """POD representing dbt's `profiles.yml` file."""
 
     target: str
     """Name of the `target` for dbt to run"""
@@ -96,7 +96,7 @@ class DbtProfile(TypedDict):
 
 def generate_profiles_dict(env: str, copy_config_dir: bool) -> Dict[str, DbtProfile]:
     """
-    Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
+    Generate and save ``profiles.yml`` file at ``build/profiles/local`` or
     ``build/profiles/env_execution``, depending on `env` argument.
 
     :param env: Name of the environment
@@ -151,7 +151,7 @@ def get_profiles_dir_build_path(env: str) -> pathlib.Path:
 
 def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
     """
-    Generates and saves ``profiles.yml`` file at ``build/profiles/local`` or
+    Generate and save ``profiles.yml`` file at ``build/profiles/local`` or
     ``build/profiles/env_execution``, depending on `env` argument.
 
     :param env: Name of the environment

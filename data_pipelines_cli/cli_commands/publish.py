@@ -95,6 +95,10 @@ def _create_dbt_project(project_name: str, project_version: str) -> Dict[str, An
 
 
 def publish() -> None:
+    """Create a dbt package out of the built project.
+
+    :raises DataPipelinesError: There is no model in 'manifest.json' file.
+    """
     project_name, project_version = _get_project_name_and_version()
     package_path = BUILD_DIR.joinpath("package")
 
@@ -115,6 +119,6 @@ def publish() -> None:
         )
 
 
-@click.command(name="publish", help="Create a package out of the project")
+@click.command(name="publish", help="Create a dbt package out of the project")
 def publish_command() -> None:
     publish()

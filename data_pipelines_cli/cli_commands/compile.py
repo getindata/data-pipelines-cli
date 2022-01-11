@@ -81,7 +81,7 @@ def compile_project(
     docker_build: bool = False,
 ) -> None:
     """
-    Create local working directories and build artifacts
+    Create local working directories and build artifacts.
 
     :param env: Name of the environment
     :type env: str

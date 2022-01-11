@@ -5,7 +5,7 @@ from data_pipelines_cli.data_structures import read_config
 
 
 def list_templates() -> None:
-    """Print a list of all templates saved in the config file"""
+    """Print a list of all templates saved in the config file."""
     config = read_config()
 
     click.echo("AVAILABLE TEMPLATES:\n")

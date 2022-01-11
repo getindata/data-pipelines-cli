@@ -7,7 +7,7 @@ from .compile import compile_project
 
 def run(env: str) -> None:
     """
-    Run the project on the local machine
+    Run the project on the local machine.
 
     :param env: Name of the environment
     :type env: str
