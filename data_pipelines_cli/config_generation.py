@@ -136,10 +136,9 @@ def generate_profiles_dict(env: str, copy_config_dir: bool) -> Dict[str, DbtProf
     }
 
 
-def get_profiles_yml_build_path(env: str) -> pathlib.Path:
+def get_profiles_dir_build_path(env: str) -> pathlib.Path:
     """
-    Returns path to ``build/profiles/<profile_name>/profiles.yml``,
-    depending on `env` argument.
+    Returns path to ``build/profiles/<profile_name>/``, depending on `env` argument.
 
     :param env: Name of the environment
     :type env: str
@@ -147,7 +146,7 @@ def get_profiles_yml_build_path(env: str) -> pathlib.Path:
     :rtype: pathlib.Path
     """
     profile_name = get_dbt_profiles_env_name(env)
-    return BUILD_DIR.joinpath("profiles", profile_name, "profiles.yml")
+    return BUILD_DIR.joinpath("profiles", profile_name)
 
 
 def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Path:
@@ -166,10 +165,10 @@ def generate_profiles_yml(env: str, copy_config_dir: bool = True) -> pathlib.Pat
     echo_info("Generating profiles.yml")
     profile = generate_profiles_dict(env, copy_config_dir)
 
-    profiles_path = get_profiles_yml_build_path(env)
-    profiles_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(profiles_path, "w") as profiles:
+    profiles_path = get_profiles_dir_build_path(env)
+    profiles_path.mkdir(parents=True, exist_ok=True)
+    with open(profiles_path.joinpath("profiles.yml"), "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)
     echo_subinfo(f"Generated profiles.yml in {profiles_path}")
 
-    return profiles_path.parent
+    return profiles_path

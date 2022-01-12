@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- `dp run` and `dp test` are no longer pointing to `profiles.yml` instead of the directory containing it.
+
 ## [0.9.0] - 2022-01-03
 
 ### Added

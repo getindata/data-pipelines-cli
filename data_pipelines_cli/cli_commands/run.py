@@ -1,6 +1,6 @@
 import click
 
-from ..config_generation import get_profiles_yml_build_path
+from ..config_generation import get_profiles_dir_build_path
 from ..dbt_utils import run_dbt_command
 from .compile import compile_project
 
@@ -13,7 +13,7 @@ def run(env: str) -> None:
     :type env: str
     """
     compile_project(env)
-    profiles_path = get_profiles_yml_build_path(env)
+    profiles_path = get_profiles_dir_build_path(env)
     run_dbt_command(("run",), env, profiles_path)
 
 
