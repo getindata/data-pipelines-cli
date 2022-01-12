@@ -6,13 +6,15 @@ import click
 import yaml
 
 from ..cli_constants import BUILD_DIR
-from ..cli_utils import echo_info, subprocess_run
+from ..cli_utils import echo_error, echo_info, subprocess_run
 from ..config_generation import read_dictionary_from_config_directory
 from ..data_structures import DockerArgs
+from ..docker_response_reader import DockerResponseReader
 from ..errors import (
     AirflowDagsPathKeyError,
     DataPipelinesError,
     DependencyNotInstalledError,
+    DockerErrorResponseError,
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
@@ -81,20 +83,23 @@ class DeployCommand:
         echo_info("Pushing Docker image")
         docker_client = docker.from_env()
         docker_args = cast(DockerArgs, self.docker_args)
-        for line in docker_client.images.push(
-            repository=docker_args.repository,
-            tag=docker_args.commit_sha,
-            stream=True,
-            decode=True,
-        ):
-            click.echo(line)
 
-            if "error" in line:
-                raise DataPipelinesError(
-                    "Error raised when pushing Docker image. Ensure that "
-                    "Docker image you try to push exists. Maybe try running "
-                    "'dp compile' first?"
+        try:
+            DockerResponseReader(
+                docker_client.images.push(
+                    repository=docker_args.repository,
+                    tag=docker_args.commit_sha,
+                    stream=True,
+                    decode=True,
                 )
+            ).click_echo_ok_responses()
+        except DockerErrorResponseError as err:
+            echo_error(err.message)
+            raise DataPipelinesError(
+                "Error raised when pushing Docker image. Ensure that "
+                "Docker image you try to push exists. Maybe try running "
+                "'dp compile' first?"
+            )
 
     @staticmethod
     def _datahub_ingest() -> None:

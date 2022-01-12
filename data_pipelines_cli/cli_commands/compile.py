@@ -4,7 +4,7 @@ import shutil
 import click
 
 from ..cli_constants import BUILD_DIR, IMAGE_TAG_TO_REPLACE
-from ..cli_utils import echo_info
+from ..cli_utils import echo_error, echo_info
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
@@ -12,7 +12,12 @@ from ..config_generation import (
 )
 from ..data_structures import DockerArgs
 from ..dbt_utils import run_dbt_command
-from ..errors import DockerNotInstalledError
+from ..docker_response_reader import DockerResponseReader
+from ..errors import (
+    DataPipelinesError,
+    DockerErrorResponseError,
+    DockerNotInstalledError,
+)
 from ..io_utils import replace
 
 
@@ -38,14 +43,15 @@ def _docker_build(docker_args: DockerArgs) -> None:
     docker_client = docker.from_env()
     docker_tag = docker_args.docker_build_tag()
     _, logs_generator = docker_client.images.build(path=".", tag=docker_tag)
-    click.echo(
-        "".join(
-            map(
-                lambda log: log["stream"],
-                filter(lambda log: "stream" in log, logs_generator),
-            )
+    try:
+        DockerResponseReader(logs_generator).click_echo_ok_responses()
+    except DockerErrorResponseError as err:
+        echo_error(err.message)
+        raise DataPipelinesError(
+            "Error raised when pushing Docker image. Ensure that "
+            "Docker image you try to push exists. Maybe try running "
+            "'dp compile' first?"
         )
-    )
 
 
 def _dbt_compile(env: str) -> None:

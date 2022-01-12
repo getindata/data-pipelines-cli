@@ -10,6 +10,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 1
 
    data_pipelines_cli.cli_commands
 
@@ -64,6 +65,14 @@ data\_pipelines\_cli.dbt\_utils module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.docker\_response\_reader module
+----------------------------------------------------
+
+.. automodule:: data_pipelines_cli.docker_response_reader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.errors module
 ----------------------------------
 
@@ -95,4 +104,3 @@ data\_pipelines\_cli.vcs\_utils module
    :members:
    :undoc-members:
    :show-inheritance:
-
