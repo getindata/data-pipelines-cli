@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2022-01-12
+
+### Changed
+
+-   Run `dbt deps` at the end of `dp prepare-env`.
+
+### Fixed
+
+-   `dp run` and `dp test` are no longer pointing to `profiles.yml` instead of the directory containing it.
+
 ## [0.9.0] - 2022-01-03
 
 ### Added
@@ -121,7 +131,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.10.0...HEAD
+
+[0.10.0]: https://github.com/getindata/data-pipelines-cli/compare/0.9.0...0.10.0
 
 [0.9.0]: https://github.com/getindata/data-pipelines-cli/compare/0.8.0...0.9.0
 

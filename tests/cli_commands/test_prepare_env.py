@@ -51,6 +51,8 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.goldens_dir_path
         ), tempfile.TemporaryDirectory() as tmp_dir2, patch(
             "pathlib.Path.home", lambda: pathlib.Path(tmp_dir2)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args: None
         ):
             runner.invoke(_cli, ["prepare-env"])
             with open(
@@ -80,6 +82,8 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.goldens_dir_path
         ), tempfile.TemporaryDirectory() as tmp_dir2, patch(
             "pathlib.Path.home", lambda: pathlib.Path(tmp_dir2)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args: None
         ):
             prepare_env("staging")
 
@@ -105,6 +109,8 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.goldens_dir_path
         ), tempfile.TemporaryDirectory() as tmp_dir2, patch(
             "pathlib.Path.home", lambda: pathlib.Path(tmp_dir2)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args: None
         ):
             with self.assertRaises(JinjaVarKeyError):
                 prepare_env("staging")
@@ -124,6 +130,8 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.goldens_dir_path
         ), tempfile.TemporaryDirectory() as tmp_dir2, patch(
             "pathlib.Path.home", lambda: pathlib.Path(tmp_dir2)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args: None
         ):
             with self.assertRaises(JinjaVarKeyError):
                 prepare_env("staging")

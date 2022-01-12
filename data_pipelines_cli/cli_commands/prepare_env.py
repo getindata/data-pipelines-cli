@@ -9,7 +9,7 @@ from jinja2.nativetypes import NativeEnvironment
 
 from data_pipelines_cli.cli_utils import echo_subinfo
 from data_pipelines_cli.config_generation import DbtProfile, generate_profiles_dict
-from data_pipelines_cli.dbt_utils import read_dbt_vars_from_configs
+from data_pipelines_cli.dbt_utils import read_dbt_vars_from_configs, run_dbt_command
 from data_pipelines_cli.errors import JinjaVarKeyError
 
 
@@ -84,7 +84,8 @@ def prepare_env(env: str) -> None:
     with open(home_profiles_path, "w") as profiles:
         yaml.dump(profile, profiles, default_flow_style=False)
 
-    echo_subinfo(f"Saved profiles.yml in {home_profiles_path}")
+    echo_subinfo(f"Saved profiles.yml in {home_profiles_path.parent}")
+    run_dbt_command(("deps",), env, home_profiles_path.parent)
 
 
 @click.command(
