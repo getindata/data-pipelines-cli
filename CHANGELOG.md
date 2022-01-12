@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Run `dbt deps` at the end of `dp prepare-env`.
+
 ### Fixed
 
 - `dp run` and `dp test` are no longer pointing to `profiles.yml` instead of the directory containing it.
