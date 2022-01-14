@@ -43,8 +43,7 @@ def replace(
 
 def git_revision_hash() -> Optional[str]:
     """
-    Tries to get current Git revision hash, if Git is installed and any
-    revision exists.
+    Get current Git revision hash, if Git is installed and any revision exists.
 
     :return: Git revision hash, if possible.
     :rtype: Optional[str]

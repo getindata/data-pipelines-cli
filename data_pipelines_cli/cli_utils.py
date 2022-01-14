@@ -62,9 +62,9 @@ def get_argument_or_environment_variable(
     argument: Optional[str], argument_name: str, environment_variable_name: str
 ) -> str:
     """
-    Given *argument* is not ``None``, returns its value. Otherwise, searches
-    for *environment_variable_name* amongst environment variables and returns
-    it. If such a variable is not set, raises :exc:`.DataPipelinesError`.
+    Given *argument* is not ``None``, return its value. Otherwise, search
+    for *environment_variable_name* amongst environment variables and return
+    it. If such a variable is not set, raise :exc:`.DataPipelinesError`.
 
     :param argument: Optional value passed to the CLI as the *argument_name*
     :type argument: Optional[str]
@@ -88,8 +88,8 @@ def get_argument_or_environment_variable(
 
 def subprocess_run(args: List[str]) -> subprocess.CompletedProcess[bytes]:
     """
-    Runs subprocess and returns its state if completed with a success. If not,
-    raises :exc:`.SubprocessNonZeroExitError`.
+    Run subprocess and return its state if completed with a success. If not,
+    raise :exc:`.SubprocessNonZeroExitError`.
 
     :param args: List of strings representing subprocess and its arguments
     :type args: List[str]

@@ -19,7 +19,7 @@ def _remove_build_dir() -> None:
 
 
 def clean() -> None:
-    """Deletes local working directories"""
+    """Delete local working directories."""
     _dbt_clean()
     _remove_build_dir()
 

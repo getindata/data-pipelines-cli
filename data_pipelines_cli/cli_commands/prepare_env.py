@@ -55,6 +55,16 @@ def _replace_outputs_vars_with_values(
 def _replace_profiles_vars_with_values(
     profile: Dict[str, DbtProfile], dbt_vars: Dict[str, Any]
 ) -> Dict[str, DbtProfile]:
+    """
+    Replace ``vars`` in *profile* with *dbt_vars*.
+
+    :param profile: Dictionary representing ``profiles.yml``
+    :type profile: Dict[str, DbtProfile]
+    :param dbt_vars: Values of variables to replace
+    :type dbt_vars: Dict[str, Any]
+    :return: ``profiles.yml`` with variables replaced with constants
+    :rtype: Dict[str, DbtProfile]
+    """
     for targets_dict in profile.values():
         new_outputs = {}
         for target, settings_dict in targets_dict["outputs"].items():
@@ -68,7 +78,9 @@ def _replace_profiles_vars_with_values(
 
 def prepare_env(env: str) -> None:
     """
-    Prepares local environment for use with applications expecting a "traditional"
+    Prepare local environment for use with dbt-related applications.
+
+    Prepare local environment for use with applications expecting a "traditional"
     dbt structure, such as plugins to VS Code. If in doubt, use ``dp run`` and
     ``dp test`` instead.
 

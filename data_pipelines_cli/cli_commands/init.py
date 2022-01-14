@@ -25,7 +25,7 @@ def _download_global_config(config_path: str) -> DataPipelinesConfig:
 
 def init(config_path: Optional[str]) -> None:
     """
-    Configure the tool for the first time
+    Configure the tool for the first time.
 
     :param config_path: URI of the repository with a template of the config file
     :type config_path: Optional[str]

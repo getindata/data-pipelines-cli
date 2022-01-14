@@ -1,13 +1,14 @@
+"""Utilities related to VCS."""
+
 from copier.vcs import GIT_PREFIX
 
 
 def add_suffix_to_git_template_path(template_path: str) -> str:
-    """
-    Adds ``.git`` suffix to *template_path*, if necessary.
+    """Add ``.git`` suffix to *template_path*, if necessary.
 
-    Checks if *template_path* starts with Git-specific prefix (e.g. `git://`),
-    or `http://` or `https://` protocol. If so, then adds ``.git`` suffix if
-    not present. Otherwise, it does not (as *template_path* probably points to
+    Check if *template_path* starts with Git-specific prefix (e.g. `git://`),
+    or `http://` or `https://` protocol. If so, then add ``.git`` suffix if
+    not present. Does nothing otherwise (as *template_path* probably points to
     a local directory).
 
     :param template_path: Path or URI to Git-based repository
