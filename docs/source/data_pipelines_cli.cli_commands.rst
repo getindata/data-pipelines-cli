@@ -80,3 +80,11 @@ data\_pipelines\_cli.cli\_commands.test module
    :members:
    :undoc-members:
    :show-inheritance:
+
+data\_pipelines\_cli.cli\_commands.update module
+------------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.update
+   :members:
+   :undoc-members:
+   :show-inheritance:

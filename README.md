@@ -47,6 +47,11 @@ directly to a template repository. If `<LINK_TO_TEMPLATE_REPOSITORY>` proves to 
 
 `dp template-list` lists all added templates.
 
+### Project update
+
+To update your pipeline project use `dp update <PIPELINE_PROJECT-PATH>`. It will sync your existing project with updated
+template version selected by `--vcs-ref` option (default `HEAD`).
+
 ### Project deployment
 
 `dp deploy` will sync with your bucket provider. The provider will be chosen automatically based on the remote URL.

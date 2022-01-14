@@ -32,6 +32,12 @@ repository. If ``<LINK_TO_TEMPLATE_REPOSITORY>`` proves to be the name of the te
 
 ``dp template-list`` lists all added templates.
 
+Project update
+--------------
+
+To update your pipeline project use ``dp update <PIPELINE_PROJECT-PATH>``. It will sync your existing project with updated
+template version selected by ``--vcs-ref`` option (default ``HEAD``).
+
 Project configuration
 ---------------------
 

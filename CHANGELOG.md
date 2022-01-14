@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+-   `dp update` command
+
 ### Changed
 
 - Docker response in `deploy` and `compile` gets printed as processed strings instead of plain dictionaries.
