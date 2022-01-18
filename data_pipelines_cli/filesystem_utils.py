@@ -12,7 +12,7 @@ from .errors import DataPipelinesError
 
 
 class LocalRemoteSync:
-    """Synchronizes local directory with a cloud storage's one"""
+    """Synchronizes local directory with a cloud storage's one."""
 
     local_fs: AbstractFileSystem
     """FS representing local directory"""
@@ -42,7 +42,7 @@ class LocalRemoteSync:
 
     def sync(self, delete: bool = True) -> None:
         """
-        Sends local files to the remote directory and (optionally) deletes
+        Send local files to the remote directory and (optionally) delete
         unnecessary ones.
 
         :param delete: Whether to delete remote files that are \
@@ -54,7 +54,7 @@ class LocalRemoteSync:
             self._delete()
 
     def _push_sync(self) -> None:
-        """Push every file to the remote"""
+        """Push every file to the remote."""
 
         # TODO: Is it "lazy" (checking what to update) or not?
         local_directory = self.local_fs.find(self.local_path_str)
@@ -67,7 +67,7 @@ class LocalRemoteSync:
             self.remote_fs.put_file(local_file, remote_path_with_suffix)
 
     def _delete(self) -> None:
-        """Remove every file from remote that's not local"""
+        """Remove every file from remote that's not local."""
         remote_directory = self.remote_fs.find(self.remote_path_str)
         for remote_file in remote_directory:
             remote_file_suffix = remote_file[len(self.remote_path_str) :]

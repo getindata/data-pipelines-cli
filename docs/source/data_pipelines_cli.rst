@@ -64,6 +64,14 @@ data\_pipelines\_cli.dbt\_utils module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.docker\_response\_reader module
+----------------------------------------------------
+
+.. automodule:: data_pipelines_cli.docker_response_reader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.errors module
 ----------------------------------
 
@@ -84,6 +92,14 @@ data\_pipelines\_cli.io\_utils module
 -------------------------------------
 
 .. automodule:: data_pipelines_cli.io_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+data\_pipelines\_cli.jinja module
+---------------------------------
+
+.. automodule:: data_pipelines_cli.jinja
    :members:
    :undoc-members:
    :show-inheritance:

@@ -6,20 +6,22 @@ import click
 import yaml
 
 from ..cli_constants import BUILD_DIR
-from ..cli_utils import echo_info, subprocess_run
+from ..cli_utils import echo_error, echo_info, subprocess_run
 from ..config_generation import read_dictionary_from_config_directory
 from ..data_structures import DockerArgs
+from ..docker_response_reader import DockerResponseReader
 from ..errors import (
     AirflowDagsPathKeyError,
     DataPipelinesError,
     DependencyNotInstalledError,
+    DockerErrorResponseError,
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
 
 
 class DeployCommand:
-    """A class used to push and deploy the project to the remote machine"""
+    """A class used to push and deploy the project to the remote machine."""
 
     docker_args: Optional[DockerArgs]
     """Arguments required by the Docker to make a push to the repository.
@@ -45,17 +47,16 @@ class DeployCommand:
         self.provider_kwargs_dict = provider_kwargs_dict or {}
 
         try:
-            self.blob_address_path = (
-                dags_path
-                or read_dictionary_from_config_directory(
-                    BUILD_DIR.joinpath("dag"), "base", "airflow.yml"
-                )["dags_path"]
-            )
+            self.blob_address_path = dags_path or read_dictionary_from_config_directory(
+                BUILD_DIR.joinpath("dag"),
+                env,
+                "airflow.yml",
+            )["dags_path"]
         except KeyError as key_error:
             raise AirflowDagsPathKeyError from key_error
 
     def deploy(self) -> None:
-        """Push and deploy the project to the remote machine
+        """Push and deploy the project to the remote machine.
 
         :raises DependencyNotInstalledError: DataHub or Docker not installed
         :raises DataPipelinesError: Error while pushing Docker image
@@ -81,20 +82,23 @@ class DeployCommand:
         echo_info("Pushing Docker image")
         docker_client = docker.from_env()
         docker_args = cast(DockerArgs, self.docker_args)
-        for line in docker_client.images.push(
-            repository=docker_args.repository,
-            tag=docker_args.commit_sha,
-            stream=True,
-            decode=True,
-        ):
-            click.echo(line)
 
-            if "error" in line:
-                raise DataPipelinesError(
-                    "Error raised when pushing Docker image. Ensure that "
-                    "Docker image you try to push exists. Maybe try running "
-                    "'dp compile' first?"
+        try:
+            DockerResponseReader(
+                docker_client.images.push(
+                    repository=docker_args.repository,
+                    tag=docker_args.commit_sha,
+                    stream=True,
+                    decode=True,
                 )
+            ).click_echo_ok_responses()
+        except DockerErrorResponseError as err:
+            echo_error(err.message)
+            raise DataPipelinesError(
+                "Error raised when pushing Docker image. Ensure that "
+                "Docker image you try to push exists. Maybe try running "
+                "'dp compile' first?"
+            )
 
     @staticmethod
     def _datahub_ingest() -> None:
@@ -125,7 +129,9 @@ class DeployCommand:
     name="deploy",
     help="Push and deploy the project to the remote machine",
 )
-@click.option("--env", default="base", type=str, help="Name of the environment")
+@click.option(
+    "--env", default="base", show_default=True, type=str, help="Name of the environment"
+)
 @click.option("--dags-path", required=False, help="Remote storage URI")
 @click.option(
     "--blob-args",

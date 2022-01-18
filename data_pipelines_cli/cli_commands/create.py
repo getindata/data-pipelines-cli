@@ -43,7 +43,7 @@ def _get_template_path(
 
 def create(project_path: str, template_path: Optional[str]) -> None:
     """
-    Create a new project using a template
+    Create a new project using a template.
 
     :param project_path: Path to a directory to create
     :type project_path: str

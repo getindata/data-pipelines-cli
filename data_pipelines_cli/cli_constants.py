@@ -24,7 +24,7 @@ BUILD_DIR: pathlib.Path = pathlib.Path.cwd().joinpath("build")
 def get_dbt_profiles_env_name(env: str) -> str:
     """
     Given a name of the environment, returns one of target names expected by
-    the `profiles.yml` file
+    the `profiles.yml` file.
 
     :param env: Name of the environment
     :type env: str

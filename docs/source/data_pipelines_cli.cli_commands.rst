@@ -57,6 +57,14 @@ data\_pipelines\_cli.cli\_commands.prepare\_env module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_commands.publish module
+-------------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.publish
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_commands.run module
 ---------------------------------------------
 
@@ -77,6 +85,14 @@ data\_pipelines\_cli.cli\_commands.test module
 ----------------------------------------------
 
 .. automodule:: data_pipelines_cli.cli_commands.test
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+data\_pipelines\_cli.cli\_commands.update module
+------------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.update
    :members:
    :undoc-members:
    :show-inheritance:

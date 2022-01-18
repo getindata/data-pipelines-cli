@@ -27,6 +27,16 @@ class NoConfigFileError(DataPipelinesError):
         )
 
 
+class NotAProjectDirectoryError(DataPipelinesError):
+    """Exception raised if `.copier-answers.yml` file does not exist in given dir"""
+
+    def __init__(self, project_path: str) -> None:
+        self.message = (
+            f"Given path {project_path} is not a data-pipelines project directory."
+            " Run 'dp create' first to create a project"
+        )
+
+
 class SubprocessNonZeroExitError(DataPipelinesError):
     """Exception raised if subprocess exits with non-zero exit code"""
 
@@ -69,3 +79,10 @@ class AirflowDagsPathKeyError(DataPipelinesError):
         self.message = (
             "Variable 'dags_path' cannot be found in 'airflow.yml' config file."
         )
+
+
+class DockerErrorResponseError(DataPipelinesError):
+    """Exception raised if there is an error response from Docker client."""
+
+    def __init__(self, error_msg: str) -> None:
+        self.message = "Error raised when using Docker.\n" + error_msg

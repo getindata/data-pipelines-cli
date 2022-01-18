@@ -32,6 +32,12 @@ repository. If ``<LINK_TO_TEMPLATE_REPOSITORY>`` proves to be the name of the te
 
 ``dp template-list`` lists all added templates.
 
+Project update
+--------------
+
+To update your pipeline project use ``dp update <PIPELINE_PROJECT-PATH>``. It will sync your existing project with updated
+template version selected by ``--vcs-ref`` option (default ``HEAD``).
+
 Project configuration
 ---------------------
 
@@ -76,7 +82,7 @@ settings taking precedence over those listed in ``base``. So, for example, for t
 
 **dp** synthesizes dbt's ``profiles.yml`` out of those settings among other things. However, right now it only creates
 ``local`` or ``env_execution`` profile, so if you want to use different settings amongst different environments, you
-should rather use ``{{ env_var('VARIABLE') }}` as a value and provide those settings as environment variables. E.g., by
+should rather use ``{{ env_var('VARIABLE') }}`` as a value and provide those settings as environment variables. E.g., by
 setting those in your ``config/<ENV>/k8s.yml`` file, in ``envs`` dictionary:
 
 .. code-block:: yaml
@@ -160,8 +166,8 @@ E.g., to connect with Google Cloud Storage, one should run:
  echo '{"token": "<PATH_TO_YOUR_TOKEN>", "project_name": "<YOUR_PROJECT_NAME>"}' > gs_args.json
  dp deploy --dags-path "gs://<YOUR_GS_PATH>" --blob-args gs_args.json
 
-However, in some cases you do not need to do so, e.g. when using **gcloud** with properly set local credentials. In such
-case, you can try to run just the ``dp deploy --dags-path "gs://<YOUR_GS_PATH>"`` command and let ``gcsfs`` search for
+However, in some cases, you do not need to do so, e.g. when using **gcloud** with properly set local credentials. In such
+a case, you can try to run just the ``dp deploy --dags-path "gs://<YOUR_GS_PATH>"`` command and let ``gcsfs`` search for
 the credentials.
 Please refer to the documentation of the specific ``fsspec``'s implementation for more information about the required
 keyword arguments.
@@ -169,20 +175,26 @@ keyword arguments.
 ``dags-path`` as config argument
 ++++++++++++++++++++++++++++++++
 
-You can also list your path in ``config/base/airflow.yml`` file, as a ``dags_path`` argument:
+You can also list your path in the ``config/base/airflow.yml`` file, as a ``dags_path`` argument:
 
 .. code-block:: yaml
 
  dags_path: gs://<YOUR_GS_PATH>
  # ... rest of the 'airflow.yml' file
 
-In such case, you do not have to provide ``--dags-path`` flag, and you can just call ``dp deploy`` instead.
+In such a case, you do not have to provide a ``--dags-path`` flag, and you can just call ``dp deploy`` instead.
+
+Packing and publishing
+----------------------
+
+The built project can be processed to a **dbt** package by calling ``dp publish``. ``dp publish`` parses ``manifest.json``
+and prepares a package that lists models outputted by transformations, saving it in the ``build/package`` directory.
 
 Preparing dbt environment
 -------------------------
 
 Sometimes you would like to use standalone **dbt** or an application that interfaces with it (like VS Code plugin).
-``dp prepare-env`` prepares your local environment to be more conformant with a standalone **dbt** requirements, e.g.
+``dp prepare-env`` prepares your local environment to be more conformant with standalone **dbt** requirements, e.g.,
 by saving ``profiles.yml`` in the home directory.
 
 However, be aware that most of the time you do not need to do so, and you can comfortably use ``dp run`` and ``dp test``

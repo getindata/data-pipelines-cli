@@ -12,10 +12,9 @@ from .errors import NoConfigFileError
 
 
 def read_dbt_vars_from_configs(env: str) -> Dict[str, Any]:
-    """
-    Reads `vars` field from dp configuration file (``$HOME/.dp.yml``), base
+    """Read `vars` field from dp configuration file (``$HOME/.dp.yml``), base
     ``dbt.yml`` config (``config/base/dbt.yml``) and environment-specific config
-    (``config/{env}/dbt.yml``) and compiles into one dictionary.
+    (``config/{env}/dbt.yml``) and compile into one dictionary.
 
     :param env: Name of the environment
     :type env: str
@@ -45,7 +44,7 @@ def run_dbt_command(
     command: Tuple[str, ...], env: str, profiles_path: pathlib.Path
 ) -> None:
     """
-    Runs dbt subprocess in a context of specified *env*
+    Run dbt subprocess in a context of specified *env*.
 
     :param command: Tuple representing dbt command and its optional arguments
     :type command: Tuple[str, ...]
