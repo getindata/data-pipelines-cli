@@ -216,6 +216,28 @@ class DeployCommandTestCase(unittest.TestCase):
             deploy_command.blob_address_path,
         )
 
+    def test_staging_airflow_address(self):
+        with tempfile.TemporaryDirectory() as tmp_dir, patch(
+            "data_pipelines_cli.cli_commands.deploy.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.config_generation.BUILD_DIR",
+            pathlib.Path(tmp_dir),
+        ):
+            for env in ["base", "staging"]:
+                tmp_config_path = pathlib.Path(tmp_dir).joinpath("dag", "config", env)
+                tmp_config_path.mkdir(parents=True, exist_ok=True)
+                tmp_file_path = tmp_config_path.joinpath("airflow.yml")
+                shutil.copyfile(
+                    self.goldens_dir_path.joinpath("config", env, "airflow.yml"),
+                    tmp_file_path,
+                )
+
+            deploy_command = DeployCommand("staging", False, None, None, False)
+        self.assertEqual(
+            "gcs://test/jinja/path/com/my/project/name",
+            deploy_command.blob_address_path,
+        )
+
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     def test_docker_run(self):
         docker_kwargs = {}

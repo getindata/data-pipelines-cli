@@ -10,6 +10,8 @@
 ### Changed
 
 - Docker response in `deploy` and `compile` gets printed as processed strings instead of plain dictionaries.
+- `dp compile` parses content of `datahub.yml` and replaces Jinja variables in the form of `var` or `env_var`.
+- `dags_path` is read from an enved `airflow.yml` file.
 
 ## [0.10.0] - 2022-01-12
 

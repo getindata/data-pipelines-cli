@@ -1,4 +1,4 @@
-    data\_pipelines\_cli package
+data\_pipelines\_cli package
 ============================
 
 .. automodule:: data_pipelines_cli
@@ -93,6 +93,14 @@ data\_pipelines\_cli.io\_utils module
 -------------------------------------
 
 .. automodule:: data_pipelines_cli.io_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+data\_pipelines\_cli.jinja module
+---------------------------------
+
+.. automodule:: data_pipelines_cli.jinja
    :members:
    :undoc-members:
    :show-inheritance:
