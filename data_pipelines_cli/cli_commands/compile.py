@@ -2,16 +2,17 @@ import pathlib
 import shutil
 
 import click
+import yaml
 
 from ..cli_constants import BUILD_DIR, IMAGE_TAG_TO_REPLACE
-from ..cli_utils import echo_error, echo_info
+from ..cli_utils import echo_error, echo_info, echo_warning
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
     generate_profiles_yml,
 )
 from ..data_structures import DockerArgs
-from ..dbt_utils import run_dbt_command
+from ..dbt_utils import read_dbt_vars_from_configs, run_dbt_command
 from ..docker_response_reader import DockerResponseReader
 from ..errors import (
     DataPipelinesError,
@@ -19,13 +20,7 @@ from ..errors import (
     DockerNotInstalledError,
 )
 from ..io_utils import replace
-
-
-def _replace_image_tag(k8s_config: pathlib.Path, docker_args: DockerArgs) -> None:
-    echo_info(
-        f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}"
-    )
-    replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.commit_sha)
+from ..jinja import replace_vars_with_values
 
 
 def _docker_build(docker_args: DockerArgs) -> None:
@@ -72,8 +67,32 @@ def _copy_dbt_manifest() -> None:
 
 
 def _replace_k8s_settings(docker_args: DockerArgs) -> None:
-    k8s_config: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
-    _replace_image_tag(k8s_config, docker_args)
+    k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
+    echo_info(
+        f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}"
+    )
+    replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.commit_sha)
+
+
+def _replace_datahub_with_jinja_vars(env: str) -> None:
+    datahub_config_path: pathlib.Path = BUILD_DIR.joinpath(
+        "dag", "config", "base", "datahub.yml"
+    )
+
+    if not datahub_config_path.exists():
+        echo_warning(
+            f"File config/base/datahub.yml does not exist in {BUILD_DIR}. "
+            "Content will not be replaced."
+        )
+        return
+
+    echo_info(f"Replacing Jinja variables in {datahub_config_path}.")
+    with open(datahub_config_path, "r") as datahub_config_file:
+        updated_config = replace_vars_with_values(
+            yaml.safe_load(datahub_config_file), read_dbt_vars_from_configs(env)
+        )
+    with open(datahub_config_path, "w") as datahub_config_file:
+        yaml.dump(updated_config, datahub_config_file)
 
 
 def compile_project(
@@ -94,6 +113,7 @@ def compile_project(
 
     docker_args = DockerArgs(env)
     _replace_k8s_settings(docker_args)
+    _replace_datahub_with_jinja_vars(env)
 
     _dbt_compile(env)
     _copy_dbt_manifest()
