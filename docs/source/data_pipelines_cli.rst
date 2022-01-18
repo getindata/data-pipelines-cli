@@ -1,4 +1,4 @@
-    data\_pipelines\_cli package
+data\_pipelines\_cli package
 ============================
 
 .. automodule:: data_pipelines_cli

@@ -47,12 +47,11 @@ class DeployCommand:
         self.provider_kwargs_dict = provider_kwargs_dict or {}
 
         try:
-            self.blob_address_path = (
-                dags_path
-                or read_dictionary_from_config_directory(
-                    BUILD_DIR.joinpath("dag"), "base", "airflow.yml"
-                )["dags_path"]
-            )
+            self.blob_address_path = dags_path or read_dictionary_from_config_directory(
+                BUILD_DIR.joinpath("dag"),
+                env,
+                "airflow.yml",
+            )["dags_path"]
         except KeyError as key_error:
             raise AirflowDagsPathKeyError from key_error
 
@@ -130,7 +129,9 @@ class DeployCommand:
     name="deploy",
     help="Push and deploy the project to the remote machine",
 )
-@click.option("--env", default="base", type=str, help="Name of the environment")
+@click.option(
+    "--env", default="base", show_default=True, type=str, help="Name of the environment"
+)
 @click.option("--dags-path", required=False, help="Remote storage URI")
 @click.option(
     "--blob-args",
