@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2022-01-18
+
 ### Added
 
 -   `dp update` command
@@ -9,9 +11,9 @@
 
 ### Changed
 
-- Docker response in `deploy` and `compile` gets printed as processed strings instead of plain dictionaries.
-- `dp compile` parses content of `datahub.yml` and replaces Jinja variables in the form of `var` or `env_var`.
-- `dags_path` is read from an enved `airflow.yml` file.
+-   Docker response in `deploy` and `compile` gets printed as processed strings instead of plain dictionaries.
+-   `dp compile` parses content of `datahub.yml` and replaces Jinja variables in the form of `var` or `env_var`.
+-   `dags_path` is read from an enved `airflow.yml` file.
 
 ## [0.10.0] - 2022-01-12
 
@@ -142,7 +144,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.10.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.11.0...HEAD
+
+[0.11.0]: https://github.com/getindata/data-pipelines-cli/compare/0.10.0...0.11.0
 
 [0.10.0]: https://github.com/getindata/data-pipelines-cli/compare/0.9.0...0.10.0
 
