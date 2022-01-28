@@ -1,6 +1,8 @@
 import json
 import pathlib
+import shutil
 from typing import Any, Dict, List, Tuple, cast
+from git import Repo, Git
 
 import click
 import yaml
@@ -8,7 +10,9 @@ from dbt.contracts.graph.manifest import Manifest, ManifestNode
 from dbt.contracts.graph.parsed import ColumnInfo
 
 from ..cli_constants import BUILD_DIR
+from ..cli_utils import echo_info, echo_subinfo, echo_warning
 from ..data_structures import DbtModel, DbtSource, DbtTableColumn
+from ..config_generation import read_dictionary_from_config_directory
 from ..errors import DataPipelinesError
 
 
@@ -94,7 +98,7 @@ def _create_dbt_project(project_name: str, project_version: str) -> Dict[str, An
     }
 
 
-def publish() -> None:
+def create_package() -> None:
     """Create a dbt package out of the built project.
 
     :raises DataPipelinesError: There is no model in 'manifest.json' file.
@@ -117,8 +121,63 @@ def publish() -> None:
             dbt_project_yml,
             default_flow_style=False,
         )
+    return package_path
+
+
+def _clean_repo(packages_repo) -> None:
+    if packages_repo.exists():
+        echo_info(f"Removing {packages_repo}")
+        shutil.rmtree(packages_repo)
+
+
+def _copy_publication_to_repo(package_dest, package_path, project_name) -> None:
+    if package_dest.exists():
+        echo_info(f"Removing {package_dest}")
+        shutil.rmtree(package_dest)
+    echo_info(f"Copying new version")
+    shutil.copytree(package_path, package_dest)
+
+
+def _configure_git_env(repo, config) -> None:
+    repo.config_writer().set_value("user", "name", config['username']).release()
+    repo.config_writer().set_value("user", "email", config['email']).release()
+
+
+def _commit_and_push_changes(repo, project_name, project_version) -> None:
+    echo_info(f"Publishing")
+    repo.git.add(all=True)
+    repo.index.commit(f"Publication from project {project_name}, version: {project_version}")
+    origin = repo.remote(name='origin')
+    origin.push()
+
+
+def publish_package(package_path, key_path, env) -> None:
+    packages_repo = BUILD_DIR.joinpath("packages_repo")
+    publish_config = read_dictionary_from_config_directory(BUILD_DIR.joinpath('dag'), env, "publish.yml")
+    _clean_repo(packages_repo)
+    with Git().custom_environment(GIT_SSH_COMMAND=f"ssh -i {key_path}"):
+        repo = Repo.clone_from(publish_config['repository'], packages_repo, branch=publish_config['branch'])
+        project_name, project_version = _get_project_name_and_version()
+        _copy_publication_to_repo(packages_repo.joinpath(project_name), package_path, project_name)
+        _configure_git_env(repo, publish_config)
+        _commit_and_push_changes(repo, project_name, project_version)
 
 
 @click.command(name="publish", help="Create a dbt package out of the project")
-def publish_command() -> None:
-    publish()
+@click.option(
+    "--key_path",
+    type=str,
+    required=True,
+    help="Path to the key with write access to repo with published packages",
+)
+@click.option(
+    "--env",
+    default="base",
+    type=str,
+    show_default=True,
+    required=True,
+    help="Name of the environment",
+)
+def publish_command(key_path: str, env: str) -> None:
+    package_path = create_package()
+    publish_package(package_path, key_path, env)

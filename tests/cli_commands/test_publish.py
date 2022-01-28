@@ -9,7 +9,7 @@ import yaml
 from click.testing import CliRunner
 
 from data_pipelines_cli.cli import _cli
-from data_pipelines_cli.cli_commands.publish import publish
+from data_pipelines_cli.cli_commands.publish import create_package
 from data_pipelines_cli.errors import DataPipelinesError
 
 goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
@@ -136,4 +136,4 @@ class PublishCommandTestCase(unittest.TestCase):
                         del manifest["nodes"][k]
                 json.dump(manifest, tmp_manifest)
             with self.assertRaises(DataPipelinesError):
-                publish()
+                create_package()

@@ -21,7 +21,7 @@ class CreateCommandTestCase(unittest.TestCase):
 
     def test_create_no_config(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_dir).joinpath("non_existing_file"),
         ):
             runner = CliRunner(mix_stderr=False)
@@ -30,7 +30,7 @@ class CreateCommandTestCase(unittest.TestCase):
             self.assertIsInstance(result.exception, NoConfigFileError)
 
     @patch(
-        "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+        "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_create_with_template_path(self):
@@ -42,7 +42,7 @@ class CreateCommandTestCase(unittest.TestCase):
             self.assertEqual(0, result.exit_code, msg=result.exception)
 
     @patch(
-        "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+        "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_create_with_template_name(self):
@@ -54,7 +54,7 @@ class CreateCommandTestCase(unittest.TestCase):
             self.assertEqual(0, result.exit_code, msg=result.exception)
 
     @patch(
-        "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+        "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
         goldens_dir_path.joinpath("example_config.yml"),
     )
     @patch("questionary.select")
@@ -70,7 +70,7 @@ class CreateCommandTestCase(unittest.TestCase):
 
     def test_no_templates(self):
         with tempfile.NamedTemporaryFile() as tmp_file, patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_file.name),
         ):
             with open(tmp_file.name, "w") as f:

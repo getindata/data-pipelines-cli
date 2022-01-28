@@ -34,7 +34,7 @@ class DataPipelinesConfig(TypedDict):
     """Variables to be passed to dbt as `--vars` argument"""
 
 
-def read_config() -> DataPipelinesConfig:
+def read_env_config() -> DataPipelinesConfig:
     """
     Parse `.dp.yml` config file, if it exists. Otherwise, raises
     :exc:`.NoConfigFileError`.
@@ -44,15 +44,15 @@ def read_config() -> DataPipelinesConfig:
     :raises NoConfigFileError: `.dp.yml` file not found
     """
     # Avoiding a dependency loop between `cli_constants` and `data_structures`
-    from data_pipelines_cli.cli_constants import CONFIGURATION_PATH
+    from data_pipelines_cli.cli_constants import ENV_CONFIGURATION_PATH
 
-    if not CONFIGURATION_PATH.is_file():
+    if not ENV_CONFIGURATION_PATH.is_file():
         echo_warning(
             "No configuration file found. Run 'dp init' to create it.",
         )
         raise NoConfigFileError()
 
-    with open(CONFIGURATION_PATH, "r") as f:
+    with open(ENV_CONFIGURATION_PATH, "r") as f:
         return yaml.safe_load(f)
 
 

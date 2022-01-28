@@ -24,6 +24,7 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
+    "git": ["GitPython==3.1.26"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",
