@@ -7,7 +7,7 @@ import copier
 import questionary
 import yaml
 
-from ..cli_constants import ENV_CONFIGURATION_PATH, DEFAULT_GLOBAL_CONFIG
+from ..cli_constants import DEFAULT_GLOBAL_CONFIG, ENV_CONFIGURATION_PATH
 from ..data_structures import DataPipelinesConfig
 from ..errors import DataPipelinesError
 from ..vcs_utils import add_suffix_to_git_template_path

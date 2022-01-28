@@ -32,6 +32,7 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "moto[s3]==2.2.16",
         "gcp-storage-emulator==2021.12.2",
+        "GitPython==3.1.26",
         *(
             [
                 require
