@@ -66,8 +66,8 @@ def _copy_dbt_manifest() -> None:
     )
 
 
-def _replace_k8s_settings(docker_args: DockerArgs) -> None:
-    k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "k8s.yml")
+def replace_image_settings(docker_args: DockerArgs) -> None:
+    k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "execution_env.yml")
     echo_info(
         f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}"
     )
@@ -112,7 +112,7 @@ def compile_project(
     copy_config_dir_to_build_dir()
 
     docker_args = DockerArgs(env)
-    _replace_k8s_settings(docker_args)
+    replace_image_settings(docker_args)
     _replace_datahub_with_jinja_vars(env)
 
     _dbt_compile(env)

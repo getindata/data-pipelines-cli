@@ -19,17 +19,13 @@ goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
 class CompileCommandTestCase(unittest.TestCase):
     @staticmethod
-    def _k8s_content(repository_url: str, tag: str):
+    def _execution_env_content(repository_url: str, tag: str):
         return {
             "image": {
                 "repository": repository_url,
                 "tag": tag,
             },
-            "variable1": 1337,
-            "var2": "Hello, world!",
-            "envs": {
-                "SOME_BOOLEAN": True,
-            },
+            "type": "k8s"
         }
 
     def setUp(self) -> None:
@@ -86,10 +82,10 @@ class CompileCommandTestCase(unittest.TestCase):
                     yaml.safe_load(golden_datahub), yaml.safe_load(tmp_datahub)
                 )
             with open(
-                tmp_dir_path.joinpath("dag", "config", "base", "k8s.yml"), "r"
+                tmp_dir_path.joinpath("dag", "config", "base", "execution_env.yml"), "r"
             ) as tmp_k8s:
                 self.assertDictEqual(
-                    self._k8s_content("my_docker_repository_uri", "aaa9876aaa"),
+                    self._execution_env_content("my_docker_repository_uri", "aaa9876aaa"),
                     yaml.safe_load(tmp_k8s),
                 )
 
