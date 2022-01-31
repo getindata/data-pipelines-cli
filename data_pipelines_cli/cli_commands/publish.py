@@ -175,7 +175,7 @@ def publish_package(package_path: pathlib.Path, key_path: str, env: str) -> None
 
 @click.command(name="publish", help="Create a dbt package out of the project")
 @click.option(
-    "--key_path",
+    "--key-path",
     type=str,
     required=True,
     help="Path to the key with write access to repo with published packages",
