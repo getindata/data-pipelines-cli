@@ -91,27 +91,42 @@ class PublishCommandTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(self.build_temp_dir)
 
-    @staticmethod
-    def mock_clone_from(url: PathLike, to_path: PathLike, **kwargs: Any):
+    def mock_origin(self, name: str):
+        self.origin = MagicMock()
+        self.origin.push = MagicMock()
+        return self.origin
+
+    def mock_clone_from(self, url: PathLike, to_path: PathLike, **kwargs: Any):
         def noop():
             pass
 
         repo_mock = MagicMock()
+        self.git = MagicMock()
+        self.index = MagicMock()
+        self.index.commit = MagicMock()
+        self.git.add = MagicMock()
         config_writer_mock = MagicMock()
         set_value_mock = MagicMock()
         set_value_mock.configure_mock(**{"release": noop})
         config_writer_mock.configure_mock(
             **{"set_value": lambda x, y, z: set_value_mock}
         )
-        repo_mock.configure_mock(**{"config_writer": config_writer_mock})
+        repo_mock.configure_mock(
+            **{
+                "config_writer": config_writer_mock,
+                "git": self.git,
+                "index": self.index,
+                "remote": self.mock_origin,
+            }
+        )
         return repo_mock
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_generate_correct_project(self):
         runner = CliRunner()
         git_mock = MagicMock()  # no override
-        repo_mock = MagicMock()
-        repo_mock.configure_mock(**{"clone_from": self.mock_clone_from})
+        repo_mock_class = MagicMock()
+        repo_mock_class.configure_mock(**{"clone_from": self.mock_clone_from})
         with patch(
             "data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir
         ), patch(
@@ -119,26 +134,38 @@ class PublishCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.cli_commands.publish.Git", git_mock
         ), patch(
-            "data_pipelines_cli.cli_commands.publish.Repo", repo_mock
+            "data_pipelines_cli.cli_commands.publish.Repo", repo_mock_class
         ):
-            result = runner.invoke(_cli, ["publish", "--key_path", "SOME_KEY.txt"])
-            result = runner.invoke(_cli, ["publish", "--key_path", "SOME_KEY.txt"])
-            self.assertEqual(0, result.exit_code, msg=result.output)
+            result = runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
+            result = runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
 
-            with open(
-                pathlib.Path(self.build_temp_dir).joinpath(
-                    "package", "models", "sources.yml"
-                ),
-                "r",
-            ) as sources_yml:
-                self.assertDictEqual(self.expected_sources, yaml.safe_load(sources_yml))
-            with open(
-                pathlib.Path(self.build_temp_dir).joinpath(
-                    "package", "dbt_project.yml"
-                ),
-                "r",
-            ) as dbt_project_yml:
-                self.assertDictEqual(self.dbt_project, yaml.safe_load(dbt_project_yml))
+            self.verify_status_code(result)
+            self.verify_publications()
+            self.verify_generated_files()
+
+    def verify_status_code(self, result):
+        self.assertEqual(0, result.exit_code, msg=result.output)
+
+    def verify_publications(self):
+        self.git.add.assert_called_with(all=True)
+        self.index.commit.assert_called_with(
+            "Publication from project my_test_project_1337, version: 1.2.3"
+        )
+        self.origin.push.assert_called_with()
+
+    def verify_generated_files(self):
+        with open(
+            pathlib.Path(self.build_temp_dir).joinpath(
+                "package", "models", "sources.yml"
+            ),
+            "r",
+        ) as sources_yml:
+            self.assertDictEqual(self.expected_sources, yaml.safe_load(sources_yml))
+        with open(
+            pathlib.Path(self.build_temp_dir).joinpath("package", "dbt_project.yml"),
+            "r",
+        ) as dbt_project_yml:
+            self.assertDictEqual(self.dbt_project, yaml.safe_load(dbt_project_yml))
 
     def test_no_models(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
