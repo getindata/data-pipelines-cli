@@ -150,11 +150,7 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.13.0...HEAD
-
-[0.13.0]: https://github.com/getindata/data-pipelines-cli/compare/0.12.0...0.13.0
-
-[0.12.0]: https://github.com/getindata/data-pipelines-cli/compare/0.11.0...0.12.0
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.11.0...HEAD
 
 [0.11.0]: https://github.com/getindata/data-pipelines-cli/compare/0.10.0...0.11.0
 
