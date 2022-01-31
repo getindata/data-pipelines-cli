@@ -20,7 +20,7 @@ class RunTestCommandTestCase(unittest.TestCase):
         self.subprocess_run_args = args
 
     @patch(
-        "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+        "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_no_arg(self):
@@ -50,7 +50,7 @@ class RunTestCommandTestCase(unittest.TestCase):
                 self.assertIn("--target local", args_str)
 
     @patch(
-        "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+        "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_dev_arg(self):

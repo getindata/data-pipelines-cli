@@ -35,7 +35,7 @@ class DbtUtilsTest(unittest.TestCase):
 
     def test_dbt_run(self):
         with tempfile.NamedTemporaryFile() as tmp_file, patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_file.name),
         ), patch(
             "data_pipelines_cli.dbt_utils.read_dictionary_from_config_directory",
@@ -68,7 +68,7 @@ class DbtUtilsTest(unittest.TestCase):
 
     def test_read_vars_no_throw(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_dir).joinpath("non_existing_config_file"),
         ):
             try:

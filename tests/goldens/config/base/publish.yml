@@ -1,0 +1,4 @@
+repository: https://gitlab.com/getindata/dataops/some_repo.git
+branch: main
+username: "DataOps Team"
+email: dataops@getindata.com
