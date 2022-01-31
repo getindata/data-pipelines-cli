@@ -97,6 +97,9 @@ class PublishCommandTestCase(unittest.TestCase):
         return self.origin
 
     def mock_clone_from(self, url: PathLike, to_path: PathLike, **kwargs: Any):
+        self.assertEqual("https://gitlab.com/getindata/dataops/some_repo.git", url)
+        self.assertEqual("main", kwargs["branch"])
+
         def noop():
             pass
 
@@ -121,22 +124,24 @@ class PublishCommandTestCase(unittest.TestCase):
         )
         return repo_mock
 
+    def repo_class_mock(self):
+        self.repo_mock_class = MagicMock()
+        self.repo_mock_class.configure_mock(**{"clone_from": self.mock_clone_from})
+        return self.repo_mock_class
+
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_generate_correct_project(self):
         runner = CliRunner()
-        git_mock = MagicMock()  # no override
-        repo_mock_class = MagicMock()
-        repo_mock_class.configure_mock(**{"clone_from": self.mock_clone_from})
         with patch(
             "data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir
         ), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", self.build_temp_dir
         ), patch(
-            "data_pipelines_cli.cli_commands.publish.Git", git_mock
+            "data_pipelines_cli.cli_commands.publish.Git", MagicMock()
         ), patch(
-            "data_pipelines_cli.cli_commands.publish.Repo", repo_mock_class
+            "data_pipelines_cli.cli_commands.publish.Repo", self.repo_class_mock()
         ):
-            result = runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
+            runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
             result = runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
 
             self.verify_status_code(result)
