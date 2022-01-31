@@ -3,7 +3,7 @@ import pathlib
 import shutil
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import yaml
 from click.testing import CliRunner
@@ -11,6 +11,9 @@ from click.testing import CliRunner
 from data_pipelines_cli.cli import _cli
 from data_pipelines_cli.cli_commands.publish import create_package
 from data_pipelines_cli.errors import DataPipelinesError
+from os import PathLike
+
+from typing import Any
 
 goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
@@ -89,15 +92,31 @@ class PublishCommandTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(self.build_temp_dir)
 
+    @staticmethod
+    def mock_clone_from(url: PathLike, to_path: PathLike, **kwargs: Any):
+        def noop():
+            pass
+        repo_mock = MagicMock()
+        config_writer_mock = MagicMock()
+        set_value_mock = MagicMock()
+        set_value_mock.configure_mock(**{"release": noop})
+        config_writer_mock.configure_mock(**{"set_value": lambda x, y, z: set_value_mock})
+        repo_mock.configure_mock(**{"config_writer": config_writer_mock})
+        return repo_mock
+
+
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_generate_correct_project(self):
         runner = CliRunner()
-
-        with patch(
-            "data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir
-        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", self.build_temp_dir):
-            result = runner.invoke(_cli, ["publish"])
-            self.assertEqual(0, result.exit_code, msg=result.exception)
+        git_mock = MagicMock()  # no override
+        repo_mock = MagicMock()
+        repo_mock.configure_mock(**{"clone_from": self.mock_clone_from})
+        with patch("data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir), \
+            patch("data_pipelines_cli.config_generation.BUILD_DIR", self.build_temp_dir), \
+            patch("data_pipelines_cli.cli_commands.publish.Git", git_mock), \
+            patch("data_pipelines_cli.cli_commands.publish.Repo", repo_mock):
+            result = runner.invoke(_cli, ["publish", "--key_path", "SOME_KEY.txt"])
+            self.assertEqual(0, result.exit_code, msg=result.output)
 
             with open(
                 pathlib.Path(self.build_temp_dir).joinpath(
