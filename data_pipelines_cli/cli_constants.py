@@ -17,7 +17,7 @@ DEFAULT_GLOBAL_CONFIG: DataPipelinesConfig = {
     "vars": {},
 }
 
-CONFIGURATION_PATH: pathlib.Path = pathlib.Path.home().joinpath(".dp.yml")
+ENV_CONFIGURATION_PATH: pathlib.Path = pathlib.Path.home().joinpath(".dp.yml")
 BUILD_DIR: pathlib.Path = pathlib.Path.cwd().joinpath("build")
 
 

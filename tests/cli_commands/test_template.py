@@ -15,7 +15,7 @@ class TemplateCommandTestCase(unittest.TestCase):
     def test_list_templates(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             self.example_config_path,
         ):
             result = runner.invoke(_cli, ["template-list"])

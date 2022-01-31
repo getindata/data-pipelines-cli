@@ -7,7 +7,7 @@ import yaml
 from .cli_constants import BUILD_DIR, get_dbt_profiles_env_name
 from .cli_utils import echo_subinfo, subprocess_run
 from .config_generation import read_dictionary_from_config_directory
-from .data_structures import DataPipelinesConfig, read_config
+from .data_structures import DataPipelinesConfig, read_env_config
 from .errors import NoConfigFileError
 
 
@@ -26,7 +26,7 @@ def read_dbt_vars_from_configs(env: str) -> Dict[str, Any]:
     )
 
     try:
-        dp_config = read_config()
+        dp_config = read_env_config()
     except NoConfigFileError:
         dp_config = DataPipelinesConfig(templates={}, vars={})
     dp_vars = dp_config.get("vars", {})

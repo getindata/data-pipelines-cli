@@ -1,12 +1,12 @@
 import click
 import yaml
 
-from data_pipelines_cli.data_structures import read_config
+from data_pipelines_cli.data_structures import read_env_config
 
 
 def list_templates() -> None:
     """Print a list of all templates saved in the config file."""
-    config = read_config()
+    config = read_env_config()
 
     click.echo("AVAILABLE TEMPLATES:\n")
     for tc in config["templates"].values():

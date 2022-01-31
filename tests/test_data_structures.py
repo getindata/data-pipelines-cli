@@ -8,7 +8,7 @@ from data_pipelines_cli.data_structures import (
     DataPipelinesConfig,
     DockerArgs,
     TemplateConfig,
-    read_config,
+    read_env_config,
 )
 from data_pipelines_cli.errors import DataPipelinesError, NoConfigFileError
 
@@ -37,18 +37,18 @@ class DataStructuresTestCase(unittest.TestCase):
 
     def test_read_config(self):
         with patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             self.example_config_path,
         ):
-            self.assertEqual(self.example_config_dict, read_config())
+            self.assertEqual(self.example_config_dict, read_env_config())
 
     def test_read_config_no_file(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
-            "data_pipelines_cli.cli_constants.CONFIGURATION_PATH",
+            "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_dir).joinpath("non_existing_file.yml"),
         ):
             with self.assertRaises(NoConfigFileError):
-                read_config()
+                read_env_config()
 
 
 class DockerArgsTest(unittest.TestCase):

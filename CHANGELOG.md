@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- `dp publish` will push generated sources to external git repo
+
 ## [0.11.0] - 2022-01-18
 
 ### Added

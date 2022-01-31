@@ -5,7 +5,7 @@ import copier
 import questionary
 
 from data_pipelines_cli.cli_utils import echo_warning
-from data_pipelines_cli.data_structures import TemplateConfig, read_config
+from data_pipelines_cli.data_structures import TemplateConfig, read_env_config
 from data_pipelines_cli.errors import DataPipelinesError
 from data_pipelines_cli.vcs_utils import add_suffix_to_git_template_path
 
@@ -51,7 +51,7 @@ def create(project_path: str, template_path: Optional[str]) -> None:
     :type template_path: Optional[str]
     :raises DataPipelinesError: no template found in `.dp.yml` config file
     """
-    config = read_config()
+    config = read_env_config()
     config_templates = config["templates"]
     src_template_path = _get_template_path(config_templates, template_path)
     copier.copy(src_path=src_template_path, dst_path=project_path)

@@ -7,7 +7,7 @@ import copier
 import questionary
 import yaml
 
-from ..cli_constants import CONFIGURATION_PATH, DEFAULT_GLOBAL_CONFIG
+from ..cli_constants import DEFAULT_GLOBAL_CONFIG, ENV_CONFIGURATION_PATH
 from ..data_structures import DataPipelinesConfig
 from ..errors import DataPipelinesError
 from ..vcs_utils import add_suffix_to_git_template_path
@@ -31,7 +31,7 @@ def init(config_path: Optional[str]) -> None:
     :type config_path: Optional[str]
     :raises DataPipelinesError: user do not want to overwrite existing config file
     """
-    if CONFIGURATION_PATH.is_file():
+    if ENV_CONFIGURATION_PATH.is_file():
         overwrite_confirm = questionary.confirm(
             "dp config already exists. Do you want to overwrite it?",
             default=False,
@@ -44,7 +44,7 @@ def init(config_path: Optional[str]) -> None:
     else:
         config = DEFAULT_GLOBAL_CONFIG
 
-    with open(CONFIGURATION_PATH, "w") as f:
+    with open(ENV_CONFIGURATION_PATH, "w") as f:
         yaml.dump(config, f, default_flow_style=False)
 
 
