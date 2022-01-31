@@ -122,6 +122,7 @@ class PublishCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_commands.publish.Repo", repo_mock
         ):
             result = runner.invoke(_cli, ["publish", "--key_path", "SOME_KEY.txt"])
+            result = runner.invoke(_cli, ["publish", "--key_path", "SOME_KEY.txt"])
             self.assertEqual(0, result.exit_code, msg=result.output)
 
             with open(
