@@ -25,7 +25,7 @@ class CompileCommandTestCase(unittest.TestCase):
                 "repository": repository_url,
                 "tag": tag,
             },
-            "type": "k8s"
+            "type": "k8s",
         }
 
     def setUp(self) -> None:
@@ -85,7 +85,9 @@ class CompileCommandTestCase(unittest.TestCase):
                 tmp_dir_path.joinpath("dag", "config", "base", "execution_env.yml"), "r"
             ) as tmp_k8s:
                 self.assertDictEqual(
-                    self._execution_env_content("my_docker_repository_uri", "aaa9876aaa"),
+                    self._execution_env_content(
+                        "my_docker_repository_uri", "aaa9876aaa"
+                    ),
                     yaml.safe_load(tmp_k8s),
                 )
 
