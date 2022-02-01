@@ -137,8 +137,6 @@ class PublishCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", self.build_temp_dir
         ), patch(
-            "data_pipelines_cli.cli_commands.publish.Git", MagicMock()
-        ), patch(
             "data_pipelines_cli.cli_commands.publish.Repo", self.repo_class_mock()
         ):
             runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
