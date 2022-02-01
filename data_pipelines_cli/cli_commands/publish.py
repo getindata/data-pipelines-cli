@@ -168,7 +168,7 @@ def publish_package(package_path: pathlib.Path, key_path: str, env: str) -> None
         publish_config["repository"],
         packages_repo,
         branch=publish_config["branch"],
-        env=dict(GIT_SSH_COMMAND=ssh_command_with_key),
+        env={"GIT_SSH_COMMAND": ssh_command_with_key},
     )
     with repo.git.custom_environment(GIT_SSH_COMMAND=ssh_command_with_key):
         project_name, project_version = _get_project_name_and_version()
