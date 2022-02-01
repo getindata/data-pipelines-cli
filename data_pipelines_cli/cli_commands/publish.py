@@ -7,7 +7,7 @@ import click
 import yaml
 from dbt.contracts.graph.manifest import Manifest, ManifestNode
 from dbt.contracts.graph.parsed import ColumnInfo
-from git import Git, Repo
+from git import Repo
 
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info
@@ -163,10 +163,14 @@ def publish_package(package_path: pathlib.Path, key_path: str, env: str) -> None
         BUILD_DIR.joinpath("dag"), env, "publish.yml"
     )
     _clean_repo(packages_repo)
-    with Git().custom_environment(GIT_SSH_COMMAND=f"ssh -i {key_path}"):
-        repo = Repo.clone_from(
-            publish_config["repository"], packages_repo, branch=publish_config["branch"]
-        )
+    ssh_command_with_key = f"ssh -i {key_path}"
+    repo = Repo.clone_from(
+        publish_config["repository"],
+        packages_repo,
+        branch=publish_config["branch"],
+        env=dict(GIT_SSH_COMMAND=ssh_command_with_key),
+    )
+    with repo.git.custom_environment(GIT_SSH_COMMAND=ssh_command_with_key):
         project_name, project_version = _get_project_name_and_version()
         _copy_publication_to_repo(packages_repo.joinpath(project_name), package_path)
         _configure_git_env(repo, publish_config)
