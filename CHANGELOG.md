@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2022-02-02
+
 ## [0.13.0] - 2022-02-01
 
 ## [0.12.0] - 2022-01-31
@@ -150,7 +152,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.14.0...HEAD
+
+[0.14.0]: https://github.com/getindata/data-pipelines-cli/compare/0.13.0...0.14.0
 
 [0.13.0]: https://github.com/getindata/data-pipelines-cli/compare/0.12.0...0.13.0
 
