@@ -34,9 +34,7 @@ def _get_database_and_schema_name(manifest: Manifest) -> Tuple[str, str]:
         raise DataPipelinesError("There is no model in 'manifest.json' file.")
 
 
-def _parse_columns_dict_into_table_list(
-    columns: Dict[str, ColumnInfo]
-) -> List[DbtTableColumn]:
+def _parse_columns_dict_into_table_list(columns: Dict[str, ColumnInfo]) -> List[DbtTableColumn]:
     return [
         DbtTableColumn(
             name=column.name,
@@ -64,16 +62,12 @@ def _parse_models_schema(manifest: Manifest) -> List[DbtModel]:
 
 
 def _get_dag_id() -> str:
-    with open(
-        BUILD_DIR.joinpath("dag", "config", "base", "airflow.yml"), "r"
-    ) as airflow_yml:
+    with open(BUILD_DIR.joinpath("dag", "config", "base", "airflow.yml"), "r") as airflow_yml:
         return yaml.safe_load(airflow_yml)["dag"]["dag_id"]
 
 
 def _create_source(project_name: str) -> DbtSource:
-    with open(
-        pathlib.Path.cwd().joinpath("target", "manifest.json"), "r"
-    ) as manifest_json:
+    with open(pathlib.Path.cwd().joinpath("target", "manifest.json"), "r") as manifest_json:
         manifest_dict = json.load(manifest_json)
         manifest = Manifest.from_dict(manifest_dict)
 
@@ -130,9 +124,7 @@ def _clean_repo(packages_repo: pathlib.Path) -> None:
         shutil.rmtree(packages_repo)
 
 
-def _copy_publication_to_repo(
-    package_dest: pathlib.Path, package_path: pathlib.Path
-) -> None:
+def _copy_publication_to_repo(package_dest: pathlib.Path, package_path: pathlib.Path) -> None:
     if package_dest.exists():
         echo_info(f"Removing {package_dest}")
         shutil.rmtree(package_dest)
@@ -145,14 +137,10 @@ def _configure_git_env(repo: Repo, config: Dict[str, Any]) -> None:
     repo.config_writer().set_value("user", "email", config["email"]).release()
 
 
-def _commit_and_push_changes(
-    repo: Repo, project_name: str, project_version: str
-) -> None:
+def _commit_and_push_changes(repo: Repo, project_name: str, project_version: str) -> None:
     echo_info("Publishing")
     repo.git.add(all=True)
-    repo.index.commit(
-        f"Publication from project {project_name}, version: {project_version}"
-    )
+    repo.index.commit(f"Publication from project {project_name}, version: {project_version}")
     origin = repo.remote(name="origin")
     origin.push()
 

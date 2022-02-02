@@ -29,9 +29,7 @@ class LocalRemoteSync:
         remote_kwargs: Dict[str, str],
     ) -> None:
         if not pathlib.Path(local_path).exists():
-            raise DataPipelinesError(
-                f"{local_path} does not exists. Run 'dp compile' before."
-            )
+            raise DataPipelinesError(f"{local_path} does not exists. Run 'dp compile' before.")
 
         self.local_path_str = str(local_path).rstrip("/")
         self.local_fs = fsspec.filesystem("file")

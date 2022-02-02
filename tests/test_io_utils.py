@@ -49,9 +49,7 @@ class TestGitRevisionHash(unittest.TestCase):
     @patch("data_pipelines_cli.io_utils.subprocess.run")
     def test_git_error(self, mock_run):
         test_error = "Some test error"
-        mock_run.side_effect = subprocess.CalledProcessError(
-            128, cmd="", stderr=test_error
-        )
+        mock_run.side_effect = subprocess.CalledProcessError(128, cmd="", stderr=test_error)
 
         with patch("sys.stderr", new=StringIO()) as fake_out:
             result = git_revision_hash()

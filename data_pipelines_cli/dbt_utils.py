@@ -40,9 +40,7 @@ def _dump_dbt_vars_from_configs_to_string(env: str) -> str:
     return yaml.dump(dbt_vars, default_flow_style=True, width=sys.maxsize)
 
 
-def run_dbt_command(
-    command: Tuple[str, ...], env: str, profiles_path: pathlib.Path
-) -> None:
+def run_dbt_command(command: Tuple[str, ...], env: str, profiles_path: pathlib.Path) -> None:
     """
     Run dbt subprocess in a context of specified *env*.
 

@@ -32,9 +32,7 @@ class TestError(unittest.TestCase):
         wrong_local_path = pathlib.Path(__file__).parent.joinpath(
             "".join(random.choices(string.ascii_letters + string.digits, k=25))
         )
-        remote_path = "".join(
-            random.choices(string.ascii_letters + string.digits + "/", k=25)
-        )
+        remote_path = "".join(random.choices(string.ascii_letters + string.digits + "/", k=25))
         with self.assertRaises(DataPipelinesError):
             LocalRemoteSync(wrong_local_path, remote_path, {}).sync(delete=False)
 
@@ -49,9 +47,7 @@ class TestSynchronize(unittest.TestCase):
     def _test_synchronize(self, protocol: str, **remote_kwargs):
         from data_pipelines_cli.filesystem_utils import LocalRemoteSync
 
-        local_path = pathlib.Path(__file__).parent.joinpath(
-            "goldens", "test_sync_directory"
-        )
+        local_path = pathlib.Path(__file__).parent.joinpath("goldens", "test_sync_directory")
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=False)
 
@@ -65,9 +61,7 @@ class TestSynchronize(unittest.TestCase):
     def _test_synchronize_with_delete(self, protocol: str, **remote_kwargs):
         from data_pipelines_cli.filesystem_utils import LocalRemoteSync
 
-        local_path = pathlib.Path(__file__).parent.joinpath(
-            "goldens", "test_sync_directory"
-        )
+        local_path = pathlib.Path(__file__).parent.joinpath("goldens", "test_sync_directory")
         remote_path = f"{protocol}://{MY_BUCKET}/"
         LocalRemoteSync(local_path, remote_path, remote_kwargs).sync(delete=True)
 
@@ -78,9 +72,7 @@ class TestSynchronize(unittest.TestCase):
                 remote_fs.find(MY_BUCKET),
             )
 
-        local_path_2 = pathlib.Path(__file__).parent.joinpath(
-            "goldens", "test_sync_2nd_directory"
-        )
+        local_path_2 = pathlib.Path(__file__).parent.joinpath("goldens", "test_sync_2nd_directory")
         LocalRemoteSync(
             local_path_2,
             remote_path,
@@ -151,9 +143,7 @@ class TestGoogleStorageSynchronize(TestSynchronize):
     def setUp(self) -> None:
         from gcp_storage_emulator.server import create_server
 
-        self.server = create_server(
-            "localhost", 9023, in_memory=True, default_bucket=MY_BUCKET
-        )
+        self.server = create_server("localhost", 9023, in_memory=True, default_bucket=MY_BUCKET)
         self.server.start()
 
     def tearDown(self):
@@ -163,6 +153,4 @@ class TestGoogleStorageSynchronize(TestSynchronize):
         self._test_synchronize("gs", endpoint_url="http://localhost:9023", token="anon")
 
     def test_synchronize_with_delete(self):
-        self._test_synchronize_with_delete(
-            "gs", endpoint_url="http://localhost:9023", token="anon"
-        )
+        self._test_synchronize_with_delete("gs", endpoint_url="http://localhost:9023", token="anon")

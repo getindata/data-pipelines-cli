@@ -36,9 +36,7 @@ class CreateCommandTestCase(unittest.TestCase):
     def test_create_with_template_path(self):
         with patch("copier.copy", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
-            result = runner.invoke(
-                _cli, ["create", self.copier_dst_path, self.copier_src_path]
-            )
+            result = runner.invoke(_cli, ["create", self.copier_dst_path, self.copier_src_path])
             self.assertEqual(0, result.exit_code, msg=result.exception)
 
     @patch(
@@ -48,9 +46,7 @@ class CreateCommandTestCase(unittest.TestCase):
     def test_create_with_template_name(self):
         with patch("copier.copy", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
-            result = runner.invoke(
-                _cli, ["create", self.copier_dst_path, "create_test"]
-            )
+            result = runner.invoke(_cli, ["create", self.copier_dst_path, "create_test"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
 
     @patch(

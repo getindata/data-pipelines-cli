@@ -17,9 +17,7 @@ class CleanCommandTestCase(unittest.TestCase):
         self.subprocess_run_args = args
 
     def test_clean(self):
-        with patch(
-            "data_pipelines_cli.cli_commands.clean.subprocess_run", self._mock_run
-        ):
+        with patch("data_pipelines_cli.cli_commands.clean.subprocess_run", self._mock_run):
             runner = CliRunner()
             result = runner.invoke(_cli, ["clean"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
