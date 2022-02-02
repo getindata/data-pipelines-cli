@@ -53,9 +53,7 @@ class DeployCommandTestCase(unittest.TestCase):
         self.build_temp_dir = pathlib.Path(tempfile.mkdtemp())
         dags_path = pathlib.Path(self.build_temp_dir).joinpath("dag")
         dags_path.mkdir(parents=True)
-        shutil.copytree(
-            self.goldens_dir_path.joinpath("config"), dags_path.joinpath("config")
-        )
+        shutil.copytree(self.goldens_dir_path.joinpath("config"), dags_path.joinpath("config"))
 
         self.storage_uri = tempfile.mkdtemp()  # this way fsspec uses LocalFS
 
@@ -98,9 +96,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     "data_pipelines_cli.cli_commands.deploy.DeployCommand.deploy",
                     lambda _self: _noop,
                 ):
-                    result = runner.invoke(
-                        _cli, ["deploy", "--blob-args", tmp_file.name]
-                    )
+                    result = runner.invoke(_cli, ["deploy", "--blob-args", tmp_file.name])
                 self.assertEqual(0, result.exit_code, msg=result.exception)
                 self.assertDictEqual(self.provider_args, result_provider_kwargs)
 
@@ -136,9 +132,7 @@ class DeployCommandTestCase(unittest.TestCase):
                 runner = CliRunner()
                 with patch.dict("sys.modules", **{module_name: None}), patch(
                     "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
-                ), patch(
-                    "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
-                ):
+                ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
                     result = runner.invoke(
                         _cli,
                         [
@@ -158,18 +152,14 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand(
-                    "base", False, self.storage_uri, self.provider_args, True
-                ).deploy()
+                DeployCommand("base", False, self.storage_uri, self.provider_args, True).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     def test_datahub_run(self):
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.subprocess_run", self._mock_run
         ), patch.dict("sys.modules", datahub=MagicMock()):
-            DeployCommand(
-                "base", False, self.storage_uri, self.provider_args, True
-            ).deploy()
+            DeployCommand("base", False, self.storage_uri, self.provider_args, True).deploy()
             self.assertListEqual(
                 [
                     "datahub",
@@ -185,9 +175,7 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand(
-                    "base", True, self.storage_uri, self.provider_args, False
-                ).deploy()
+                DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()
 
     @patch(
         "data_pipelines_cli.cli_commands.deploy.BUILD_DIR",
@@ -261,9 +249,7 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
-            DeployCommand(
-                "base", True, self.storage_uri, self.provider_args, False
-            ).deploy()
+            DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()
 
         self.assertEqual("my_docker_repository_uri", docker_kwargs.get("repository"))
         self.assertEqual("sha1234", docker_kwargs.get("tag"))
@@ -287,12 +273,8 @@ class DeployCommandTestCase(unittest.TestCase):
 
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch.dict(
             "sys.modules", docker=docker_mock
-        ), patch(
-            "data_pipelines_cli.data_structures.git_revision_hash", lambda: "sha1234"
-        ), patch(
+        ), patch("data_pipelines_cli.data_structures.git_revision_hash", lambda: "sha1234"), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
             with self.assertRaises(DataPipelinesError):
-                DeployCommand(
-                    "base", True, self.storage_uri, self.provider_args, False
-                ).deploy()
+                DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()

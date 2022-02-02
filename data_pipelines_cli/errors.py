@@ -22,9 +22,7 @@ class NoConfigFileError(DataPipelinesError):
     """Exception raised if `.dp.yml` does not exist"""
 
     def __init__(self) -> None:
-        self.message = (
-            "`.dp.yml` config file does not exists. Run 'dp init' to create it."
-        )
+        self.message = "`.dp.yml` config file does not exists. Run 'dp init' to create it."
 
 
 class NotAProjectDirectoryError(DataPipelinesError):
@@ -41,9 +39,7 @@ class SubprocessNonZeroExitError(DataPipelinesError):
     """Exception raised if subprocess exits with non-zero exit code"""
 
     def __init__(self, subprocess_name: str, exit_code: int) -> None:
-        self.message = (
-            f"{subprocess_name} has exited with non-zero exit code: {exit_code}"
-        )
+        self.message = f"{subprocess_name} has exited with non-zero exit code: {exit_code}"
 
 
 class SubprocessNotFound(DataPipelinesError):
@@ -76,9 +72,7 @@ class AirflowDagsPathKeyError(DataPipelinesError):
     """Exception raised if there is no ``dags_path`` in `airflow.yml` file."""
 
     def __init__(self) -> None:
-        self.message = (
-            "Variable 'dags_path' cannot be found in 'airflow.yml' config file."
-        )
+        self.message = "Variable 'dags_path' cannot be found in 'airflow.yml' config file."
 
 
 class DockerErrorResponseError(DataPipelinesError):

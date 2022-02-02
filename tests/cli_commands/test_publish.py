@@ -75,9 +75,7 @@ class PublishCommandTestCase(unittest.TestCase):
         self.build_temp_dir = pathlib.Path(tempfile.mkdtemp())
         dags_path = pathlib.Path(self.build_temp_dir).joinpath("dag")
         dags_path.mkdir(parents=True)
-        shutil.copytree(
-            goldens_dir_path.joinpath("config"), dags_path.joinpath("config")
-        )
+        shutil.copytree(goldens_dir_path.joinpath("config"), dags_path.joinpath("config"))
 
         profiles_yml_path = pathlib.Path(self.build_temp_dir).joinpath(
             "profiles", "env_execution", "profiles.yml"
@@ -111,9 +109,7 @@ class PublishCommandTestCase(unittest.TestCase):
         config_writer_mock = MagicMock()
         set_value_mock = MagicMock()
         set_value_mock.configure_mock(**{"release": noop})
-        config_writer_mock.configure_mock(
-            **{"set_value": lambda x, y, z: set_value_mock}
-        )
+        config_writer_mock.configure_mock(**{"set_value": lambda x, y, z: set_value_mock})
         repo_mock.configure_mock(
             **{
                 "config_writer": config_writer_mock,
@@ -132,13 +128,9 @@ class PublishCommandTestCase(unittest.TestCase):
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_generate_correct_project(self):
         runner = CliRunner()
-        with patch(
-            "data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir
-        ), patch(
+        with patch("data_pipelines_cli.cli_commands.publish.BUILD_DIR", self.build_temp_dir), patch(
             "data_pipelines_cli.config_generation.BUILD_DIR", self.build_temp_dir
-        ), patch(
-            "data_pipelines_cli.cli_commands.publish.Repo", self.repo_class_mock()
-        ):
+        ), patch("data_pipelines_cli.cli_commands.publish.Repo", self.repo_class_mock()):
             runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
             result = runner.invoke(_cli, ["publish", "--key-path", "SOME_KEY.txt"])
 
@@ -158,9 +150,7 @@ class PublishCommandTestCase(unittest.TestCase):
 
     def verify_generated_files(self):
         with open(
-            pathlib.Path(self.build_temp_dir).joinpath(
-                "package", "models", "sources.yml"
-            ),
+            pathlib.Path(self.build_temp_dir).joinpath("package", "models", "sources.yml"),
             "r",
         ) as sources_yml:
             self.assertDictEqual(self.expected_sources, yaml.safe_load(sources_yml))
@@ -183,9 +173,7 @@ class PublishCommandTestCase(unittest.TestCase):
             target_path.mkdir(parents=True)
             with open(
                 goldens_dir_path.joinpath("target", "manifest.json"), "r"
-            ) as manifest_json, open(
-                target_path.joinpath("manifest.json"), "w"
-            ) as tmp_manifest:
+            ) as manifest_json, open(target_path.joinpath("manifest.json"), "w") as tmp_manifest:
                 manifest = json.load(manifest_json)
                 for k in list(manifest["nodes"].keys()):
                     if k.startswith("model"):

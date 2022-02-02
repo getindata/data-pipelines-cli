@@ -36,12 +36,8 @@ class CliUtilsTest(unittest.TestCase):
                 "sys.stdout", new=StringIO()
             ) as fake_out, patch("sys.stderr", new=StringIO()) as fake_err:
                 echo_fun(test_string)
-                self.assertEqual(
-                    endlined_test_string if is_stdout else "", fake_out.getvalue()
-                )
-                self.assertEqual(
-                    endlined_test_string if not is_stdout else "", fake_err.getvalue()
-                )
+                self.assertEqual(endlined_test_string if is_stdout else "", fake_out.getvalue())
+                self.assertEqual(endlined_test_string if not is_stdout else "", fake_err.getvalue())
 
     some_env_variable_key = "SOME_VARIABLE"
     some_env_variable_value = "some_value"
@@ -51,26 +47,20 @@ class CliUtilsTest(unittest.TestCase):
         argument = "argument"
         self.assertEqual(
             argument,
-            get_argument_or_environment_variable(
-                argument, "arg", self.some_env_variable_key
-            ),
+            get_argument_or_environment_variable(argument, "arg", self.some_env_variable_key),
         )
 
     @patch.dict(os.environ, {some_env_variable_key: some_env_variable_value})
     def test_get_argument_from_env_var(self):
         self.assertEqual(
             self.some_env_variable_value,
-            get_argument_or_environment_variable(
-                None, "arg", self.some_env_variable_key
-            ),
+            get_argument_or_environment_variable(None, "arg", self.some_env_variable_key),
         )
 
     @patch.dict(os.environ, {})
     def test_get_argument_throw(self):
         with self.assertRaises(DataPipelinesError):
-            get_argument_or_environment_variable(
-                None, "arg", self.some_env_variable_key
-            )
+            get_argument_or_environment_variable(None, "arg", self.some_env_variable_key)
 
     @patch("data_pipelines_cli.cli_utils.subprocess.run")
     def test_subprocess_run_return_code(self, mock_run):

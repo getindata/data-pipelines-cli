@@ -1,6 +1,3 @@
-image:
-  repository: my_docker_repository_uri
-  tag: <IMAGE_TAG>
 variable1: 1337
 var2: "Hello, world!"
 envs:

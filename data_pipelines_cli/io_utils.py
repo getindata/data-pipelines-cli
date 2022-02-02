@@ -13,9 +13,7 @@ import click
 
 # Python's `sed` equivalent, based on the following answer:
 # https://stackoverflow.com/a/31499114
-def replace(
-    filename: Union[str, os.PathLike[str]], pattern: str, replacement: str
-) -> None:
+def replace(filename: Union[str, os.PathLike[str]], pattern: str, replacement: str) -> None:
     """
     Perform the pure-Python equivalent of in-place `sed` substitution: e.g.,
     ``sed -i -e 's/'${pattern}'/'${replacement}' "${filename}"``.
@@ -49,9 +47,7 @@ def git_revision_hash() -> Optional[str]:
     :rtype: Optional[str]
     """
     try:
-        rev_process = subprocess.run(
-            ["git", "rev-parse", "HEAD"], check=True, capture_output=True
-        )
+        rev_process = subprocess.run(["git", "rev-parse", "HEAD"], check=True, capture_output=True)
         return rev_process.stdout.decode("ascii").strip()
     except FileNotFoundError:
         click.echo(
@@ -62,8 +58,7 @@ def git_revision_hash() -> Optional[str]:
         return None
     except subprocess.CalledProcessError as err:
         click.echo(
-            "The tool has run across a following error when trying to "
-            "get Git revision hash:",
+            "The tool has run across a following error when trying to " "get Git revision hash:",
             file=sys.stderr,
         )
         click.echo(err.stderr, file=sys.stderr)

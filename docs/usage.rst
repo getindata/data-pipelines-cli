@@ -93,6 +93,9 @@ setting those in your ``config/<ENV>/k8s.yml`` file, in ``envs`` dictionary:
  project: my-gcp-project
  threads: 1
 
+ # config/base/execution_env.yml
+ # ... General config for execution env ...
+
  # config/base/k8s.yml
  # ... Kubernetes settings ...
 

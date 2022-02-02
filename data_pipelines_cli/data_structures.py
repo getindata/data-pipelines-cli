@@ -91,14 +91,14 @@ class DockerArgs:
             read_dictionary_from_config_directory,
         )
 
-        k8s_config = read_dictionary_from_config_directory(
-            BUILD_DIR.joinpath("dag"), env, "k8s.yml"
+        execution_env_config = read_dictionary_from_config_directory(
+            BUILD_DIR.joinpath("dag"), env, "execution_env.yml"
         )
         try:
-            return k8s_config["image"]["repository"]
+            return execution_env_config["image"]["repository"]
         except KeyError as key_error:
             raise DataPipelinesError(
-                f"Could not find 'repository' variable in build/config/{env}/k8s.yml."
+                f"Could not find 'repository' variable in build/config/{env}/execution_env.yml."
             ) from key_error
 
 

@@ -1,0 +1,5 @@
+image:
+  repository: my_docker_repository_uri
+  tag: <IMAGE_TAG>
+
+type: k8s
