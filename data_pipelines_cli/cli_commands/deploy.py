@@ -129,9 +129,7 @@ class DeployCommand:
     name="deploy",
     help="Push and deploy the project to the remote machine",
 )
-@click.option(
-    "--env", default="base", show_default=True, type=str, help="Name of the environment"
-)
+@click.option("--env", default="base", show_default=True, type=str, help="Name of the environment")
 @click.option("--dags-path", required=False, help="Remote storage URI")
 @click.option(
     "--blob-args",

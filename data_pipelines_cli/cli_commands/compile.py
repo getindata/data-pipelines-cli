@@ -68,16 +68,12 @@ def _copy_dbt_manifest() -> None:
 
 def replace_image_settings(docker_args: DockerArgs) -> None:
     k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "execution_env.yml")
-    echo_info(
-        f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}"
-    )
+    echo_info(f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}")
     replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.commit_sha)
 
 
 def _replace_datahub_with_jinja_vars(env: str) -> None:
-    datahub_config_path: pathlib.Path = BUILD_DIR.joinpath(
-        "dag", "config", "base", "datahub.yml"
-    )
+    datahub_config_path: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "datahub.yml")
 
     if not datahub_config_path.exists():
         echo_warning(

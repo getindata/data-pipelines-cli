@@ -43,9 +43,7 @@ class CompileCommandTestCase(unittest.TestCase):
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
@@ -65,29 +63,21 @@ class CompileCommandTestCase(unittest.TestCase):
             self.assertIn("dbt source freshness", args_str)
 
             tmp_dir_path = pathlib.Path(tmp_dir)
-            with open(
-                tmp_dir_path.joinpath("dag", "manifest.json"), "r"
-            ) as tmp_manifest, open(
+            with open(tmp_dir_path.joinpath("dag", "manifest.json"), "r") as tmp_manifest, open(
                 goldens_dir_path.joinpath("target", "manifest.json"), "r"
             ) as golden_manifest:
-                self.assertDictEqual(
-                    json.load(golden_manifest), json.load(tmp_manifest)
-                )
+                self.assertDictEqual(json.load(golden_manifest), json.load(tmp_manifest))
             with open(
                 tmp_dir_path.joinpath("dag", "config", "base", "datahub.yml"), "r"
             ) as tmp_datahub, open(
                 goldens_dir_path.joinpath("config", "base", "datahub.yml")
             ) as golden_datahub:
-                self.assertDictEqual(
-                    yaml.safe_load(golden_datahub), yaml.safe_load(tmp_datahub)
-                )
+                self.assertDictEqual(yaml.safe_load(golden_datahub), yaml.safe_load(tmp_datahub))
             with open(
                 tmp_dir_path.joinpath("dag", "config", "base", "execution_env.yml"), "r"
             ) as tmp_k8s:
                 self.assertDictEqual(
-                    self._execution_env_content(
-                        "my_docker_repository_uri", "aaa9876aaa"
-                    ),
+                    self._execution_env_content("my_docker_repository_uri", "aaa9876aaa"),
                     yaml.safe_load(tmp_k8s),
                 )
 
@@ -205,9 +195,7 @@ class CompileCommandTestCase(unittest.TestCase):
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)

@@ -107,18 +107,12 @@ class TestConfigGeneration(unittest.TestCase):
             ), patch(
                 "pathlib.Path.cwd", lambda: self.goldens_dir_path
             ):
-                self.profiles_path = cgen.generate_profiles_yml(env).joinpath(
-                    "profiles.yml"
-                )
+                self.profiles_path = cgen.generate_profiles_yml(env).joinpath("profiles.yml")
                 with open(self.profiles_path, "r") as generated, open(
-                    self.goldens_dir_path.joinpath(
-                        "example_profiles", f"{env}_{profile_type}.yml"
-                    ),
+                    self.goldens_dir_path.joinpath("example_profiles", f"{env}_{profile_type}.yml"),
                     "r",
                 ) as prepared:
-                    self.assertDictEqual(
-                        yaml.safe_load(prepared), yaml.safe_load(generated)
-                    )
+                    self.assertDictEqual(yaml.safe_load(prepared), yaml.safe_load(generated))
 
                 os.remove(self.profiles_path)
                 os.rmdir(self.profiles_path.parent)

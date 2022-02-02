@@ -45,14 +45,10 @@ def replace_vars_with_values(
     rendered_settings = {}
     for setting_key, setting_old_value in templated_dictionary.items():
         if isinstance(setting_old_value, dict):
-            rendered_settings[setting_key] = replace_vars_with_values(
-                setting_old_value, dbt_vars
-            )
+            rendered_settings[setting_key] = replace_vars_with_values(setting_old_value, dbt_vars)
         else:
             try:
-                rendered_settings[setting_key] = jinja_env.get_template(
-                    setting_key
-                ).render()
+                rendered_settings[setting_key] = jinja_env.get_template(setting_key).render()
             except TypeError:
                 # Jinja is accepting only str or Template and fails on int, etc.
                 rendered_settings[setting_key] = setting_old_value

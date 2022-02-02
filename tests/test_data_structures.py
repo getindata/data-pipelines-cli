@@ -31,9 +31,7 @@ class DataStructuresTestCase(unittest.TestCase):
         },
         vars={"username": "testuser"},
     )
-    example_config_path = pathlib.Path(__file__).parent.joinpath(
-        "goldens", "example_config.yml"
-    )
+    example_config_path = pathlib.Path(__file__).parent.joinpath("goldens", "example_config.yml")
 
     def test_read_config(self):
         with patch(
@@ -58,9 +56,7 @@ class DockerArgsTest(unittest.TestCase):
         self.build_temp_dir = pathlib.Path(tempfile.mkdtemp())
         dags_path = pathlib.Path(self.build_temp_dir).joinpath("dag")
         dags_path.mkdir(parents=True)
-        shutil.copytree(
-            self.goldens_dir_path.joinpath("config"), dags_path.joinpath("config")
-        )
+        shutil.copytree(self.goldens_dir_path.joinpath("config"), dags_path.joinpath("config"))
 
     def tearDown(self) -> None:
         shutil.rmtree(self.build_temp_dir)

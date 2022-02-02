@@ -13,8 +13,6 @@ def list_templates() -> None:
         click.echo(yaml.dump(tc))
 
 
-@click.command(
-    name="template-list", help="Print a list of all templates saved in the config file"
-)
+@click.command(name="template-list", help="Print a list of all templates saved in the config file")
 def list_templates_command() -> None:
     list_templates()

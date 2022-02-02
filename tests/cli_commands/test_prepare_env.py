@@ -41,10 +41,7 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR",
-            pathlib.Path(tmp_dir),
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir),), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR",
             pathlib.Path(tmp_dir),
         ), patch(
@@ -58,22 +55,15 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             with open(
                 pathlib.Path(tmp_dir2).joinpath(".dbt", "profiles.yml"), "r"
             ) as generated, open(
-                self.goldens_dir_path.joinpath(
-                    "example_profiles", "local_snowflake.yml"
-                ),
+                self.goldens_dir_path.joinpath("example_profiles", "local_snowflake.yml"),
                 "r",
             ) as prepared:
-                self.assertDictEqual(
-                    yaml.safe_load(prepared), yaml.safe_load(generated)
-                )
+                self.assertDictEqual(yaml.safe_load(prepared), yaml.safe_load(generated))
 
     def test_vars_profiles_generation(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR",
-            pathlib.Path(tmp_dir),
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir),), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR",
             pathlib.Path(tmp_dir),
         ), patch.dict(
@@ -87,20 +77,13 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
         ):
             prepare_env("staging")
 
-            with open(
-                pathlib.Path(tmp_dir2).joinpath(".dbt", "profiles.yml"), "r"
-            ) as generated:
-                self.assertDictEqual(
-                    self.rendered_from_vars_profile, yaml.safe_load(generated)
-                )
+            with open(pathlib.Path(tmp_dir2).joinpath(".dbt", "profiles.yml"), "r") as generated:
+                self.assertDictEqual(self.rendered_from_vars_profile, yaml.safe_load(generated))
 
     def test_raise_missing_variable(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR",
-            pathlib.Path(tmp_dir),
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir),), patch(
             "data_pipelines_cli.cli_commands.prepare_env.read_dbt_vars_from_configs",
             lambda _env: {},
         ), patch.dict(
@@ -118,10 +101,7 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
     def test_raise_missing_environment_variable(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch(
-            "data_pipelines_cli.config_generation.BUILD_DIR",
-            pathlib.Path(tmp_dir),
-        ), patch(
+        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir),), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR",
             pathlib.Path(tmp_dir),
         ), patch.dict(
