@@ -64,6 +64,14 @@ data\_pipelines\_cli.cli\_commands.init module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_commands.lint module
+----------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.lint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_commands.prepare\_env module
 ------------------------------------------------------
 
@@ -119,4 +127,3 @@ data\_pipelines\_cli.cli\_commands.update module
    :members:
    :undoc-members:
    :show-inheritance:
-

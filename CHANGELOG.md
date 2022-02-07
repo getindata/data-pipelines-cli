@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `dp lint` command that uses [SQLFluff](https://github.com/sqlfluff/sqlfluff) to lint models and tests
+
 ## [0.19.0] - 2022-04-25
 
 ### Added
