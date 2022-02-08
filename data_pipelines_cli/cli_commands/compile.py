@@ -5,7 +5,7 @@ import click
 import yaml
 
 from ..cli_constants import BUILD_DIR, IMAGE_TAG_TO_REPLACE
-from ..cli_utils import echo_error, echo_info, echo_warning
+from ..cli_utils import echo_error, echo_info, echo_suberror, echo_warning
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
@@ -31,22 +31,25 @@ def _docker_build(docker_args: DockerArgs) -> None:
     """
     try:
         import docker
+        import docker.errors
     except ModuleNotFoundError:
         raise DockerNotInstalledError()
 
     echo_info("Building Docker image")
     docker_client = docker.from_env()
     docker_tag = docker_args.docker_build_tag()
-    _, logs_generator = docker_client.images.build(path=".", tag=docker_tag)
     try:
+        _, logs_generator = docker_client.images.build(path=".", tag=docker_tag)
         DockerResponseReader(logs_generator).click_echo_ok_responses()
+    except docker.errors.BuildError as err:
+        echo_error(err.msg)
+        echo_error("BUILD LOG:")
+        for log in err.build_log:
+            echo_suberror(str(log))
+        raise DataPipelinesError("Error raised when pushing Docker image.")
     except DockerErrorResponseError as err:
         echo_error(err.message)
-        raise DataPipelinesError(
-            "Error raised when pushing Docker image. Ensure that "
-            "Docker image you try to push exists. Maybe try running "
-            "'dp compile' first?"
-        )
+        raise DataPipelinesError("Error raised when pushing Docker image.")
 
 
 def _dbt_compile(env: str) -> None:

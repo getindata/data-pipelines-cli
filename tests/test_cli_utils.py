@@ -7,6 +7,7 @@ from unittest.mock import patch
 from data_pipelines_cli.cli_utils import (
     echo_error,
     echo_info,
+    echo_suberror,
     echo_subinfo,
     echo_warning,
     get_argument_or_environment_variable,
@@ -22,6 +23,7 @@ from data_pipelines_cli.errors import (
 class CliUtilsTest(unittest.TestCase):
     echo_is_printing_to_out = [
         (echo_error, False),
+        (echo_suberror, False),
         (echo_warning, False),
         (echo_info, True),
         (echo_subinfo, True),
