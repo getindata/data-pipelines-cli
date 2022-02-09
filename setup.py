@@ -14,6 +14,7 @@ INSTALL_REQUIREMENTS = [
     "dbt-core==1.0.1",
     "Jinja2>=2.11,<2.12",
     "fsspec",
+    "packaging>=20.4,<21.0",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -46,6 +47,7 @@ EXTRA_REQUIRE = {
         "sphinx-rtd-theme==1.0.0",
         "sphinx-click>=3.1,<3.2",
         "myst-parser>=0.16, <0.17",
+        "GitPython==3.1.26",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
