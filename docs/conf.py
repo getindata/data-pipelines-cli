@@ -9,6 +9,8 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath("../"))
 sys.path.insert(0, os.path.abspath("../data_pipelines_cli"))
 
 
@@ -27,7 +29,7 @@ author = "GetInData"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "sphinx_click.ext",
+    "sphinx_click",
     "myst_parser",
 ]
 

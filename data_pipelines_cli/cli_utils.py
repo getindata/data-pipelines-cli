@@ -25,6 +25,17 @@ def echo_error(text: str, **kwargs: Any) -> None:
     click.secho(text, file=sys.stderr, fg="red", **kwargs)
 
 
+def echo_suberror(text: str, **kwargs: Any) -> None:
+    """
+    Print a suberror message to stderr using click-specific print function.
+
+    :param text: Message to print
+    :type text: str
+    :param kwargs:
+    """
+    click.secho(text, file=sys.stderr, fg="bright_red", **kwargs)
+
+
 def echo_warning(text: str, **kwargs: Any) -> None:
     """
     Print a warning message to stderr using click-specific print function.

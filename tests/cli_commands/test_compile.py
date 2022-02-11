@@ -130,7 +130,7 @@ class CompileCommandTestCase(unittest.TestCase):
 
         runner = CliRunner()
         with patch.dict(
-            "sys.modules", docker=docker_mock
+            "sys.modules", **{"docker": docker_mock, "docker.errors": MagicMock()}
         ), tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
@@ -148,6 +148,40 @@ class CompileCommandTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     @patch("data_pipelines_cli.data_structures.git_revision_hash")
+    def test_docker_throw_build_error(self, mock_git_revision_hash):
+        commit_sha = "aaa9876aaa"
+        mock_git_revision_hash.return_value = commit_sha
+
+        class MockException(Exception):
+            msg = "some error message"
+            build_log = ["more", "errors"]
+
+        docker_errors_mock = MagicMock(BuildError=MockException)
+        docker_images_mock = MagicMock(build=MagicMock(side_effect=MockException))
+        docker_client_mock = MagicMock(images=docker_images_mock)
+        docker_mock = MagicMock(from_env=lambda: docker_client_mock, errors=docker_errors_mock)
+
+        with patch.dict(
+            "sys.modules", **{"docker": docker_mock, "docker.errors": docker_errors_mock}
+        ), tempfile.TemporaryDirectory() as tmp_dir, patch(
+            "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
+            "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
+        ):
+            with self.assertRaises(DataPipelinesError):
+                try:
+                    compile_project("base", True)
+                except MockException:
+                    self.fail()
+
+    @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
+    @patch("data_pipelines_cli.data_structures.git_revision_hash")
     def test_docker_throw_on_error(self, mock_git_revision_hash):
         commit_sha = "aaa9876aaa"
         mock_git_revision_hash.return_value = commit_sha
@@ -159,15 +193,23 @@ class CompileCommandTestCase(unittest.TestCase):
                 '"error":"An image cannot be built."}',
             ]
 
+        class MockException(Exception):
+            pass
+
+        docker_errors_mock = MagicMock()
+        docker_errors_mock.BuildError = MockException
+
         docker_images_mock = MagicMock()
         docker_images_mock.configure_mock(**{"build": _mock_docker})
         docker_client_mock = MagicMock()
         docker_client_mock.configure_mock(**{"images": docker_images_mock})
         docker_mock = MagicMock()
-        docker_mock.configure_mock(**{"from_env": lambda: docker_client_mock})
+        docker_mock.configure_mock(
+            **{"from_env": lambda: docker_client_mock, "errors": docker_errors_mock}
+        )
 
         with patch.dict(
-            "sys.modules", docker=docker_mock
+            "sys.modules", **{"docker": docker_mock, "docker.errors": docker_errors_mock}
         ), tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
