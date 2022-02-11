@@ -6,14 +6,15 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "click<8.0",
+    "click>=8.0.3,<9.0",
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
     "types-PyYAML>=6.0",
     "copier==5.1.0",
-    "dbt>=0.21, <0.22",
+    "dbt-core==1.0.1",
     "Jinja2>=2.11,<2.12",
     "fsspec",
+    "packaging>=20.4,<21.0",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -44,8 +45,9 @@ EXTRA_REQUIRE = {
     "docs": [
         "sphinx==4.3.1",
         "sphinx-rtd-theme==1.0.0",
-        "sphinx-click>=3.0,<3.1",
+        "sphinx-click>=3.1,<3.2",
         "myst-parser>=0.16, <0.17",
+        "GitPython==3.1.26",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
