@@ -5,7 +5,7 @@ import click
 import yaml
 
 from ..cli_constants import BUILD_DIR, IMAGE_TAG_TO_REPLACE
-from ..cli_utils import echo_error, echo_info, echo_suberror, echo_warning
+from ..cli_utils import echo_info, echo_warning
 from ..config_generation import (
     copy_config_dir_to_build_dir,
     copy_dag_dir_to_build_dir,
@@ -14,11 +14,7 @@ from ..config_generation import (
 from ..data_structures import DockerArgs
 from ..dbt_utils import read_dbt_vars_from_configs, run_dbt_command
 from ..docker_response_reader import DockerResponseReader
-from ..errors import (
-    DataPipelinesError,
-    DockerErrorResponseError,
-    DockerNotInstalledError,
-)
+from ..errors import DockerErrorResponseError, DockerNotInstalledError
 from ..io_utils import replace
 from ..jinja import replace_vars_with_values
 
@@ -42,14 +38,8 @@ def _docker_build(docker_args: DockerArgs) -> None:
         _, logs_generator = docker_client.images.build(path=".", tag=docker_tag)
         DockerResponseReader(logs_generator).click_echo_ok_responses()
     except docker.errors.BuildError as err:
-        echo_error(err.msg)
-        echo_error("BUILD LOG:")
-        for log in err.build_log:
-            echo_suberror(str(log))
-        raise DataPipelinesError("Error raised when pushing Docker image.")
-    except DockerErrorResponseError as err:
-        echo_error(err.message)
-        raise DataPipelinesError("Error raised when pushing Docker image.")
+        build_log = "\n".join([str(log) for log in err.build_log])
+        raise DockerErrorResponseError(f"{err.msg}\n{build_log}")
 
 
 def _dbt_compile(env: str) -> None:
