@@ -1,11 +1,17 @@
+from typing import Optional
+
+
 class DataPipelinesError(Exception):
     """Base class for all exceptions in data_pipelines_cli module"""
 
     message: str
     """explanation of the error"""
+    submessage: Optional[str]
+    """additional informations for the error"""
 
-    def __init__(self, message: str) -> None:
+    def __init__(self, message: str, submessage: Optional[str] = None) -> None:
         self.message = message
+        self.submessage = submessage
 
 
 class DependencyNotInstalledError(DataPipelinesError):
@@ -38,8 +44,11 @@ class NotAProjectDirectoryError(DataPipelinesError):
 class SubprocessNonZeroExitError(DataPipelinesError):
     """Exception raised if subprocess exits with non-zero exit code"""
 
-    def __init__(self, subprocess_name: str, exit_code: int) -> None:
+    def __init__(
+        self, subprocess_name: str, exit_code: int, subprocess_output: Optional[str] = None
+    ) -> None:
         self.message = f"{subprocess_name} has exited with non-zero exit code: {exit_code}"
+        self.submessage = subprocess_output
 
 
 class SubprocessNotFound(DataPipelinesError):
