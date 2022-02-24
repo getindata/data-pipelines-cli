@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Pinned `MarkupSafe==2.0.1` to ensure that Jinja works.
+
 ## [0.15.0] - 2022-02-11
 
 -   Migration to dbt 1.0.1
