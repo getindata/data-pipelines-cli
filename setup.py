@@ -6,12 +6,13 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
+    "MarkupSafe==2.0.1",  # https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
+    "dbt-core==1.0.2",
     "click>=8.0.3,<9.0",
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
     "types-PyYAML>=6.0",
     "copier==5.1.0",
-    "dbt-core==1.0.1",
     "Jinja2>=2.11,<2.12",
     "fsspec",
     "packaging>=20.4,<21.0",
@@ -54,7 +55,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.15.0",
+    version="0.15.1",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
