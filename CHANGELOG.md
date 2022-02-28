@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## [0.15.1] - 2022-02-28
+
 ### Fixed
-- Pinned `MarkupSafe==2.0.1` to ensure that Jinja works.
+
+-   Pinned `MarkupSafe==2.0.1` to ensure that Jinja works.
 
 ## [0.15.0] - 2022-02-11
 
@@ -159,7 +162,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.15.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.15.1...HEAD
+
+[0.15.1]: https://github.com/getindata/data-pipelines-cli/compare/0.15.0...0.15.1
 
 [0.15.0]: https://github.com/getindata/data-pipelines-cli/compare/0.14.0...0.15.0
 
