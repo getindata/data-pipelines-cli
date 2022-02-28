@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.15.2] - 2022-02-28
+
+### Changed
+
+-   Bumped `dbt` to 1.0.3.
+
 ## [0.15.1] - 2022-02-28
 
 ### Fixed
@@ -162,7 +168,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.15.1...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.15.2...HEAD
+
+[0.15.2]: https://github.com/getindata/data-pipelines-cli/compare/0.15.1...0.15.2
 
 [0.15.1]: https://github.com/getindata/data-pipelines-cli/compare/0.15.0...0.15.1
 
