@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Bumped `dbt` to 1.0.3.
+
 ## [0.15.1] - 2022-02-28
 
 ### Fixed

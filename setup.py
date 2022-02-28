@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.0.1",  # https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
-    "dbt-core==1.0.2",
+    "dbt-core>=1.0.2",
     "click>=8.0.3,<9.0",
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
