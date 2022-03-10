@@ -4,7 +4,8 @@
 
 ### Added
 
-- `dp generate source-yaml` and `dp generate model-yaml` commands that automatically generate YAML schema files for project's sources or models, respectively.
+- `dp generate source-yaml` and `dp generate model-yaml` commands that automatically generate YAML schema files for project's sources or models, respectively (using [dbt-codegen](https://hub.getdbt.com/dbt-labs/codegen/latest/) or [dbt-profiler](https://hub.getdbt.com/data-mie/dbt_profiler/latest/) under the hood).
+- `dp generate source-sql` command that generates SQL representing sources listed in `source.yml` (or a similar file) (again, with the help of [dbt-codegen](https://hub.getdbt.com/dbt-labs/codegen/latest/)).
 
 ## [0.15.2] - 2022-02-28
 
