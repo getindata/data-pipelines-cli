@@ -2,13 +2,13 @@ import json
 import pathlib
 import re
 import sys
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 import click
 import yaml
 
 from ..cli_utils import echo_info, echo_warning
-from ..config_generation import get_profiles_dir_build_path
+from ..config_generation import generate_profiles_yml, get_profiles_dir_build_path
 from ..dbt_utils import run_dbt_command
 from ..errors import DataPipelinesError, SubprocessNonZeroExitError
 from .compile import compile_project
@@ -38,11 +38,9 @@ def _get_deps_macro_and_arg_name(with_meta: bool) -> MacroArgName:
 
 
 def _get_unfiltered_macro_run_output(
-    env: str, model_name: str, macro_name: str, arg_name: str, profiles_path: pathlib.Path
+    env: str, macro_name: str, macro_args: Dict[str, str], profiles_path: pathlib.Path
 ) -> str:
-    print_args = yaml.dump(
-        {arg_name: model_name}, default_flow_style=True, width=sys.maxsize
-    ).rstrip()
+    print_args = yaml.dump(macro_args, default_flow_style=True, width=sys.maxsize).rstrip()
     dbt_command_result_bytes = run_dbt_command(
         ("run-operation", macro_name, "--args", print_args),
         env,
@@ -57,15 +55,12 @@ def _filter_out_dbt_log_output(raw_dbt_output: str) -> str:
     return "\n".join(filter(lambda line: not re.match(pattern, line), raw_dbt_output.splitlines()))
 
 
-def _generate_models_from_single_table(
-    env: str, model_name: str, macro_name: str, arg_name: str, profiles_path: pathlib.Path
-) -> List[Dict[str, Any]]:
-
-    schema_output = _get_unfiltered_macro_run_output(
-        env, model_name, macro_name, arg_name, profiles_path
-    )
+def _generate_models_or_sources_from_single_table(
+    env: str, macro_name: str, macro_args: Dict[str, Any], profiles_path: pathlib.Path
+) -> Dict[str, Any]:
+    schema_output = _get_unfiltered_macro_run_output(env, macro_name, macro_args, profiles_path)
     filtered_output = _filter_out_dbt_log_output(schema_output)
-    return yaml.safe_load(filtered_output)["models"]
+    return yaml.safe_load(filtered_output)
 
 
 def _is_ephemeral_model(manifest: Dict[str, Any], model_name: str) -> bool:
@@ -75,15 +70,10 @@ def _is_ephemeral_model(manifest: Dict[str, Any], model_name: str) -> bool:
     raise DataPipelinesError(f"Could not find {model_name} in project's 'manifest.json' file.")
 
 
-def _generate_model_yamls_for_directory(
-    directory: pathlib.Path,
-    env: str,
-    overwrite: bool,
-    macro_arg_name: MacroArgName,
-    profiles_path: pathlib.Path,
-) -> None:
+def _get_output_yaml_or_warn_if_exists(
+    directory: pathlib.Path, overwrite: bool
+) -> Optional[pathlib.Path]:
     output_path = directory.joinpath(f"{directory.name}.yml")
-
     if output_path.exists():
         if not overwrite:
             echo_warning(
@@ -91,11 +81,24 @@ def _generate_model_yamls_for_directory(
                 "will not be overwritten. If you want to overwrite it, pass "
                 "'--overwrite' flag."
             )
-            return
+            return None
         else:
             echo_warning(
                 f"{str(output_path)} in directory {str(directory)} exists, it gets overwritten."
             )
+    return output_path
+
+
+def _generate_model_yamls_for_directory(
+    directory: pathlib.Path,
+    env: str,
+    overwrite: bool,
+    macro_arg_name: MacroArgName,
+    profiles_path: pathlib.Path,
+) -> None:
+    output_path = _get_output_yaml_or_warn_if_exists(directory, overwrite)
+    if output_path is None:
+        return
 
     click.echo(f"Generating schema file for directory: {str(directory)}")
     with open(pathlib.Path.cwd().joinpath("target", "manifest.json"), "r") as manifest_json:
@@ -104,9 +107,12 @@ def _generate_model_yamls_for_directory(
         model
         for file in directory.glob("*.sql")
         if not _is_ephemeral_model(manifest, file.stem)
-        for model in _generate_models_from_single_table(
-            env, file.stem, macro_arg_name["macro_name"], macro_arg_name["arg_name"], profiles_path
-        )
+        for model in _generate_models_or_sources_from_single_table(
+            env,
+            macro_arg_name["macro_name"],
+            {macro_arg_name["arg_name"]: file.stem},
+            profiles_path,
+        )["models"]
     ]
     if len(models) == 0:
         echo_warning(
@@ -141,6 +147,38 @@ def generate_model_yamls(
         )
 
 
+def generate_source_yamls(
+    env: str, source_path: pathlib.Path, overwrite: bool, schema_names: Sequence[str]
+) -> None:
+    profiles_path = generate_profiles_yml(env)
+    output_path = _get_output_yaml_or_warn_if_exists(source_path, overwrite)
+    if output_path is None:
+        return
+    source_path.mkdir(parents=True, exist_ok=True)
+
+    try:
+        sources = [
+            source
+            for schema in schema_names
+            for source in _generate_models_or_sources_from_single_table(
+                env,
+                "generate_source",
+                {"schema_name": schema, "generate_columns": True},
+                profiles_path,
+            )["sources"]
+        ]
+        with open(output_path, "w") as output_file:
+            yaml.dump({"version": 2, "sources": sources}, output_file, default_flow_style=False)
+        echo_info(f"Generated source schema file and saved in {output_path}")
+    except SubprocessNonZeroExitError as err:
+        raise DataPipelinesError(
+            "Error while running dbt command. Ensure that you have codegen "
+            "installed and you have chosen correct existing datasets (schemas) to "
+            "generate source.yml out of.\n" + err.message,
+            submessage=err.submessage,
+        )
+
+
 @click.group(name="generate", help="Generate additional dbt files")
 def generate_group() -> None:
     pass
@@ -169,6 +207,22 @@ def _generate_model_yaml_command(
     generate_model_yamls(env, with_meta, overwrite, model_path)
 
 
-@generate_group.command(name="source", help="")
-def _generate_source_command(env: str, output: str, table: Sequence[str]) -> None:
-    pass
+@generate_group.command(name="source-yaml", help="Generate source YAML using codegen")
+@click.option("--env", default="local", type=str, help="Name of the environment")
+@click.option(
+    "--source-path",
+    default=pathlib.Path.cwd().joinpath("models", "source"),
+    type=pathlib.Path,
+    help="Path to the 'source' directory",
+    required=True,
+)
+@click.option(
+    "--overwrite", type=bool, is_flag=True, help="Whether to overwrite an existing YAML file"
+)
+@click.argument("schema-name", type=str, nargs=-1)
+def _generate_source_command(
+    env: str, source_path: pathlib.Path, overwrite: bool, schema_name: Sequence[str]
+) -> None:
+    if len(schema_name) == 0:
+        raise DataPipelinesError("Command expects at least one 'schema-name' argument")
+    generate_source_yamls(env, source_path, overwrite, schema_name)

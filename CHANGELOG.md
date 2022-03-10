@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `dp generate source-yaml` and `dp generate model-yaml` commands that automatically generate YAML schema files for project's sources or models, respectively.
+
 ## [0.15.2] - 2022-02-28
 
 ### Changed

@@ -18,6 +18,10 @@ GOLDENS_DIR_PATH = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
 @patch("data_pipelines_cli.cli_commands.generate.compile_project", lambda *_args, **_kwargs: None)
 @patch(
+    "data_pipelines_cli.cli_commands.generate.generate_profiles_yml",
+    lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
+)
+@patch(
     "data_pipelines_cli.config_generation.get_profiles_dir_build_path",
     lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
 )
@@ -60,9 +64,27 @@ class GenerateCommandTestCase(unittest.TestCase):
             stdout=MagicMock(decode=lambda *a, **k: yaml.dump({"models": [model_name]}))
         )
 
+    def _mock_run_dbt_command_for_source(self, args_tuple, *_args, **_kwargs) -> str:
+        self.dbt_command_args_tuples.append(args_tuple)
+        # We are calling `dbt run-operation MACRO_NAME --args "{ARG_NAME: MODEL_NAME}"`
+        # so to get MODEL_NAME out of the call one have to extract the first value
+        # in the dictionary, without knowledge of the exact key (ARG_NAME)
+        operation_args = yaml.safe_load(args_tuple[3])
+        return MagicMock(
+            stdout=MagicMock(
+                decode=lambda *a, **k: yaml.dump({"sources": [operation_args["schema_name"]]})
+            )
+        )
+
     def test_generate_model_no_arg(self):
         runner = CliRunner()
         result = runner.invoke(_cli, ["generate", "model-yaml"])
+        self.assertNotEqual(0, result.exit_code)
+        self.assertIsInstance(result.exception, DataPipelinesError)
+
+    def test_generate_source_no_arg(self):
+        runner = CliRunner()
+        result = runner.invoke(_cli, ["generate", "source-yaml"])
         self.assertNotEqual(0, result.exit_code)
         self.assertIsInstance(result.exception, DataPipelinesError)
 
@@ -173,6 +195,39 @@ class GenerateCommandTestCase(unittest.TestCase):
                 )
             )
             self.assertSetEqual({path.stem for path in self.subdir_paths}, self.processed_models)
+
+    def test_generate_source(self):
+        runner = CliRunner()
+        with patch(
+            "data_pipelines_cli.cli_commands.generate.run_dbt_command",
+            self._mock_run_dbt_command_for_source,
+        ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
+            result = runner.invoke(
+                _cli,
+                [
+                    "generate",
+                    "source-yaml",
+                    "--source-path",
+                    self.models_dir_path,
+                    "dataset1",
+                    "dataset2",
+                    "dataset3",
+                ],
+            )
+            self.assertEqual(0, result.exit_code, msg=result.exception)
+            self.assertTrue(
+                all(
+                    args_tuple[1] == "generate_source"
+                    for args_tuple in self.dbt_command_args_tuples
+                )
+            )
+            with open(
+                self.models_dir_path.joinpath(f"{self.models_dir_path.stem}.yml"), "r"
+            ) as source_yml:
+                self.assertDictEqual(
+                    {"version": 2, "sources": ["dataset1", "dataset2", "dataset3"]},
+                    yaml.safe_load(source_yml),
+                )
 
     def test_is_ephemeral_model(self):
         example_dict = {
