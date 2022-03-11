@@ -1,0 +1,17 @@
+version: 2
+sources:
+  - name: source1
+    tables:
+      - name: table1
+        columns:
+          - name: column1
+          - name: column2
+      - name: table2
+        columns:
+          - name: column1
+          - name: column2
+  - name: source2
+    tables:
+      - name: table1
+        columns:
+          - name: column1

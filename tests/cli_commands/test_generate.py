@@ -71,6 +71,16 @@ class GenerateCommandTestCase(unittest.TestCase):
             )
         )
 
+    def _mock_run_dbt_command_for_source_sql(self, args_tuple, *_args, **_kwargs) -> str:
+        self.dbt_command_args_tuples.append(args_tuple)
+        operation_args = yaml.safe_load(args_tuple[3])
+        return MagicMock(
+            stdout=MagicMock(
+                decode=lambda *a, **k: "SELECT * FROM "
+                f"{operation_args['source_name']}.{operation_args['table_name']}"
+            )
+        )
+
     def test_generate_model_no_arg(self):
         runner = CliRunner()
         result = runner.invoke(_cli, ["generate", "model-yaml"])
@@ -214,7 +224,7 @@ class GenerateCommandTestCase(unittest.TestCase):
         "data_pipelines_cli.cli_commands.generate.source_yaml.generate_profiles_yml",
         lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
     )
-    def test_generate_source(self):
+    def test_generate_source_yaml(self):
         runner = CliRunner()
         with patch(
             "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
@@ -246,6 +256,45 @@ class GenerateCommandTestCase(unittest.TestCase):
                     {"version": 2, "sources": ["dataset1", "dataset2", "dataset3"]},
                     yaml.safe_load(source_yml),
                 )
+
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.source_sql.generate_profiles_yml",
+        lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
+    )
+    def test_generate_source_sql(self):
+        runner = CliRunner()
+        with patch(
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
+            self._mock_run_dbt_command_for_source_sql,
+        ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
+            result = runner.invoke(
+                _cli,
+                [
+                    "generate",
+                    "source-sql",
+                    "--source-yaml-path",
+                    GOLDENS_DIR_PATH.joinpath("source_yaml.yml"),
+                    "--staging-path",
+                    self.models_dir_path.joinpath("s_t_a_ging"),
+                ],
+            )
+            self.assertEqual(0, result.exit_code, msg=result.exception)
+            self.assertTrue(
+                all(
+                    args_tuple[1] == "generate_base_model"
+                    for args_tuple in self.dbt_command_args_tuples
+                )
+            )
+            for source_name, table_name in [
+                ("source1", "table1"),
+                ("source1", "table2"),
+                ("source2", "table1"),
+            ]:
+                with open(
+                    self.models_dir_path.joinpath("s_t_a_ging", source_name, f"{table_name}.sql"),
+                    "r",
+                ) as table_yml:
+                    self.assertEqual(f"SELECT * FROM {source_name}.{table_name}", table_yml.read())
 
     def test_is_ephemeral_model(self):
         example_dict = {

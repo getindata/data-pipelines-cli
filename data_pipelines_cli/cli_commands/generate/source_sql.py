@@ -23,7 +23,7 @@ def generate_source_sqls(
     try:
         for source_name, table_name in tables_by_source:
             output_path = get_output_file_or_warn_if_exists(
-                staging_path, overwrite, "sql", f"{table_name}"
+                staging_path.joinpath(source_name), overwrite, "sql", f"{table_name}"
             )
             if output_path is None:
                 continue
@@ -33,6 +33,7 @@ def generate_source_sqls(
                 {"source_name": source_name, "table_name": table_name},
                 profiles_path,
             )
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             with open(output_path, "w") as output:
                 output.write(table_sql)
     except SubprocessNonZeroExitError as err:
