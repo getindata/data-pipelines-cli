@@ -10,17 +10,12 @@ import yaml
 from click.testing import CliRunner
 
 from data_pipelines_cli.cli import _cli
-from data_pipelines_cli.cli_commands.generate import _is_ephemeral_model
+from data_pipelines_cli.cli_commands.generate.model_yaml import _is_ephemeral_model
 from data_pipelines_cli.errors import DataPipelinesError
 
 GOLDENS_DIR_PATH = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
 
-@patch("data_pipelines_cli.cli_commands.generate.compile_project", lambda *_args, **_kwargs: None)
-@patch(
-    "data_pipelines_cli.cli_commands.generate.generate_profiles_yml",
-    lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
-)
 @patch(
     "data_pipelines_cli.config_generation.get_profiles_dir_build_path",
     lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
@@ -90,13 +85,17 @@ class GenerateCommandTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: GOLDENS_DIR_PATH)
     @patch(
-        "data_pipelines_cli.cli_commands.generate._is_ephemeral_model",
+        "data_pipelines_cli.cli_commands.generate.model_yaml._is_ephemeral_model",
         lambda *args, **kwargs: False,
+    )
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.model_yaml.compile_project",
+        lambda *_args, **_kwargs: None,
     )
     def test_generate_model_count_touched_subdirs(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_commands.generate.run_dbt_command",
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
             self._mock_run_dbt_command,
         ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
             result = runner.invoke(
@@ -125,13 +124,18 @@ class GenerateCommandTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: GOLDENS_DIR_PATH)
     @patch(
-        "data_pipelines_cli.cli_commands.generate._is_ephemeral_model",
+        "data_pipelines_cli.cli_commands.generate.model_yaml._is_ephemeral_model",
         lambda *args, **kwargs: False,
+    )
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.model_yaml.compile_project",
+        lambda *_args, **_kwargs: None,
     )
     def test_generate_model_count_touched_subdirs_overwrite(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_commands.generate.run_dbt_command", self._mock_run_dbt_command
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
+            self._mock_run_dbt_command,
         ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
             result = runner.invoke(
                 _cli, ["generate", "model-yaml", "--overwrite", str(self.models_dir_path)]
@@ -147,13 +151,18 @@ class GenerateCommandTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: GOLDENS_DIR_PATH)
     @patch(
-        "data_pipelines_cli.cli_commands.generate._is_ephemeral_model",
+        "data_pipelines_cli.cli_commands.generate.model_yaml._is_ephemeral_model",
         lambda *args, **kwargs: False,
+    )
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.model_yaml.compile_project",
+        lambda *_args, **_kwargs: None,
     )
     def test_generate_model_count_touched_subdirs_with_meta(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_commands.generate.run_dbt_command", self._mock_run_dbt_command
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
+            self._mock_run_dbt_command,
         ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
             result = runner.invoke(
                 _cli, ["generate", "model-yaml", "--with-meta", str(self.models_dir_path)]
@@ -175,13 +184,18 @@ class GenerateCommandTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: GOLDENS_DIR_PATH)
     @patch(
-        "data_pipelines_cli.cli_commands.generate._is_ephemeral_model",
+        "data_pipelines_cli.cli_commands.generate.model_yaml._is_ephemeral_model",
         lambda *args, **kwargs: False,
+    )
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.model_yaml.compile_project",
+        lambda *_args, **_kwargs: None,
     )
     def test_generate_model_count_touched_subdirs_with_meta_overwrite(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_commands.generate.run_dbt_command", self._mock_run_dbt_command
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
+            self._mock_run_dbt_command,
         ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
             result = runner.invoke(
                 _cli,
@@ -196,10 +210,14 @@ class GenerateCommandTestCase(unittest.TestCase):
             )
             self.assertSetEqual({path.stem for path in self.subdir_paths}, self.processed_models)
 
+    @patch(
+        "data_pipelines_cli.cli_commands.generate.source_yaml.generate_profiles_yml",
+        lambda *_args, **_kwargs: pathlib.Path("/a/b/c"),
+    )
     def test_generate_source(self):
         runner = CliRunner()
         with patch(
-            "data_pipelines_cli.cli_commands.generate.run_dbt_command",
+            "data_pipelines_cli.cli_commands.generate.utils.run_dbt_command",
             self._mock_run_dbt_command_for_source,
         ), runner.isolated_filesystem(temp_dir=self.models_dir_path.parent):
             result = runner.invoke(

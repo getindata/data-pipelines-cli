@@ -6,7 +6,7 @@ from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
 from .cli_commands.deploy import deploy_command
-from .cli_commands.generate import generate_group
+from .cli_commands.generate.generate import generate_group
 from .cli_commands.init import init_command
 from .cli_commands.prepare_env import prepare_env_command
 from .cli_commands.publish import publish_command
