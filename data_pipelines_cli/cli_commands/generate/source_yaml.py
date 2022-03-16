@@ -29,12 +29,17 @@ def generate_source_yamls(
             for source in generate_models_or_sources_from_single_table(
                 env,
                 "generate_source",
-                {"schema_name": schema, "generate_columns": True},
+                {"schema_name": schema, "generate_columns": True, "include_descriptions": True},
                 profiles_path,
             )["sources"]
         ]
         with open(output_path, "w") as output_file:
-            yaml.dump({"version": 2, "sources": sources}, output_file, default_flow_style=False)
+            yaml.dump(
+                {"version": 2, "sources": sources},
+                output_file,
+                default_flow_style=False,
+                sort_keys=False,
+            )
         echo_info(f"Generated source schema file and saved in {output_path}")
     except SubprocessNonZeroExitError as err:
         raise DataPipelinesError(

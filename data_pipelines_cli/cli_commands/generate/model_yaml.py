@@ -77,7 +77,12 @@ def _generate_model_yamls_for_directory(
         )
     else:
         with open(output_path, "w") as output_file:
-            yaml.dump({"version": 2, "models": models}, output_file, default_flow_style=False)
+            yaml.dump(
+                {"version": 2, "models": models},
+                output_file,
+                default_flow_style=False,
+                sort_keys=False,
+            )
         echo_info(f"Generated source schema file and saved in {output_path}")
 
 
