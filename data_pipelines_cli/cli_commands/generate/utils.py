@@ -1,5 +1,5 @@
+import json
 import pathlib
-import re
 import sys
 from typing import Any, Dict, Optional
 
@@ -7,9 +7,10 @@ import yaml
 
 from ...cli_utils import echo_warning
 from ...dbt_utils import run_dbt_command
+from ...errors import DataPipelinesError
 
 
-def _get_unfiltered_macro_run_output(
+def get_macro_run_output(
     env: str, macro_name: str, macro_args: Dict[str, str], profiles_path: pathlib.Path
 ) -> str:
     print_args = yaml.dump(macro_args, default_flow_style=True, width=sys.maxsize).rstrip()
@@ -17,27 +18,20 @@ def _get_unfiltered_macro_run_output(
         ("run-operation", macro_name, "--args", print_args),
         env,
         profiles_path,
+        log_format_json=True,
         capture_output=True,
     )
-    return dbt_command_result_bytes.stdout.decode(encoding=sys.stdout.encoding or "utf-8")
-
-
-def _filter_out_dbt_log_output(raw_dbt_output: str) -> str:
-    pattern = re.compile(r"\d{2}:\d{2}:\d{2}.*")
-    return "\n".join(filter(lambda line: not re.match(pattern, line), raw_dbt_output.splitlines()))
-
-
-def run_and_filter_dbt_macro(
-    env: str, macro_name: str, macro_args: Dict[str, Any], profiles_path: pathlib.Path
-) -> str:
-    schema_output = _get_unfiltered_macro_run_output(env, macro_name, macro_args, profiles_path)
-    return _filter_out_dbt_log_output(schema_output)
+    decoded_output = dbt_command_result_bytes.stdout.decode(encoding=sys.stdout.encoding or "utf-8")
+    for line in map(json.loads, decoded_output.splitlines()):
+        if line.get("code") == "M011":
+            return line["msg"]
+    raise DataPipelinesError(f"No macro output found in the dbt output:\n{decoded_output}")
 
 
 def generate_models_or_sources_from_single_table(
     env: str, macro_name: str, macro_args: Dict[str, Any], profiles_path: pathlib.Path
 ) -> Dict[str, Any]:
-    return yaml.safe_load(run_and_filter_dbt_macro(env, macro_name, macro_args, profiles_path))
+    return yaml.safe_load(get_macro_run_output(env, macro_name, macro_args, profiles_path))
 
 
 def get_output_file_or_warn_if_exists(

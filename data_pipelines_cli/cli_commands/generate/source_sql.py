@@ -5,7 +5,7 @@ import yaml
 
 from ...config_generation import generate_profiles_yml
 from ...errors import DataPipelinesError, SubprocessNonZeroExitError
-from .utils import get_output_file_or_warn_if_exists, run_and_filter_dbt_macro
+from .utils import get_macro_run_output, get_output_file_or_warn_if_exists
 
 
 def generate_source_sqls(
@@ -27,7 +27,7 @@ def generate_source_sqls(
             )
             if output_path is None:
                 continue
-            table_sql = run_and_filter_dbt_macro(
+            table_sql = get_macro_run_output(
                 env,
                 "generate_base_model",
                 {"source_name": source_name, "table_name": table_name},

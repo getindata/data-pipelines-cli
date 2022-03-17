@@ -1,3 +1,4 @@
+import json
 import pathlib
 import random
 import shutil
@@ -56,7 +57,11 @@ class GenerateCommandTestCase(unittest.TestCase):
         model_name = list(operation_args.values())[0]
         self.processed_models.add(model_name)
         return MagicMock(
-            stdout=MagicMock(decode=lambda *a, **k: yaml.dump({"models": [model_name]}))
+            stdout=MagicMock(
+                decode=lambda *a, **k: json.dumps(
+                    {"code": "M011", "msg": yaml.dump({"models": [model_name]})}
+                )
+            )
         )
 
     def _mock_run_dbt_command_for_source(self, args_tuple, *_args, **_kwargs) -> str:
@@ -67,7 +72,9 @@ class GenerateCommandTestCase(unittest.TestCase):
         operation_args = yaml.safe_load(args_tuple[3])
         return MagicMock(
             stdout=MagicMock(
-                decode=lambda *a, **k: yaml.dump({"sources": [operation_args["schema_name"]]})
+                decode=lambda *a, **k: json.dumps(
+                    {"code": "M011", "msg": yaml.dump({"sources": [operation_args["schema_name"]]})}
+                )
             )
         )
 
@@ -76,8 +83,13 @@ class GenerateCommandTestCase(unittest.TestCase):
         operation_args = yaml.safe_load(args_tuple[3])
         return MagicMock(
             stdout=MagicMock(
-                decode=lambda *a, **k: "SELECT * FROM "
-                f"{operation_args['source_name']}.{operation_args['table_name']}"
+                decode=lambda *a, **k: json.dumps(
+                    {
+                        "code": "M011",
+                        "msg": "SELECT * FROM "
+                        f"{operation_args['source_name']}.{operation_args['table_name']}",
+                    }
+                )
             )
         )
 
@@ -291,7 +303,9 @@ class GenerateCommandTestCase(unittest.TestCase):
                 ("source2", "table1"),
             ]:
                 with open(
-                    self.models_dir_path.joinpath("s_t_a_ging", source_name, f"{table_name}.sql"),
+                    self.models_dir_path.joinpath(
+                        "s_t_a_ging", source_name, f"stg_{table_name}.sql"
+                    ),
                     "r",
                 ) as table_yml:
                     self.assertEqual(f"SELECT * FROM {source_name}.{table_name}", table_yml.read())
