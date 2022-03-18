@@ -58,7 +58,9 @@ def git_revision_hash() -> Optional[str]:
         return None
     except subprocess.CalledProcessError as err:
         click.echo(
-            "The tool has run across a following error when trying to " "get Git revision hash:",
+            "The tool has run across a following error when trying to get Git "
+            "revision hash. Ensure your project is a Git repository (run 'git "
+            "init', if not).",
             file=sys.stderr,
         )
         click.echo(err.stderr, file=sys.stderr)

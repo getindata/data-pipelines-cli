@@ -30,7 +30,7 @@ class DbtUtilsTest(unittest.TestCase):
     def setUp(self) -> None:
         self.subprocess_run_args = []
 
-    def _mock_run(self, args: List[str]):
+    def _mock_run(self, args: List[str], **_kwargs):
         self.subprocess_run_args = args
 
     def test_dbt_run(self):

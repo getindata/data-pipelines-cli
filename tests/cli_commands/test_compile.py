@@ -31,7 +31,7 @@ class CompileCommandTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.all_subprocess_run_args = []
 
-    def _mock_run(self, args: List[str]):
+    def _mock_run(self, args: List[str], **_kwargs):
         self.all_subprocess_run_args += args
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)

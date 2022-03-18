@@ -22,7 +22,7 @@ def echo_error(text: str, **kwargs: Any) -> None:
     :type text: str
     :param kwargs:
     """
-    click.secho(text, file=sys.stderr, fg="red", **kwargs)
+    click.secho(text, file=sys.stderr, fg="red", bold=True, **kwargs)
 
 
 def echo_suberror(text: str, **kwargs: Any) -> None:
@@ -97,20 +97,28 @@ def get_argument_or_environment_variable(
     return result
 
 
-def subprocess_run(args: List[str]) -> subprocess.CompletedProcess[bytes]:
+def subprocess_run(
+    args: List[str], capture_output: bool = False
+) -> subprocess.CompletedProcess[bytes]:
     """
     Run subprocess and return its state if completed with a success. If not,
     raise :exc:`.SubprocessNonZeroExitError`.
 
     :param args: List of strings representing subprocess and its arguments
     :type args: List[str]
+    :param capture_output: Whether to capture output of subprocess.
+    :type capture_output: bool
     :return: State of the completed process
     :rtype: subprocess.CompletedProcess[bytes]
     :raises SubprocessNonZeroExitError: subprocess exited with non-zero exit code
     """
     try:
-        return subprocess.run(args, check=True)
+        return subprocess.run(args, check=True, capture_output=capture_output)
     except FileNotFoundError:
         raise SubprocessNotFound(args[0])
     except subprocess.CalledProcessError as err:
-        raise SubprocessNonZeroExitError(args[0], err.returncode)
+        raise SubprocessNonZeroExitError(
+            args[0],
+            err.returncode,
+            err.output.decode(encoding=sys.stdout.encoding or "utf-8") if err.output else None,
+        )
