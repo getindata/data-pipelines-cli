@@ -8,7 +8,8 @@ from data_pipelines_cli.errors import NotAProjectDirectoryError
 
 def update(project_path: str, vcs_ref: str) -> None:
     """
-    Update an existing project from its template
+    Update an existing project from its template.
+
     :param project_path: Path to a directory to create
     :type project_path: str
     :param vcs_ref: Git reference to checkout in projects template

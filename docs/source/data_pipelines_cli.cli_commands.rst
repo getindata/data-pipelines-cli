@@ -6,6 +6,13 @@ data\_pipelines\_cli.cli\_commands package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+
+   data_pipelines_cli.cli_commands.generate
+
 Submodules
 ----------
 

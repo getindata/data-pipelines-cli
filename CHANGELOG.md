@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.16.0] - 2022-03-24
+
+### Added
+
+-   `dp generate source-yaml` and `dp generate model-yaml` commands that automatically generate YAML schema files for project's sources or models, respectively (using [dbt-codegen](https://hub.getdbt.com/dbt-labs/codegen/latest/) or [dbt-profiler](https://hub.getdbt.com/data-mie/dbt_profiler/latest/) under the hood).
+-   `dp generate source-sql` command that generates SQL representing sources listed in `source.yml` (or a similar file) (again, with the help of [dbt-codegen](https://hub.getdbt.com/dbt-labs/codegen/latest/)).
+
 ## [0.15.2] - 2022-02-28
 
 ### Changed
@@ -168,7 +175,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.15.2...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.16.0...HEAD
+
+[0.16.0]: https://github.com/getindata/data-pipelines-cli/compare/0.15.2...0.16.0
 
 [0.15.2]: https://github.com/getindata/data-pipelines-cli/compare/0.15.1...0.15.2
 

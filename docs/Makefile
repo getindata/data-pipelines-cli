@@ -13,7 +13,7 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
-	@sphinx-apidoc ../data_pipelines_cli -o source --maxdepth 1 -fMT
+	@sphinx-apidoc ../data_pipelines_cli -o source -fMT
 
 .PHONY: help apidoc Makefile
 

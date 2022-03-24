@@ -73,7 +73,7 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
         ), tempfile.TemporaryDirectory() as tmp_dir2, patch(
             "pathlib.Path.home", lambda: pathlib.Path(tmp_dir2)
         ), patch(
-            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args: None
+            "data_pipelines_cli.dbt_utils.subprocess_run", lambda _args, **_kwargs: None
         ):
             prepare_env("staging")
 

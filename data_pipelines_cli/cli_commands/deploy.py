@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
+from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_error, echo_info, subprocess_run
 from ..config_generation import read_dictionary_from_config_directory
@@ -33,6 +34,7 @@ class DeployCommand:
     provider_kwargs_dict: Dict[str, Any]
     """Dictionary of arguments required by a specific cloud storage provider,
     e.g. path to a token, username, password, etc."""
+    env: str
 
     def __init__(
         self,
@@ -45,6 +47,7 @@ class DeployCommand:
         self.docker_args = DockerArgs(env) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
+        self.env = env
 
         try:
             self.blob_address_path = dags_path or read_dictionary_from_config_directory(
@@ -100,8 +103,7 @@ class DeployCommand:
                 "'dp compile' first?"
             )
 
-    @staticmethod
-    def _datahub_ingest() -> None:
+    def _datahub_ingest(self) -> None:
         """:raises DependencyNotInstalledError: DataHub not installed"""
         try:
             import datahub  # noqa: F401
@@ -114,7 +116,7 @@ class DeployCommand:
                 "datahub",
                 "ingest",
                 "-c",
-                str(BUILD_DIR.joinpath("dag", "config", "base", "datahub.yml")),
+                str(find_datahub_config_file(self.env)),
             ]
         )
 

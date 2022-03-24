@@ -24,6 +24,14 @@ data\_pipelines\_cli.cli module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_configs module
+----------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_configs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_constants module
 ------------------------------------------
 

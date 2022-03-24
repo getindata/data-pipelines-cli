@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import pathlib
+import subprocess
 import sys
 from typing import Any, Dict, Tuple
 
@@ -40,7 +43,13 @@ def _dump_dbt_vars_from_configs_to_string(env: str) -> str:
     return yaml.dump(dbt_vars, default_flow_style=True, width=sys.maxsize)
 
 
-def run_dbt_command(command: Tuple[str, ...], env: str, profiles_path: pathlib.Path) -> None:
+def run_dbt_command(
+    command: Tuple[str, ...],
+    env: str,
+    profiles_path: pathlib.Path,
+    log_format_json: bool = False,
+    capture_output: bool = False,
+) -> subprocess.CompletedProcess[bytes]:
     """
     Run dbt subprocess in a context of specified *env*.
 
@@ -50,6 +59,12 @@ def run_dbt_command(command: Tuple[str, ...], env: str, profiles_path: pathlib.P
     :type env: str
     :param profiles_path: Path to the directory containing `profiles.yml` file
     :type profiles_path: pathlib.Path
+    :param log_format_json: Whether to run dbt command with `--log-format=json` flag
+    :type log_format_json: bool
+    :param capture_output: Whether to capture stdout of subprocess.
+    :type capture_output: bool
+    :return: State of the completed process
+    :rtype: subprocess.CompletedProcess[bytes]
     :raises SubprocessNotFound: dbt not installed
     :raises SubprocessNonZeroExitError: dbt exited with error
     """
@@ -60,9 +75,10 @@ def run_dbt_command(command: Tuple[str, ...], env: str, profiles_path: pathlib.P
         BUILD_DIR.joinpath("dag"), env, "dbt.yml"
     )
     dbt_vars = _dump_dbt_vars_from_configs_to_string(env)
-    subprocess_run(
+    return subprocess_run(
         [
             "dbt",
+            *(["--log-format=json"] if log_format_json else []),
             *command,
             "--profile",
             dbt_env_config["target_type"],
@@ -72,5 +88,6 @@ def run_dbt_command(command: Tuple[str, ...], env: str, profiles_path: pathlib.P
             get_dbt_profiles_env_name(env),
             "--vars",
             dbt_vars,
-        ]
+        ],
+        capture_output=capture_output,
     )

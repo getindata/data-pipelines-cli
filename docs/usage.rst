@@ -139,6 +139,53 @@ get erased on every ``dp init`` call. It is a great idea to put *commonly used* 
 organization will end up with a list of user-specific variables reusable across different projects on its machine.
 Just remember, **global-scoped variables take precedence over project-scoped ones.**
 
+dbt sources and models creation
+-------------------------------
+
+With the help of `dbt-codegen <https://hub.getdbt.com/dbt-labs/codegen/>`_ and
+`dbt-profiler <https://hub.getdbt.com/data-mie/dbt_profiler/>`_, one can easily generate ``source.yml``, source's base
+model SQLs, and model-related YAMLs. **dp** offers a convenient CLI wrapper around those functionalities.
+
+First, add the **dbt-codegen** package to your ``packages.yml`` file:
+
+.. code-block:: yaml
+
+ packages:
+   - package: dbt-codegen
+     version: 0.5.0  # or newer
+
+Then, run ``dp generate source-yaml YOUR_DATASET_NAME`` to generate ``source.yml`` file in ``models/source`` directory.
+You can list more than one dataset, divided by space. After that, you are free to modify this file.
+
+When you want to generate SQLs for your sources, run ``dp generate source-sql``. It will save those SQLs in the directory
+``models/staging/YOUR_DATASET_NAME``.
+
+Finally, when you have all your models prepared (in the form of SQLs), run ``dp generate model-yaml MODELS_DIR`` to
+generate YAML files describing them (once again, you are not only free to modify them but also encouraged to do so!).
+E.g., given such a directory structure:
+
+| models
+| ├── staging
+| │   └── my_source
+| │       ├── stg_table1.sql
+| │       └── stg_table2.sql
+| ├── intermediate
+| │   ├── intermediate1.sql
+| │   ├── intermediate2.sql
+| │   └── intermediate3.sql
+| └── presentation
+|     └── presentation1.sql
+|
+
+``dp generate model-yaml models/`` will create ``models/staging/my_source/my_source.yml``,
+``models/staging/intermediate/intermediate.yml``, and ``models/presentation/presentation.yml``. Beware, however, this
+command WILL NOT WORK if you do not have those models created in your data warehouse already. So remember to run
+``dp run`` (or a similar command) beforehand.
+
+If you add the **dbt-profiler** package to your ``packages.yml`` file too, you can call
+``dp generate model-yaml --with-meta MODELS_DIR``. **dbt-profiler** will add a lot of profiling metadata to
+descriptions of your models.
+
 Project compilation
 -------------------
 
