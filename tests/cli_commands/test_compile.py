@@ -31,7 +31,6 @@ class CompileCommandTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.all_subprocess_run_args = []
 
-
     def _mock_run(self, args: List[str]):
         self.all_subprocess_run_args += args
 
@@ -238,7 +237,9 @@ class CompileCommandTestCase(unittest.TestCase):
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.compile.BUILD_DIR", pathlib.Path(tmp_dir)
-        ), patch("data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)), patch(
+        ), patch("data_pipelines_cli.cli_configs.BUILD_DIR", pathlib.Path(tmp_dir)), patch(
+            "data_pipelines_cli.config_generation.BUILD_DIR", pathlib.Path(tmp_dir)
+        ), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)

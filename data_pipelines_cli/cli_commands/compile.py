@@ -4,6 +4,7 @@ import shutil
 import click
 import yaml
 
+from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR, IMAGE_TAG_TO_REPLACE
 from ..cli_utils import echo_info, echo_warning
 from ..config_generation import (
@@ -66,9 +67,9 @@ def replace_image_settings(docker_args: DockerArgs) -> None:
 
 
 def _replace_datahub_with_jinja_vars(env: str) -> None:
-    datahub_config_path: pathlib.Path = BUILD_DIR.joinpath("dag", "config", "base", "datahub.yml")
+    datahub_config_path: pathlib.Path = find_datahub_config_file(env)
 
-    if not datahub_config_path.exists():
+    if not datahub_config_path.is_file():
         echo_warning(
             f"File config/base/datahub.yml does not exist in {BUILD_DIR}. "
             "Content will not be replaced."

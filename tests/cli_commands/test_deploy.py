@@ -155,6 +155,7 @@ class DeployCommandTestCase(unittest.TestCase):
                 DeployCommand("base", False, self.storage_uri, self.provider_args, True).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
+    @patch("data_pipelines_cli.cli_configs.BUILD_DIR", goldens_dir_path)
     def test_datahub_run(self):
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.subprocess_run", self._mock_run

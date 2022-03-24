@@ -5,8 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
-import pathlib
-
+from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_error, echo_info, subprocess_run
 from ..config_generation import read_dictionary_from_config_directory
@@ -117,14 +116,9 @@ class DeployCommand:
                 "datahub",
                 "ingest",
                 "-c",
-                str(self._find_datahub_config_file()),
+                str(find_datahub_config_file(self.env)),
             ]
         )
-
-    def _find_datahub_config_file(self) -> pathlib.Path:
-        if BUILD_DIR.joinpath("dag", "config", self.env, "datahub.yml").is_file():
-            return BUILD_DIR.joinpath("dag", "config", self.env, "datahub.yml")
-        return BUILD_DIR.joinpath("dag", "config", "base", "datahub.yml")
 
     def _sync_bucket(self) -> None:
         echo_info("Syncing Bucket")
