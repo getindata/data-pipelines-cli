@@ -31,6 +31,7 @@ class CompileCommandTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.all_subprocess_run_args = []
 
+
     def _mock_run(self, args: List[str]):
         self.all_subprocess_run_args += args
 
