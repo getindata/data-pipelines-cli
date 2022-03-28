@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `dp docs-serve` command acting as a wrapper for `dbt docs serve`.
+
 ## [0.17.0] - 2022-04-11
 
 ### Added
