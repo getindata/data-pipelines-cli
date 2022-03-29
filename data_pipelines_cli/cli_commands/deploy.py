@@ -50,11 +50,14 @@ class DeployCommand:
         self.env = env
 
         try:
-            self.blob_address_path = dags_path or read_dictionary_from_config_directory(
-                BUILD_DIR.joinpath("dag"),
-                env,
-                "airflow.yml",
-            )["dags_path"]
+            self.blob_address_path = (
+                dags_path
+                or read_dictionary_from_config_directory(
+                    BUILD_DIR.joinpath("dag"),
+                    env,
+                    "airflow.yml",
+                )["dags_path"]
+            )
         except KeyError as key_error:
             raise AirflowDagsPathKeyError from key_error
 

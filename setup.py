@@ -69,7 +69,7 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
     keywords="dbt airflow cli",
-    author=u"Andrzej Swatowski",
+    author="Andrzej Swatowski",
     author_email="andrzej.swatowski@getindata.com",
     url="https://github.com/getindata/data-pipelines-cli/",
     packages=find_packages(exclude=["docs", "tests"]),
