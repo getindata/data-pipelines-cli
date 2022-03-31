@@ -1,5 +1,6 @@
 import pathlib
 import shutil
+from typing import Optional
 
 import click
 import yaml
@@ -62,8 +63,8 @@ def _copy_dbt_manifest() -> None:
 
 def replace_image_settings(docker_args: DockerArgs) -> None:
     k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "execution_env.yml")
-    echo_info(f"Replacing {IMAGE_TAG_TO_REPLACE} with commit SHA = {docker_args.commit_sha}")
-    replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.commit_sha)
+    echo_info(f"Replacing {IMAGE_TAG_TO_REPLACE} with image tag = {docker_args.image_tag}")
+    replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.image_tag)
 
 
 def _replace_datahub_with_jinja_vars(env: str) -> None:
@@ -85,15 +86,14 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
         yaml.dump(updated_config, datahub_config_file)
 
 
-def compile_project(
-    env: str,
-    docker_build: bool = False,
-) -> None:
+def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bool = False) -> None:
     """
     Create local working directories and build artifacts.
 
     :param env: Name of the environment
     :type env: str
+    :param docker_tag: Image tag of a Docker image to create
+    :type docker_tag: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
     :raises DataPipelinesError:
@@ -101,7 +101,7 @@ def compile_project(
     copy_dag_dir_to_build_dir()
     copy_config_dir_to_build_dir()
 
-    docker_args = DockerArgs(env)
+    docker_args = DockerArgs(env, docker_tag)
     replace_image_settings(docker_args)
     _replace_datahub_with_jinja_vars(env)
 
@@ -130,8 +130,8 @@ def compile_project(
     default=False,
     help="Whether to build a Docker image",
 )
-def compile_project_command(
-    env: str,
-    docker_build: bool,
-) -> None:
-    compile_project(env, docker_build)
+@click.option(
+    "--docker-tag", type=str, required=False, help="Image tag of a Docker image to create"
+)
+def compile_project_command(env: str, docker_build: bool, docker_tag: Optional[str]) -> None:
+    compile_project(env, docker_tag, docker_build)

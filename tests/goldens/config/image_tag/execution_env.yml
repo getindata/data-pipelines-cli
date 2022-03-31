@@ -1,0 +1,3 @@
+image:
+  repository: my_docker_repository_uri
+  tag: some_test_tag_a1s2d3f
