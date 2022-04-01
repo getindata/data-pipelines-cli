@@ -17,7 +17,7 @@ Read the full documentation at [https://data-pipelines-cli.readthedocs.io/](http
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [dp (data-pipelines-cli)](https://pypi.org/project/data-pipelines-cli/):
 
 ```bash
-pip install data-pipelines-cli[docker,datahub,gcs]
+pip install data-pipelines-cli[bigquery,docker,datahub,gcs]
 ```
 
 ## Usage

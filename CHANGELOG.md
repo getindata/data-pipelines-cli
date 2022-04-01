@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `pip install data-pipelines-cli[ADAPTER_PROVIDER]` installs adapter alongside **dbt-core**, e.g. `pip install data-pipelines-cli[bigquery]`.
+
 ## [0.16.0] - 2022-03-24
 
 ### Added
