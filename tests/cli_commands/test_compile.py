@@ -176,7 +176,7 @@ class CompileCommandTestCase(unittest.TestCase):
         ):
             with self.assertRaises(DataPipelinesError):
                 try:
-                    compile_project("base", True)
+                    compile_project("base", docker_build=True)
                 except MockException:
                     self.fail()
 
@@ -222,7 +222,7 @@ class CompileCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
         ):
             with self.assertRaises(DataPipelinesError):
-                compile_project("base", True)
+                compile_project("base", docker_build=True)
 
     @patch("data_pipelines_cli.data_structures.git_revision_hash")
     def test_datahub_variables(self, mock_git_revision_hash):
