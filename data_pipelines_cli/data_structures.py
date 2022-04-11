@@ -86,10 +86,7 @@ class DockerArgs:
     def _get_image_tag_from_k8s_config(self, env: str, image_tag: Optional[str]) -> str:
         from data_pipelines_cli.cli_constants import IMAGE_TAG_TO_REPLACE
 
-        if image_tag:
-            return image_tag
-
-        config_tag = self._get_docker_image_variable_from_k8s_config("tag", env)
+        config_tag = image_tag or self._get_docker_image_variable_from_k8s_config("tag", env)
         if config_tag != IMAGE_TAG_TO_REPLACE:
             return config_tag
 
