@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.17.0] - 2022-04-11
+
+### Added
+
+-   `pip install data-pipelines-cli[ADAPTER_PROVIDER]` installs adapter alongside **dbt-core**, e.g. `pip install data-pipelines-cli[bigquery]`.
+
+### Changed
+
+-   `dp compile` accepts additional command line argument `--docker-tag`, allowing for custom Docker tag instead of relying on Git commit SHA. Moreover, if `--docker-tag` is not provided, **dp** searches for tag in `build/dag/config/<ENV>/execution_env.yml`. If it is present instead of `<IMAGE_TAG>` to be replaced, **dp** chooses it over Git commit SHA.
+
 ## [0.16.0] - 2022-03-24
 
 ### Added
@@ -175,7 +185,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.16.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.17.0...HEAD
+
+[0.17.0]: https://github.com/getindata/data-pipelines-cli/compare/0.16.0...0.17.0
 
 [0.16.0]: https://github.com/getindata/data-pipelines-cli/compare/0.15.2...0.16.0
 

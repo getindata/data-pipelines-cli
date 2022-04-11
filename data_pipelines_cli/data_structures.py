@@ -1,5 +1,5 @@
 import sys
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import yaml
 
@@ -64,15 +64,12 @@ class DockerArgs:
 
     repository: str
     """URI of the Docker images repository"""
-    commit_sha: str
-    """Long hash of the current Git revision. Used as an image tag"""
+    image_tag: str
+    """An image tag"""
 
-    def __init__(self, env: str) -> None:
+    def __init__(self, env: str, image_tag: Optional[str]) -> None:
         self.repository = self._get_docker_repository_uri_from_k8s_config(env)
-        commit_sha = git_revision_hash()
-        if not commit_sha:
-            raise DataPipelinesError("Could not get git revision hash.")
-        self.commit_sha = commit_sha
+        self.image_tag = self._get_image_tag_from_k8s_config(env, image_tag)
 
     def docker_build_tag(self) -> str:
         """
@@ -81,10 +78,25 @@ class DockerArgs:
         :return: Tag for Docker Python API build command
         :rtype: str
         """
-        return f"{self.repository}:{self.commit_sha}"
+        return f"{self.repository}:{self.image_tag}"
+
+    def _get_docker_repository_uri_from_k8s_config(self, env: str) -> str:
+        return self._get_docker_image_variable_from_k8s_config("repository", env)
+
+    def _get_image_tag_from_k8s_config(self, env: str, image_tag: Optional[str]) -> str:
+        from data_pipelines_cli.cli_constants import IMAGE_TAG_TO_REPLACE
+
+        config_tag = image_tag or self._get_docker_image_variable_from_k8s_config("tag", env)
+        if config_tag != IMAGE_TAG_TO_REPLACE:
+            return config_tag
+
+        commit_sha = git_revision_hash()
+        if not commit_sha:
+            raise DataPipelinesError("Could not get git revision hash.")
+        return commit_sha
 
     @staticmethod
-    def _get_docker_repository_uri_from_k8s_config(env: str) -> str:
+    def _get_docker_image_variable_from_k8s_config(key: str, env: str) -> str:
         # Avoiding a dependency loop between `cli_constants` and `data_structures`
         from data_pipelines_cli.cli_constants import BUILD_DIR
         from data_pipelines_cli.config_generation import (
@@ -95,10 +107,10 @@ class DockerArgs:
             BUILD_DIR.joinpath("dag"), env, "execution_env.yml"
         )
         try:
-            return execution_env_config["image"]["repository"]
+            return execution_env_config["image"][key]
         except KeyError as key_error:
             raise DataPipelinesError(
-                f"Could not find 'repository' variable in build/config/{env}/execution_env.yml."
+                f"Could not find '{key}' variable in build/config/{env}/execution_env.yml."
             ) from key_error
 
 

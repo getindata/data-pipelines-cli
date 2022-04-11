@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.0.1",  # https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
-    "dbt-core>=1.0.2",
+    "dbt-core==1.0.4",
     "click>=8.0.3,<9.0",
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
@@ -24,6 +24,12 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 }
 
 EXTRA_REQUIRE = {
+    # DBT adapters
+    "bigquery": ["dbt-bigquery==1.0.0"],
+    "postgres": ["dbt-postgres==1.0.4"],
+    "snowflake": ["dbt-snowflake==1.0.0"],
+    "redshift": ["dbt-redshift==1.0.0"],
+    # ---
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
     "git": ["GitPython==3.1.26"],
@@ -55,7 +61,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.16.0",
+    version="0.17.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -69,7 +75,7 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
     keywords="dbt airflow cli",
-    author=u"Andrzej Swatowski",
+    author="Andrzej Swatowski",
     author_email="andrzej.swatowski@getindata.com",
     url="https://github.com/getindata/data-pipelines-cli/",
     packages=find_packages(exclude=["docs", "tests"]),
