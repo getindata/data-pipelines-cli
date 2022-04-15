@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
     "copier @ git+https://github.com/swtwsk/copier@regex-update",
     "Jinja2>=2.11,<2.12",
     "fsspec",
-    "packaging>=20.4,<21.0",
+    "packaging>=20.9,<21.0",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
