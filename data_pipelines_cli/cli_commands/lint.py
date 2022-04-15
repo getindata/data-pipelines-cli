@@ -1,7 +1,7 @@
 import pathlib
 import tempfile
 from configparser import ConfigParser
-from typing import List
+from typing import Any, List
 
 import click
 import yaml
@@ -48,13 +48,27 @@ def _get_source_tests_paths() -> List[pathlib.Path]:
     return list(map(lambda dir_name: pathlib.Path.cwd().joinpath(dir_name), dir_names))
 
 
+def _insert_into_config_section(config: ConfigParser, section: str, key: str, value: Any) -> None:
+    if section not in config:
+        config[section] = {}
+    config[section][key] = value
+
+
 def _create_temporary_sqlfluff_config(env: str) -> ConfigParser:
+    sqlfluff_config_path = pathlib.Path.cwd().joinpath(".sqlfluff")
     config = ConfigParser()
-    config["sqlfluff"] = {"templater": "dbt"}
-    config["sqlfluff:templater:dbt"] = {
-        "profiles_dir": str(generate_profiles_yml(env, copy_config_dir=True).absolute())
-    }
+    if sqlfluff_config_path.exists():
+        config.read(sqlfluff_config_path)
+
+    _insert_into_config_section(config, "sqlfluff", "templater", "dbt")
+    _insert_into_config_section(
+        config,
+        "sqlfluff:templater:dbt",
+        "profiles_dir",
+        str(generate_profiles_yml(env, copy_config_dir=True).absolute()),
+    )
     config["sqlfluff:templater:dbt:context"] = read_dbt_vars_from_configs(env)
+
     return config
 
 
