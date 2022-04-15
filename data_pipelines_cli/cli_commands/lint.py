@@ -12,6 +12,7 @@ from ..config_generation import (
     generate_profiles_yml,
     read_dictionary_from_config_directory,
 )
+from ..dbt_utils import read_dbt_vars_from_configs
 from ..errors import SQLLintError, SubprocessNonZeroExitError
 
 SQLFLUFF_FIX_NOT_EVERYTHING_ERROR = 1
@@ -53,6 +54,7 @@ def _create_temporary_sqlfluff_config(env: str) -> ConfigParser:
     config["sqlfluff:templater:dbt"] = {
         "profiles_dir": str(generate_profiles_yml(env, copy_config_dir=True).absolute())
     }
+    config["sqlfluff:templater:dbt:context"] = read_dbt_vars_from_configs(env)
     return config
 
 
