@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
 
    data_pipelines_cli.cli_commands.generate
 
@@ -112,3 +111,4 @@ data\_pipelines\_cli.cli\_commands.update module
    :members:
    :undoc-members:
    :show-inheritance:
+
