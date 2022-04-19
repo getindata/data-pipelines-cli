@@ -3,3 +3,5 @@ sphinx-click>=4.0,<4.1
 myst-parser>=0.17, <0.18
 docutils>=0.17,<0.18
 GitPython==3.1.26
+git+https://github.com/swtwsk/copier@regex-update
+
