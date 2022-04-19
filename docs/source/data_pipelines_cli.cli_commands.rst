@@ -48,6 +48,14 @@ data\_pipelines\_cli.cli\_commands.deploy module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_commands.docs module
+----------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.docs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_commands.init module
 ----------------------------------------------
 

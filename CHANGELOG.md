@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.18.0] - 2022-04-19
+
+### Added
+
+-   `dp docs-serve` command acting as a wrapper for `dbt docs serve`.
+
 ## [0.17.0] - 2022-04-11
 
 ### Added
@@ -185,7 +191,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.17.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.18.0...HEAD
+
+[0.18.0]: https://github.com/getindata/data-pipelines-cli/compare/0.17.0...0.18.0
 
 [0.17.0]: https://github.com/getindata/data-pipelines-cli/compare/0.16.0...0.17.0
 

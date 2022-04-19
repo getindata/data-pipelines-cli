@@ -10,7 +10,7 @@ from data_pipelines_cli.cli import _cli
 
 
 class RunTestCommandTestCase(unittest.TestCase):
-    commands_to_test = ["run", "test"]
+    commands_to_test = ["run", "test", "docs-serve"]
     goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
     def setUp(self) -> None:
@@ -44,7 +44,8 @@ class RunTestCommandTestCase(unittest.TestCase):
                 self.assertEqual(0, result.exit_code, msg=result.exception)
 
                 self.assertEqual("dbt", self.subprocess_run_args[0])
-                self.assertEqual(cmd, self.subprocess_run_args[1])
+                split_cmd = cmd.split("-")
+                self.assertEqual(split_cmd, self.subprocess_run_args[1 : 1 + len(split_cmd)])
                 args_str = " ".join(self.subprocess_run_args)
                 self.assertIn("--profile snowflake", args_str)
                 self.assertIn("--target local", args_str)
@@ -76,7 +77,8 @@ class RunTestCommandTestCase(unittest.TestCase):
                     self.assertEqual(0, result.exit_code, msg=result.exception)
 
                     self.assertEqual("dbt", self.subprocess_run_args[0])
-                    self.assertEqual(cmd, self.subprocess_run_args[1])
+                    split_cmd = cmd.split("-")
+                    self.assertEqual(split_cmd, self.subprocess_run_args[1 : 1 + len(split_cmd)])
                     args_str = " ".join(self.subprocess_run_args)
                     self.assertIn("--profile bigquery", args_str)
                     self.assertIn("--target env_execution", args_str)
