@@ -50,10 +50,10 @@ EXTRA_REQUIRE = {
         ),
     ],
     "docs": [
-        "sphinx==4.3.1",
+        "sphinx==4.5.0",
         "sphinx-rtd-theme==1.0.0",
-        "sphinx-click>=3.1,<3.2",
-        "myst-parser>=0.16, <0.17",
+        "sphinx-click>=4.0,<4.1",
+        "myst-parser>=0.17, <0.18",
         "GitPython==3.1.26",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
