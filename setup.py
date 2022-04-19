@@ -34,7 +34,7 @@ EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
     "git": ["GitPython==3.1.26"],
-    "lint": ["sqlfluff==0.12.0", "sqlfluff-templater-dbt==0.12.0"],
+    "lint": ["sqlfluff>=0.12.0,<1.0", "sqlfluff-templater-dbt>=0.12.0,<1.0"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",
