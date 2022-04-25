@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [0.19.0] - 2022-04-25
+
 ### Added
 
-- `dp seed` command acting as a wrapper for `dbt seed`.
+-   `dp seed` command acting as a wrapper for `dbt seed`.
 
 ## [0.18.0] - 2022-04-19
 
@@ -195,7 +197,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.18.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.19.0...HEAD
+
+[0.19.0]: https://github.com/getindata/data-pipelines-cli/compare/0.18.0...0.19.0
 
 [0.18.0]: https://github.com/getindata/data-pipelines-cli/compare/0.17.0...0.18.0
 
