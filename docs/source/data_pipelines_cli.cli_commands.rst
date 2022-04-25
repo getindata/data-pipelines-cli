@@ -88,6 +88,14 @@ data\_pipelines\_cli.cli\_commands.run module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_commands.seed module
+----------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.seed
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_commands.template module
 --------------------------------------------------
 
