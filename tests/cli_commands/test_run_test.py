@@ -10,7 +10,7 @@ from data_pipelines_cli.cli import _cli
 
 
 class RunTestCommandTestCase(unittest.TestCase):
-    commands_to_test = ["run", "test", "docs-serve"]
+    commands_to_test = ["run", "test", "seed", "docs-serve"]
     goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
     def setUp(self) -> None:

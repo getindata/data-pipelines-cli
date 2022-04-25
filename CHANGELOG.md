@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `dp seed` command acting as a wrapper for `dbt seed`.
+
 ## [0.18.0] - 2022-04-19
 
 ### Added
