@@ -68,7 +68,7 @@ class DockerArgsTest(unittest.TestCase):
         mock_git_revision_hash.return_value = commit_sha
 
         with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
-            docker_args = DockerArgs("base", None)
+            docker_args = DockerArgs("base", None, {})
 
         self.assertEqual(f"{repository}:{commit_sha}", docker_args.docker_build_tag())
         self.assertEqual(repository, docker_args.repository)
@@ -79,7 +79,7 @@ class DockerArgsTest(unittest.TestCase):
         image_tag = "my_awesome_tag_eee440b_latest"
 
         with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
-            docker_args = DockerArgs("base", image_tag)
+            docker_args = DockerArgs("base", image_tag, {})
 
         self.assertEqual(f"{repository}:{image_tag}", docker_args.docker_build_tag())
         self.assertEqual(repository, docker_args.repository)
@@ -90,7 +90,7 @@ class DockerArgsTest(unittest.TestCase):
         image_tag = "some_test_tag_a1s2d3f"
 
         with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
-            docker_args = DockerArgs("image_tag", None)
+            docker_args = DockerArgs("image_tag", None, {})
 
         self.assertEqual(f"{repository}:{image_tag}", docker_args.docker_build_tag())
         self.assertEqual(repository, docker_args.repository)
@@ -103,7 +103,7 @@ class DockerArgsTest(unittest.TestCase):
         mock_git_revision_hash.return_value = commit_sha
 
         with self.assertRaises(DataPipelinesError):
-            _ = DockerArgs("base", None)
+            _ = DockerArgs("base", None, {})
 
     @patch("data_pipelines_cli.data_structures.git_revision_hash")
     def test_no_git_hash(self, mock_git_revision_hash):
@@ -111,4 +111,4 @@ class DockerArgsTest(unittest.TestCase):
 
         with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DataPipelinesError):
-                _ = DockerArgs("base", None)
+                _ = DockerArgs("base", None, {})
