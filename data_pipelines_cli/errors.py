@@ -44,6 +44,8 @@ class NotAProjectDirectoryError(DataPipelinesError):
 class SubprocessNonZeroExitError(DataPipelinesError):
     """Exception raised if subprocess exits with non-zero exit code"""
 
+    exit_code: int
+
     def __init__(
         self, subprocess_name: str, exit_code: int, subprocess_output: Optional[str] = None
     ) -> None:
@@ -51,6 +53,7 @@ class SubprocessNonZeroExitError(DataPipelinesError):
             f"{subprocess_name} has exited with non-zero exit code: {exit_code}",
             submessage=subprocess_output,
         )
+        self.exit_code = exit_code
 
 
 class SubprocessNotFound(DataPipelinesError):
@@ -91,3 +94,10 @@ class DockerErrorResponseError(DataPipelinesError):
 
     def __init__(self, error_msg: str) -> None:
         super().__init__("Error raised when using Docker.\n" + error_msg)
+
+
+class SQLLintError(DataPipelinesError):
+    """Exception raised if there are linting problems in some files."""
+
+    def __init__(self) -> None:
+        super().__init__("Fix SQL linting errors.")

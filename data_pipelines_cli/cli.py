@@ -9,6 +9,7 @@ from .cli_commands.deploy import deploy_command
 from .cli_commands.docs import docs_command
 from .cli_commands.generate.generate import generate_group
 from .cli_commands.init import init_command
+from .cli_commands.lint import lint_command
 from .cli_commands.prepare_env import prepare_env_command
 from .cli_commands.publish import publish_command
 from .cli_commands.run import run_command
@@ -43,6 +44,7 @@ _cli.add_command(deploy_command)
 _cli.add_command(docs_command)
 _cli.add_command(generate_group)
 _cli.add_command(init_command)
+_cli.add_command(lint_command)
 _cli.add_command(list_templates_command)
 _cli.add_command(prepare_env_command)
 _cli.add_command(publish_command)

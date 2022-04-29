@@ -12,10 +12,11 @@ INSTALL_REQUIREMENTS = [
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
     "types-PyYAML>=6.0",
-    "copier==5.1.0",
+    # due to the 'regex' conflict between copier and sqlfluff:
+    "copier @ git+https://github.com/swtwsk/copier@regex-update",
     "Jinja2>=2.11,<2.12",
     "fsspec",
-    "packaging>=20.4,<21.0",
+    "packaging>=20.9,<21.0",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -33,6 +34,7 @@ EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
     "git": ["GitPython==3.1.26"],
+    "lint": ["sqlfluff>=0.12.0,<1.0", "sqlfluff-templater-dbt>=0.12.0,<1.0"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",
