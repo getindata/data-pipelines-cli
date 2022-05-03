@@ -90,8 +90,7 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
 
 def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bool = False, docker_args: Dict[str, str] = None) -> None:
     docker_args = docker_args or {}
-    """
-    Create local working directories and build artifacts.
+    """Create local working directories and build artifacts.
 
     :param env: Name of the environment
     :type env: str
@@ -99,8 +98,7 @@ def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bo
     :type docker_tag: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
-    :raises DataPipelinesError:
-    """
+    :raises DataPipelinesError:"""
     copy_dag_dir_to_build_dir()
     copy_config_dir_to_build_dir()
 
