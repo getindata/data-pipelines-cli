@@ -88,7 +88,8 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
         yaml.dump(updated_config, datahub_config_file)
 
 
-def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bool = False, docker_args: Dict[str, str] = {}) -> None:
+def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bool = False, docker_args: Dict[str, str] = None) -> None:
+    docker_args = docker_args or {}
     """
     Create local working directories and build artifacts.
 
