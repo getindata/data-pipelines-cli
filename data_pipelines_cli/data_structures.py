@@ -1,5 +1,4 @@
 import sys
-import os
 from typing import Any, Dict, List, Optional
 
 import yaml

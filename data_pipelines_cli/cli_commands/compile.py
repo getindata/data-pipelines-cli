@@ -1,8 +1,7 @@
+import json
 import pathlib
 import shutil
-from typing import Optional, Dict
-
-import json
+from typing import Dict, Optional
 
 import click
 import yaml
@@ -39,7 +38,9 @@ def _docker_build(docker_args: DockerArgs) -> None:
     docker_client = docker.from_env()
     docker_tag = docker_args.docker_build_tag()
     try:
-        _, logs_generator = docker_client.images.build(path=".", tag=docker_tag, buildargs=docker_args.build_args)
+        _, logs_generator = docker_client.images.build(
+            path=".", tag=docker_tag, buildargs=docker_args.build_args
+        )
         DockerResponseReader(logs_generator).click_echo_ok_responses()
     except docker.errors.BuildError as err:
         build_log = "\n".join([str(log) for log in err.build_log])
@@ -88,9 +89,14 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
         yaml.dump(updated_config, datahub_config_file)
 
 
-def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bool = False, docker_args: Dict[str, str] = None) -> None:
-    docker_args = docker_args or {}
-    """Create local working directories and build artifacts.
+def compile_project(
+    env: str,
+    docker_tag: Optional[str] = None,
+    docker_build: bool = False,
+    docker_build_args: Optional[Dict[str, str]] = None,
+) -> None:
+    """
+    Create local working directories and build artifacts.
 
     :param env: Name of the environment
     :type env: str
@@ -98,11 +104,12 @@ def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bo
     :type docker_tag: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
-    :raises DataPipelinesError:"""
+    :raises DataPipelinesError:
+    """
     copy_dag_dir_to_build_dir()
     copy_config_dir_to_build_dir()
 
-    docker_args = DockerArgs(env, docker_tag, docker_args)
+    docker_args = DockerArgs(env, docker_tag, docker_build_args or {})
     replace_image_settings(docker_args)
     _replace_datahub_with_jinja_vars(env)
 
@@ -137,5 +144,7 @@ def compile_project(env: str, docker_tag: Optional[str] = None, docker_build: bo
 @click.option(
     "--docker-args", type=str, required=False, help="Args required to build project in json format"
 )
-def compile_project_command(env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str]) -> None:
+def compile_project_command(
+    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str]
+) -> None:
     compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"))
