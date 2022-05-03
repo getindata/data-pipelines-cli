@@ -69,10 +69,10 @@ class DockerArgs:
     """An image tag"""
     build_args: Dict[str, str]
 
-    def __init__(self, env: str, image_tag: Optional[str], docker_args: Dict[str, str]) -> None:
+    def __init__(self, env: str, image_tag: Optional[str], build_args: Dict[str, str]) -> None:
         self.repository = self._get_docker_repository_uri_from_k8s_config(env)
         self.image_tag = self._get_image_tag_from_k8s_config(env, image_tag)
-        self.build_args = docker_args
+        self.build_args = build_args
 
     def docker_build_tag(self) -> str:
         """
