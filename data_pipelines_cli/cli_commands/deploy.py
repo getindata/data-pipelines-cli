@@ -44,7 +44,7 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
     ) -> None:
-        self.docker_args = DockerArgs(env, None) if docker_push else None
+        self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env

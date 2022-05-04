@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   `--docker-args` has been added to `dp compile`
+
 ## [0.19.0] - 2022-04-25
 
 ### Added
