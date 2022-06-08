@@ -21,18 +21,19 @@ def replace(filename: Union[str, os.PathLike[str]], pattern: str, replacement: s
     Beware however, it uses Python regex dialect instead of `sed`'s one.
     It can introduce regex-related bugs.
     """
-    # For efficiency, precompile the passed regular expression.
+
     if pattern:
+        # For efficiency, precompile the passed regular expression.
         pattern_compiled = re.compile(pattern)
 
-    # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e.,
-    # binary writing with updating). This is usually a good thing. In this
-    # case, however, binary writing imposes non-trivial encoding constraints
-    # trivially resolved by switching to text writing. Let's do that.
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp_file:
-        with open(filename) as src_file:
-            for line in src_file:
-                tmp_file.write(pattern_compiled.sub(replacement, line))
+        # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e.,
+        # binary writing with updating). This is usually a good thing. In this
+        # case, however, binary writing imposes non-trivial encoding constraints
+        # trivially resolved by switching to text writing. Let's do that.
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp_file:
+            with open(filename) as src_file:
+                for line in src_file:
+                    tmp_file.write(pattern_compiled.sub(replacement, line))
 
     # Overwrite the original file with the munged temporary file in a
     # manner preserving file attributes (e.g., permissions).
