@@ -10,6 +10,8 @@ from typing import Optional, Union
 
 import click
 
+from data_pipelines_cli.cli_utils import echo_warning
+
 
 # Python's `sed` equivalent, based on the following answer:
 # https://stackoverflow.com/a/31499114
@@ -22,7 +24,7 @@ def replace(filename: Union[str, os.PathLike[str]], pattern: str, replacement: s
     It can introduce regex-related bugs.
     """
 
-    if pattern:
+    if replacement:
         # For efficiency, precompile the passed regular expression.
         pattern_compiled = re.compile(pattern)
 
