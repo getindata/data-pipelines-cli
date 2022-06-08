@@ -22,7 +22,8 @@ def replace(filename: Union[str, os.PathLike[str]], pattern: str, replacement: s
     It can introduce regex-related bugs.
     """
     # For efficiency, precompile the passed regular expression.
-    pattern_compiled = re.compile(pattern)
+    if pattern:
+        pattern_compiled = re.compile(pattern)
 
     # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e.,
     # binary writing with updating). This is usually a good thing. In this
