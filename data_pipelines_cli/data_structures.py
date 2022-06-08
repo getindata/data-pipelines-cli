@@ -94,7 +94,7 @@ class DockerArgs:
 
         commit_sha = git_revision_hash()
         if not commit_sha:
-            raise DataPipelinesError("Could not get git revision hash.")
+            echo_warning("Could not get git revision hash.")
         return commit_sha
 
     @staticmethod
