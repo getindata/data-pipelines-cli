@@ -10,8 +10,6 @@ from typing import Optional, Union
 
 import click
 
-from data_pipelines_cli.cli_utils import echo_warning
-
 
 # Python's `sed` equivalent, based on the following answer:
 # https://stackoverflow.com/a/31499114
