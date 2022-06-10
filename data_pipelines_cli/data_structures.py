@@ -95,6 +95,7 @@ class DockerArgs:
         commit_sha = git_revision_hash()
         if not commit_sha:
             echo_warning("Could not get git revision hash.")
+            commit_sha = "None"
         return commit_sha
 
     @staticmethod
