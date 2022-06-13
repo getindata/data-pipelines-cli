@@ -3,10 +3,11 @@ import random
 import string
 import unittest
 
+import aiobotocore
 import boto3
 import botocore
 import fsspec
-import moto
+from botocore.awsrequest import AWSResponse
 from moto import mock_s3
 
 from data_pipelines_cli.errors import DataPipelinesError
@@ -18,11 +19,24 @@ MY_BUCKET = "my_bucket"
 # https://github.com/aio-libs/aiobotocore/issues/755#issuecomment-844273191
 # aiobotocore problems can be fixed by creating an AWSResponse with fixed
 # `raw_headers` field
-class MockedAWSResponse(botocore.awsrequest.AWSResponse):
-    raw_headers = {}  # type: ignore
+# Patch `aiobotocore.endpoint.convert_to_response_dict` to work with moto.
+class MockedAWSResponse:
+    def __init__(self, response: AWSResponse):
+        self._response = response
+        self.status_code = response.status_code
+        self.raw = response.raw
+        self.raw.raw_headers = {}
 
-    async def read(self):  # type: ignore
-        return self.text
+    @property
+    async def content(self):
+        return self._response.content
+
+
+def factory(original):
+    def patched_convert_to_response_dict(http_response, operation_model):
+        return original(MockedAWSResponse(http_response), operation_model)
+
+    return patched_convert_to_response_dict
 
 
 class TestError(unittest.TestCase):
@@ -92,8 +106,11 @@ class TestSynchronize(unittest.TestCase):
 @mock_s3
 class TestS3Synchronize(TestSynchronize):
     def setUp(self) -> None:
-        botocore.awsrequest.AWSResponse = MockedAWSResponse
-        moto.core.models.AWSResponse = MockedAWSResponse
+        from aiobotocore.endpoint import convert_to_response_dict  # noqa: F401
+
+        aiobotocore.endpoint.convert_to_response_dict = factory(
+            aiobotocore.endpoint.convert_to_response_dict
+        )
 
         client = boto3.client(
             "s3",
