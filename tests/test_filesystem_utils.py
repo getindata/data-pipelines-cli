@@ -4,6 +4,7 @@ import string
 import unittest
 
 import aiobotocore
+import aiobotocore.endpoint
 import boto3
 import botocore
 import fsspec
@@ -37,6 +38,11 @@ def factory(original):
         return original(MockedAWSResponse(http_response), operation_model)
 
     return patched_convert_to_response_dict
+
+
+aiobotocore.endpoint.convert_to_response_dict = factory(
+    aiobotocore.endpoint.convert_to_response_dict
+)
 
 
 class TestError(unittest.TestCase):
@@ -106,12 +112,6 @@ class TestSynchronize(unittest.TestCase):
 @mock_s3
 class TestS3Synchronize(TestSynchronize):
     def setUp(self) -> None:
-        from aiobotocore.endpoint import convert_to_response_dict  # noqa: F401
-
-        aiobotocore.endpoint.convert_to_response_dict = factory(
-            aiobotocore.endpoint.convert_to_response_dict
-        )
-
         client = boto3.client(
             "s3",
             region_name="eu-west-1",
