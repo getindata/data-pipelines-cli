@@ -64,10 +64,10 @@ def _copy_dbt_manifest() -> None:
     )
 
 
-def replace_image_settings(docker_args: DockerArgs) -> None:
+def replace_image_settings(image_tag: str) -> None:
     k8s_config = BUILD_DIR.joinpath("dag", "config", "base", "execution_env.yml")
-    echo_info(f"Replacing {IMAGE_TAG_TO_REPLACE} with image tag = {docker_args.image_tag}")
-    replace(k8s_config, IMAGE_TAG_TO_REPLACE, docker_args.image_tag)
+    echo_info(f"Replacing {IMAGE_TAG_TO_REPLACE} with image tag = {image_tag}")
+    replace(k8s_config, IMAGE_TAG_TO_REPLACE, image_tag)
 
 
 def _replace_datahub_with_jinja_vars(env: str) -> None:
@@ -110,7 +110,9 @@ def compile_project(
     copy_config_dir_to_build_dir()
 
     docker_args = DockerArgs(env, docker_tag, docker_build_args or {})
-    replace_image_settings(docker_args)
+
+    replace_image_settings(docker_args.image_tag or "Empty")
+
     _replace_datahub_with_jinja_vars(env)
 
     _dbt_compile(env)

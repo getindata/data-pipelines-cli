@@ -98,12 +98,9 @@ class DockerResponseReader:
     @staticmethod
     def _prepare_stream(log: Dict[str, Union[str, Dict[str, str]]]) -> List[DockerReadResponse]:
         stream = cast(str, log["stream"])
-        return list(
-            map(
-                lambda line: DockerReadResponse(line, False),
-                filter(lambda x: x, stream.splitlines()),
-            )
-        )
+        return [
+            DockerReadResponse(line, False) for line in filter(lambda x: x, stream.splitlines())
+        ]
 
     @staticmethod
     def _prepare_aux(log: Dict[str, Union[str, Dict[str, str]]]) -> List[DockerReadResponse]:

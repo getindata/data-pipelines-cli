@@ -38,8 +38,8 @@ EXTRA_REQUIRE = {
         "pytest-cov>=2.8.0, <3.0.0",
         "pre-commit==2.15.0",
         "tox==3.21.1",
-        "moto[s3]==3.0.7",
-        "gcp-storage-emulator==2021.12.2",
+        "moto[s3]==3.1.12",
+        "gcp-storage-emulator==2022.6.11",
         "GitPython==3.1.26",
         *(
             [
@@ -61,7 +61,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.20.0",
+    version="0.20.1",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

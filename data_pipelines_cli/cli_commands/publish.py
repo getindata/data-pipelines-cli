@@ -26,7 +26,7 @@ def _get_database_and_schema_name(manifest: Manifest) -> Tuple[str, str]:
     try:
         model = next(
             node
-            for node in map(lambda n: cast(ManifestNode, n), manifest.nodes.values())
+            for node in (cast(ManifestNode, n) for n in manifest.nodes.values())
             if node.resource_type == "model"
         )
         return model.database, model.schema
@@ -56,7 +56,7 @@ def _parse_models_schema(manifest: Manifest) -> List[DbtModel]:
             meta=node.meta,
             columns=_parse_columns_dict_into_table_list(node.columns),
         )
-        for node in map(lambda n: cast(ManifestNode, n), manifest.nodes.values())
+        for node in (cast(ManifestNode, n) for n in manifest.nodes.values())
         if node.resource_type == "model"
     ]
 

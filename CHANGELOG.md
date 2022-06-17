@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.20.1] - 2022-06-17
+
+### Fixed
+
+-   `dp seed`, `dp run` and `dp test` no longer fail when we are not using git repository.
+
 ## [0.20.0] - 2022-05-04
 
 -   `--docker-args` has been added to `dp compile`
@@ -201,7 +207,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.20.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.20.1...HEAD
+
+[0.20.1]: https://github.com/getindata/data-pipelines-cli/compare/0.20.0...0.20.1
 
 [0.20.0]: https://github.com/getindata/data-pipelines-cli/compare/0.19.0...0.20.0
 
