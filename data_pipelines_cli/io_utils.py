@@ -21,6 +21,7 @@ def replace(filename: Union[str, os.PathLike[str]], pattern: str, replacement: s
     Beware however, it uses Python regex dialect instead of `sed`'s one.
     It can introduce regex-related bugs.
     """
+
     # For efficiency, precompile the passed regular expression.
     pattern_compiled = re.compile(pattern)
 

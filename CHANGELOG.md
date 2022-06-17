@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+-   `dp seed`, `dp run` and `dp test` no longer fail when we are not using git repository.
+
 ## [0.20.0] - 2022-05-04
 
 -   `--docker-args` has been added to `dp compile`

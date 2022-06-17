@@ -109,6 +109,4 @@ class DockerArgsTest(unittest.TestCase):
     def test_no_git_hash(self, mock_git_revision_hash):
         mock_git_revision_hash.return_value = None
 
-        with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
-            with self.assertRaises(DataPipelinesError):
-                _ = DockerArgs("base", None, {})
+        patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir)
