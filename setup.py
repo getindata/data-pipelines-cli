@@ -16,6 +16,7 @@ INSTALL_REQUIREMENTS = [
     "Jinja2>=2.11,<2.12",
     "fsspec",
     "packaging>=20.4,<21.0",
+    "colorama==0.4.4"
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -31,7 +32,7 @@ EXTRA_REQUIRE = {
     "redshift": ["dbt-redshift==1.0.0"],
     # ---
     "docker": ["docker>=5.0"],
-    "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
+    "datahub": ["acryl-datahub>=0.8.39",'acryl-datahub[dbt]'],
     "git": ["GitPython==3.1.26"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
