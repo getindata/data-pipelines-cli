@@ -32,7 +32,7 @@ EXTRA_REQUIRE = {
     "redshift": ["dbt-redshift==1.0.0"],
     # ---
     "docker": ["docker>=5.0"],
-    "datahub": ["acryl-datahub>=0.8.39",'acryl-datahub[dbt]'],
+    "datahub": ["acryl-datahub[dbt]>=0.8.39"],
     "git": ["GitPython==3.1.26"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
