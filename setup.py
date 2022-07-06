@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
     "Jinja2>=2.11,<2.12",
     "fsspec",
     "packaging>=20.4,<21.0",
-    "colorama==0.4.4"
+    "colorama==0.4.4",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
