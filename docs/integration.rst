@@ -5,7 +5,7 @@ Integration with environment
 processes. The following picture presents the whole environment which is handled by our tool.
 
 .. image:: images/integration.png
-   :width: 600
+   :width: 700
 
 DBT
 ++++++++++++++++++++++++++++++++++++++++++++++

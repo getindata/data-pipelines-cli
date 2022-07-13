@@ -140,8 +140,6 @@ Publication configuration
 ``config/<ENV>/publish.yml`` file contains configuration about creating DBT packages for downstream projects and
 publishing it to a git repository as a package registry.
 
-
-TODO:
 .. list-table::
    :widths: 25 20 55
    :header-rows: 1
