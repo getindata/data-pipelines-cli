@@ -56,6 +56,7 @@ EXTRA_REQUIRE = {
         "myst-parser>=0.17, <0.18",
         "GitPython==3.1.26",
         "colorama==0.4.4",
+        "MarkupSafe>=2.1.1",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
