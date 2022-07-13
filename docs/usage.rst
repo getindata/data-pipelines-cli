@@ -184,7 +184,7 @@ Published packages can be used as standard DBT packages by adding them in ``pack
 
 .. code-block:: yaml
 
-packages:
+ packages:
   - git: "https://{{env_var('DBT_GIT_USER_NAME', '')}}:{{env_var('DBT_GIT_SECRET_TOKEN', '')}}@gitlab.com/<path to you repository>"
     subdirectory: "<upstream project name>"
 
@@ -195,9 +195,9 @@ Created metadata files containing extra information about the project name (whic
 
 .. code-block:: json
 
-"source_meta": {
+ "source_meta": {
     "dag": "<project name>"
-}
+ }
 
 This way explicit dependencies can be created in the execution environment. For more information see the documentation of
 `dbt-airflow-factory <https://dbt-airflow-factory.readthedocs.io/en/latest/features.html#source-dependencies>`

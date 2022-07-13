@@ -8,7 +8,7 @@ Create Data Pipeline project template
 ----------------
 
 The first thing that you need to do is to create a git repository with a project template used later to create multiple
- projects. The template should contain the whole directory structure and files used in your projects.
+projects. The template should contain the whole directory structure and files used in your projects.
 Additionally, it should have a connection configuration to all components in your environment, CICD, and all other
 aspects specific to your company. Here you can find templates examples that you can adjust to your need:
 https://github.com/getindata/data-pipelines-template-example . Based on the template The Data Pipelines CLI will ask a user

@@ -143,7 +143,7 @@ publishing it to a git repository as a package registry.
 
 TODO:
 .. list-table::
-   :widths: 25 20 2 53
+   :widths: 25 20 55
    :header-rows: 1
 
    * - Parameter
