@@ -4,3 +4,5 @@ myst-parser>=0.17, <0.18
 docutils>=0.17,<0.18
 GitPython==3.1.26
 colorama==0.4.4
+MarkupSafe==2.0.1
+Werkzeug==2.0.3
