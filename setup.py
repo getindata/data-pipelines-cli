@@ -55,6 +55,7 @@ EXTRA_REQUIRE = {
         "sphinx-click>=4.0,<4.1",
         "myst-parser>=0.17, <0.18",
         "GitPython==3.1.26",
+        "colorama==0.4.4"
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
