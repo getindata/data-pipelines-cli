@@ -6,6 +6,7 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
+    "MarkupSafe<2.1",
     "dbt-core==1.1.1",
     "click>=8.0.3,<9.0",
     "questionary==1.10.0",
