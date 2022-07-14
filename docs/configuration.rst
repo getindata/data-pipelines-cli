@@ -67,13 +67,13 @@ setting those in your ``config/<ENV>/k8s.yml`` file, in ``envs`` dictionary:
  envs:
     GCP_DATASET: prod-dataset
 
-DBT configuration
+dbt configuration
 ++++++++++++++++++++++++++++++
 
 The main configuration is in ``config/<ENV>/dbt.yml`` file. At the moment it allows setting two values:
 * ``target`` - should be set either to ``local`` or ``env_execution`` depending on where the tool is used. Local means
 running locally while ``env_execution`` means executing by the scheduler on the dev or prod environment.
-* ``target_type`` - defines which backend DBT will use and what file **dp** will search for additional configuration
+* ``target_type`` - defines which backend **dbt** will use and what file **dp** will search for additional configuration
 (example: ``bigquery`` or ``snowflake``).
 
 Additionally, the backend configuration file should be provided with a name depending on the selected ``target_type``
@@ -131,13 +131,13 @@ storing projects DAGs with other artifacts.
 Execution environment configuration
 ++++++++++++++++++++++++++++++
 
-All configuration about how DBT is executed on the Airflow side is kept in execution_env.yml and <env type>.yml. More
+All configuration about how **dbt** is executed on the Airflow side is kept in execution_env.yml and <env type>.yml. More
 information about these settings can be found here: https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#execution-env-yml-file
 
 Publication configuration
 ++++++++++++++++++++++++++++++
 
-``config/<ENV>/publish.yml`` file contains configuration about creating DBT packages for downstream projects and
+``config/<ENV>/publish.yml`` file contains configuration about creating **dbt** packages for downstream projects and
 publishing it to a git repository as a package registry.
 
 .. list-table::
@@ -163,7 +163,6 @@ publishing it to a git repository as a package registry.
 Data governance configuration
 ++++++++++++++++++++++++++++++
 
-**dp** can sends DBT metadata to DataHub. All related configuration is stored in ``config/<ENV>/datahub.yml`` file.
-More information about it can be found here: https://datahubproject.io/docs/metadata-ingestion#recipes
-and https://datahubproject.io/docs/generated/ingestion/sources/dbt
+**dp** can sends **dbt** metadata to DataHub. All related configuration is stored in ``config/<ENV>/datahub.yml`` file.
+More information about it can be found `here <https://datahubproject.io/docs/metadata-ingestion#recipes>`_ and `here <https://datahubproject.io/docs/generated/ingestion/sources/dbt>`_.
 

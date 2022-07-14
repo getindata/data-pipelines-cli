@@ -1,4 +1,4 @@
-``data-pipelines-cli``: CLI for data platform
+``Data Pipelines CLI``: CLI for data platform
 ==============================================
 
 .. image:: https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg
@@ -23,7 +23,7 @@
 
 Introduction
 ------------
-Data Pipelines CLI is a command-line tool providing an easy way to build and manage data pipelines based on DBT
+**Data Pipelines CLI**, also called **DP tool**, is a command-line tool providing an easy way to build and manage data pipelines based on **dbt**
 in an environment with GIT, Airflow, DataHub, VSCode, etc.
 
 The tool can be used in any environment with access to shell and ``Python`` installed.
@@ -35,7 +35,7 @@ publications of created transformations.
 
 Community
 ------------
-Although the tools were created by GetInData and used in their project it is open-sourced and everyone is welcome
+Although the tools were created by `GetInData <https://getindata.com/>`_ and used in their project it is open-sourced and everyone is welcome
 to use and contribute to making it better and more powerful.
 
 .. toctree::

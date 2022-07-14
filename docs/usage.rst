@@ -8,23 +8,24 @@ Preparing working environment
 -------------------------
 
 The first thing that needs to be done when starting Building Data Pipelines is to prepare the working environment. This step
-can be done either on a private computer on any kind of Workbench (eg. JupyterLab). You will need a link from your
+can be done either on a local machine on any kind of Workbench (eg. JupyterLab). You will need a link from your
 Data Engineer or Administrator to the template with initial configuration then, run ``dp init <CONFIG_REPOSITORY_URL>``
 to initialize **dp**. You can also drop ``<CONFIG_REPOSITORY_URL>`` argument, **dp** will get initialized with an empty
 config.
 
 This step is done only the first time for each working environment you want to use.
 
-Adapting working environment to VSCode
--------------------------
+Example:
 
-VSCode is recommended tool to work with DBT as you can add a plugin that makes the work more efficient. To configure
-the plugin or integrate it with some other standalone application you will need to generate ``profiles.yml`` file from the project.
-``dp prepare-env`` prepares your local environment to be more conformant with standalone **dbt** requirements by saving
-``profiles.yml`` in the home directory.
+In this example only one variable you will be asked for and it is going to be `username` which is used in many dp commands.
 
-However, be aware that IDE usage is optional, and you can comfortably use ``dp run`` and ``dp test``
-commands to interface with the **dbt** instead.
+.. code-block:: bash
+
+ dp init https://github.com/getindata/data-pipelines-cli-init-example
+
+
+.. image:: images/init.png
+   :width: 700
 
 Project creation
 ----------------
@@ -38,6 +39,38 @@ repository. If ``<LINK_TO_TEMPLATE_REPOSITORY>`` proves to be the name of the te
 
 After the template selection, you will be asked a series of predefined questions in the template.  Answering them all will cause
 a new empty project to be generated. The project will be adjusted and personalized based on answers to the questions.
+
+Example:
+
+Following command starts project creation process.
+
+.. code-block:: bash
+
+ dp create our-simple-project
+
+Fist step after this command is template selection:
+
+.. image:: images/creating.png
+   :width: 700
+
+We can switch options by pressing up and down buttons and we can make a decision by pressing enter.
+After that, series of questions will be asked. Be aware that the name of the DP project should be composed of alpha-numeric
+signs and the _ sign. After answering these questions the tool will generate complete project.
+
+.. image:: images/created.png
+   :width: 700
+
+
+Adapting working environment to VSCode
+-------------------------
+
+VSCode is recommended tool to work with **dbt** as you can add a plugin that makes the work more efficient. To configure
+the plugin or integrate it with some other standalone application you will need to generate ``profiles.yml`` file from the project.
+``dp prepare-env`` prepares your local environment to be more conformant with standalone **dbt** requirements by saving
+``profiles.yml`` in the home directory.
+
+However, be aware that IDE usage is optional, and you can comfortably use ``dp run`` and ``dp test``
+commands to interface with the **dbt** instead.
 
 List all available templates
 ----------------
@@ -68,7 +101,29 @@ When you get your project created, you can run ``dp run`` and ``dp test`` comman
 
 Both commands accept ``--env`` parameter to select the execution environment. The default value is ``local``.
 
-DBT sources and automatic models creation
+Example:
+
+.. code-block:: bash
+
+ dp run
+
+This process will look at the contents of the models directory and create coresponding tables or views in data storage.
+
+.. image:: images/run.png
+   :width: 700
+
+Now after all the tables and views are created we can also check, if the models work as intended by running the tests.
+
+.. code-block:: bash
+
+ dp test
+
+
+.. image:: images/test.png
+   :width: 700
+
+
+dbt sources and automatic models creation
 -------------------------------
 
 With the help of `dbt-codegen <https://hub.getdbt.com/dbt-labs/codegen/>`_ and
@@ -156,7 +211,7 @@ In such a case, you do not have to provide a ``--dags-path`` flag, and you can j
 Docker image
 ++++++++++++++++++++++++++++++++
 
-``dp deploy`` command builds Docker image with DBT and project and sends it go Docker Registry. Docker registry may be
+``dp deploy`` command builds Docker image with **dbt** and project and sends it go Docker Registry. Docker registry may be
 configured via Environment Variables (eg. DOCKER_AUTH_CONFIG) and the image repository can be configured in
 ``execution_env.yml`` file. Use ``--docker-push`` flag to enable docker pushing during deployment.
 
@@ -171,7 +226,7 @@ Packing and publishing
 
 Sometimes there is a need to reuse data created in other projects and/or by a different team. The built project can be
 converted to a **dbt** package by calling ``dp publish``. ``dp publish`` parses ``manifest.json``
-and prepares a package from the presentation layer. It lists models created by transformations and they usually are a final product of a project. The models are prepared in form of DBT sources. Created metadata files are saved in the ``build/package`` directory and sent to a git repository
+and prepares a package from the presentation layer. It lists models created by transformations and they usually are a final product of a project. The models are prepared in form of **dbt** sources. Created metadata files are saved in the ``build/package`` directory and sent to a git repository
 configured in ``publish.yml`` file.
 
 Publication repo usually is private for a company and appropriate permissions are required. We recommend key-based
@@ -180,7 +235,7 @@ communication. You can use ``--key-path`` as a parameter to point to the key fil
 Using published sources
 ++++++++++++++++++++++++++++++++
 
-Published packages can be used as standard DBT packages by adding them in ``packages.yml`` in the following form:
+Published packages can be used as standard **dbt** packages by adding them in ``packages.yml`` in the following form:
 
 .. code-block:: yaml
 
@@ -215,5 +270,5 @@ One can use ``dp seed`` to load seeds from the project. Use ``--env`` to choose 
 Serve documentation
 -------------
 
-DBT creates quite good documentation and sometimes it is useful to expose them to your coworkers on a custom port. To do that you can run
+dbt creates quite good documentation and sometimes it is useful to expose them to your coworkers on a custom port. To do that you can run
 ``dbt docs --port <port>`` command.
