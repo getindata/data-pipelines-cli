@@ -2,7 +2,11 @@ Usage
 =====
 
 This section is for ``Data Pipelines CLI``'s users. It will present how to use the tool and how it handles interaction
-with the whole Data environment.
+with the whole Data environment. Below diagram presents the sequence process how usually the toole is used and order in
+which different commands are executed:
+
+.. image:: images/railsroad.png
+   :width: 700
 
 Preparing working environment
 -------------------------
