@@ -123,7 +123,7 @@ Airflow configuration
 ++++++++++++++++++++++++++++++
 
 Airflow-related configuration is stored in ``config/<ENV>/airflow.yml`` file and is strongly connected to the Airflow plugin: ``dbt-airflow-factory``
-More information about this configuration can be found here: https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#airflow-yml-file
+More information about this configuration can be found `here <https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#airflow-yml-file>`_
 
 One important config from **dp** tool in this file is ``dags_path``. It sets the URL to blob storage that is responsible for
 storing projects DAGs with other artifacts.
@@ -132,7 +132,7 @@ Execution environment configuration
 ++++++++++++++++++++++++++++++
 
 All configuration about how **dbt** is executed on the Airflow side is kept in execution_env.yml and <env type>.yml. More
-information about these settings can be found here: https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#execution-env-yml-file
+information about these settings can be found `here <https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#execution-env-yml-file>`_
 
 Publication configuration
 ++++++++++++++++++++++++++++++
