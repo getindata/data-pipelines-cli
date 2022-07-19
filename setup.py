@@ -6,8 +6,9 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe==2.0.1",  # https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
-    "dbt-core==1.0.4",
+    "MarkupSafe<2.1",
+    "Werkzeug==2.0.3",
+    "dbt-core==1.1.1",
     "click>=8.0.3,<9.0",
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
@@ -16,6 +17,7 @@ INSTALL_REQUIREMENTS = [
     "Jinja2>=2.11,<2.12",
     "fsspec",
     "packaging>=20.4,<21.0",
+    "colorama==0.4.4",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -25,13 +27,13 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.0.0"],
-    "postgres": ["dbt-postgres==1.0.4"],
-    "snowflake": ["dbt-snowflake==1.0.0"],
-    "redshift": ["dbt-redshift==1.0.0"],
+    "bigquery": ["dbt-bigquery==1.1.1"],
+    "postgres": ["dbt-postgres==1.1.1"],
+    "snowflake": ["dbt-snowflake==1.1.0"],
+    "redshift": ["dbt-redshift==1.1.0"],
     # ---
     "docker": ["docker>=5.0"],
-    "datahub": ["acryl-datahub>=0.8.17, <0.8.18"],
+    "datahub": ["acryl-datahub[dbt]>=0.8.39"],
     "git": ["GitPython==3.1.26"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
@@ -55,13 +57,14 @@ EXTRA_REQUIRE = {
         "sphinx-click>=4.0,<4.1",
         "myst-parser>=0.17, <0.18",
         "GitPython==3.1.26",
+        "colorama==0.4.4",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
 
 setup(
     name="data_pipelines_cli",
-    version="0.20.1",
+    version="0.21.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
