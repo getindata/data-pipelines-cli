@@ -1,145 +1,133 @@
 Usage
 =====
 
-First, create a repository with a global configuration file that you or your organization will be using. The repository
-should contain ``dp.yml.tmpl`` file looking similar to this:
+This section is for ``Data Pipelines CLI``'s users. It will present how to use the tool and how it handles interaction
+with the whole Data environment. Below diagram presents the sequence process how usually the toole is used and order in
+which different commands are executed:
 
-.. code-block:: yaml
+.. image:: images/railsroad.png
+   :width: 700
 
- templates:
-   my-first-template:
-     template_name: my-first-template
-     template_path: https://github.com/<YOUR_USERNAME>/<YOUR_TEMPLATE>.git
- vars:
-   username: YOUR_USERNAME
+Preparing working environment
+-------------------------
 
-Thanks to the `copier <https://copier.readthedocs.io/en/stable/>`_, you can leverage Jinja template syntax to create
-easily modifiable configuration templates. Just create a ``copier.yml`` file next to the ``dp.yml.tmpl`` one and configure
-the template questions (read more at `copier documentation <https://copier.readthedocs.io/en/stable/configuring/>`_).
+The first thing that needs to be done when starting Building Data Pipelines is to prepare the working environment. This step
+can be done either on a local machine on any kind of Workbench (eg. JupyterLab). You will need a link from your
+Data Engineer or Administrator to the template with initial configuration then, run ``dp init <CONFIG_REPOSITORY_URL>``
+to initialize **dp**. You can also drop ``<CONFIG_REPOSITORY_URL>`` argument, **dp** will get initialized with an empty
+config.
 
-Then, run ``dp init <CONFIG_REPOSITORY_URL>`` to initialize **dp**. You can also drop ``<CONFIG_REPOSITORY_URL>`` argument,
-**dp** will get initialized with an empty config.
+This step is done only the first time for each working environment you want to use.
+
+Example:
+
+In this example only one variable you will be asked for and it is going to be `username` which is used in many dp commands.
+
+.. code-block:: bash
+
+ dp init https://github.com/getindata/data-pipelines-cli-init-example
+
+
+.. image:: images/init.png
+   :width: 700
 
 Project creation
 ----------------
 
-You can use ``dp create <NEW_PROJECT_PATH>`` to choose one of the templates added before and create the project in the
+You can use ``dp create <NEW_PROJECT_PATH>`` to choose one of the templates to create the project in the
 ``<NEW_PROJECT_PATH>`` directory.
 
 You can also use ``dp create <NEW_PROJECT_PATH> <LINK_TO_TEMPLATE_REPOSITORY>`` to point directly to a template
 repository. If ``<LINK_TO_TEMPLATE_REPOSITORY>`` proves to be the name of the template defined in **dp**'s config file,
 ``dp create`` will choose the template by the name instead of trying to download the repository.
 
-``dp template-list`` lists all added templates.
+After the template selection, you will be asked a series of predefined questions in the template.  Answering them all will cause
+a new empty project to be generated. The project will be adjusted and personalized based on answers to the questions.
+
+Example:
+
+Following command starts project creation process.
+
+.. code-block:: bash
+
+ dp create our-simple-project
+
+Fist step after this command is template selection:
+
+.. image:: images/creating.png
+   :width: 700
+
+We can switch options by pressing up and down buttons and we can make a decision by pressing enter.
+After that, series of questions will be asked. Be aware that the name of the DP project should be composed of alpha-numeric
+signs and the _ sign. After answering these questions the tool will generate complete project.
+
+.. image:: images/created.png
+   :width: 700
+
+
+Adapting working environment to VSCode
+-------------------------
+
+VSCode is recommended tool to work with **dbt** as you can add a plugin that makes the work more efficient. To configure
+the plugin or integrate it with some other standalone application you will need to generate ``profiles.yml`` file from the project.
+``dp prepare-env`` prepares your local environment to be more conformant with standalone **dbt** requirements by saving
+``profiles.yml`` in the home directory.
+
+However, be aware that IDE usage is optional, and you can comfortably use ``dp run`` and ``dp test``
+commands to interface with the **dbt** instead.
+
+List all available templates
+----------------
+
+Execute ``dp template-list`` to list all added templates.
 
 Project update
 --------------
 
-To update your pipeline project use ``dp update <PIPELINE_PROJECT-PATH>``. It will sync your existing project with updated
-template version selected by ``--vcs-ref`` option (default ``HEAD``).
+Whenever the template change you can update your project using ``dp update <PIPELINE_PROJECT-PATH>`` command.
+It will sync your existing project with the updated template version selected by ``--vcs-ref`` option (default ``HEAD``).
 
-Project configuration
----------------------
+It may be very useful when the are some infrastructure changes in your organization and you need to upgrade all created
+projects (there can be hundreds of them).
 
-**dp** as a tool depends on a few files in your project directory. In your project directory, it must be able to find a
-``config`` directory with a structure looking similar to this:
+Project compilation
+-------------------
 
-| config
-| ├── base
-| │   ├── dbt.yml
-| │   ├── bigquery.yml
-| │   └── ...
-| ├── dev
-| │   └── bigquery.yml
-| │── local
-| │   ├── dbt.yml
-| │   └── bigquery.yml
-| └── prod
-|     └── bigquery.yml
-|
+``dp compile`` prepares your project to be run on your local machine and/or deployed on a remote one.
 
-Whenever you call **dp**'s command with the ``--env <ENV>`` flag, the tool will search for ``dbt.yml`` and
-``<TARGET_TYPE>.yml`` files in ``base`` and ``<ENV>`` directory and parse important info out of them, with ``<ENV>``
-settings taking precedence over those listed in ``base``. So, for example, for the following files:
+Local run
+---------
 
-.. code-block:: yaml
+When you get your project created, you can run ``dp run`` and ``dp test`` commands.
 
- # config/base/dbt.yml
- target: env_execution
- target_type: bigquery
+* ``dp run`` runs the project on your local machine,
+* ``dp test`` run tests for your project on your local machine.
 
- # config/base/bigquery.yml
- method: oauth
- project: my-gcp-project
- dataset: my-dataset
- threads: 1
+Both commands accept ``--env`` parameter to select the execution environment. The default value is ``local``.
 
- # cat config/dev/bigquery.yml
- dataset: dev-dataset
+Example:
 
-``dp test --env dev`` will run ``dp test`` command using values from those files, most notably with ``dataset: dev-dataset`` overwriting
-``dataset: my-dataset`` setting.
+.. code-block:: bash
 
-**dp** synthesizes dbt's ``profiles.yml`` out of those settings among other things. However, right now it only creates
-``local`` or ``env_execution`` profile, so if you want to use different settings amongst different environments, you
-should rather use ``{{ env_var('VARIABLE') }}`` as a value and provide those settings as environment variables. E.g., by
-setting those in your ``config/<ENV>/k8s.yml`` file, in ``envs`` dictionary:
+ dp run
 
-.. code-block:: yaml
+This process will look at the contents of the models directory and create coresponding tables or views in data storage.
 
- # config/base/bigquery.yml
- method: oauth
- dataset: "{{ env_var('GCP_DATASET') }}"
- project: my-gcp-project
- threads: 1
+.. image:: images/run.png
+   :width: 700
 
- # config/base/execution_env.yml
- # ... General config for execution env ...
+Now after all the tables and views are created we can also check, if the models work as intended by running the tests.
 
- # config/base/k8s.yml
- # ... Kubernetes settings ...
+.. code-block:: bash
 
- # config/dev/k8s.yml
- envs:
-   GCP_DATASET: dev-dataset
+ dp test
 
- # config/prod/k8s.yml
- envs:
-    GCP_DATASET: prod-dataset
 
-``target`` and ``target_type``
-++++++++++++++++++++++++++++++
+.. image:: images/test.png
+   :width: 700
 
-* ``target`` setting in ``config/<ENV>/dbt.yml`` should be set either to ``local`` or ``env_execution``;
-* ``target_type`` defines which backend dbt will use and what file **dp** will search for; example ``target_types`` are ``bigquery`` or ``snowflake``.
 
-Variables
-+++++++++
-
-You can put a dictionary of variables to be passed to ``dbt`` in your ``config/<ENV>/dbt.yml`` file, following the convention
-presented in `the guide at the dbt site <https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml>`_.
-E.g., if one of the fields of ``config/<SNOWFLAKE_ENV>/snowflake.yml`` looks like this:
-
-.. code-block:: yaml
-
- schema: "{{ var('snowflake_schema') }}"
-
-you should put the following in your ``config/<SNOWFLAKE_ENV>/dbt.yml`` file:
-
-.. code-block:: yaml
-
- vars:
-   snowflake_schema: EXAMPLE_SCHEMA
-
-and then run your ``dp run --env <SNOWFLAKE_ENV>`` (or any similar command).
-
-You can also add "global" variables to your **dp** config file ``$HOME/.dp.yml``. Be aware, however, that those variables
-get erased on every ``dp init`` call. It is a great idea to put *commonly used* variables in your organization's
-``dp.yml.tmpl`` template and make **copier** ask for those when initializing **dp**. By doing so, each member of your
-organization will end up with a list of user-specific variables reusable across different projects on its machine.
-Just remember, **global-scoped variables take precedence over project-scoped ones.**
-
-dbt sources and models creation
+dbt sources and automatic models creation
 -------------------------------
 
 With the help of `dbt-codegen <https://hub.getdbt.com/dbt-labs/codegen/>`_ and
@@ -186,23 +174,16 @@ If you add the **dbt-profiler** package to your ``packages.yml`` file too, you c
 ``dp generate model-yaml --with-meta MODELS_DIR``. **dbt-profiler** will add a lot of profiling metadata to
 descriptions of your models.
 
-Project compilation
--------------------
-
-``dp compile`` prepares your project to be run on your local machine and/or deployed on a remote one.
-
-Local run
----------
-
-When you get your project configured, you can run ``dp run`` and ``dp test`` commands.
-
-* ``dp run`` runs the project on your local machine,
-* ``dp test`` run tests for your project on your local machine.
-
 Project deployment
 ------------------
 
-``dp deploy`` will sync with your bucket provider. The provider will be chosen automatically based on the remote URL.
+``dp deploy`` executes the deployment of a project. Depending on the configuration the command may execute different steps
+described in this section. Please be aware that this command is meant for the CICD process and usually should be avoided as manual activity.
+
+Blob storage synchronization
+++++++++++++++++++++++++++++++++
+
+The main action of the ``dp deploy`` command is synchronization with your bucket provider. The provider will be chosen automatically based on the remote URL.
 Usually, it is worth pointing ``dp deploy`` to a JSON or YAML file with provider-specific data like access tokens or project
 names. The *provider-specific data* should be interpreted as the ``**kwargs`` (keyword arguments) expected by a specific
 `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_'s FileSystem implementation. One would most likely want to
@@ -222,10 +203,7 @@ the credentials.
 Please refer to the documentation of the specific ``fsspec``'s implementation for more information about the required
 keyword arguments.
 
-``dags-path`` as config argument
-++++++++++++++++++++++++++++++++
-
-You can also list your path in the ``config/base/airflow.yml`` file, as a ``dags_path`` argument:
+You can also provide your path in the ``config/base/airflow.yml`` file, as a ``dags_path`` argument:
 
 .. code-block:: yaml
 
@@ -234,23 +212,67 @@ You can also list your path in the ``config/base/airflow.yml`` file, as a ``dags
 
 In such a case, you do not have to provide a ``--dags-path`` flag, and you can just call ``dp deploy`` instead.
 
+Docker image
+++++++++++++++++++++++++++++++++
+
+``dp deploy`` command builds Docker image with **dbt** and project and sends it go Docker Registry. Docker registry may be
+configured via Environment Variables (eg. DOCKER_AUTH_CONFIG) and the image repository can be configured in
+``execution_env.yml`` file. Use ``--docker-push`` flag to enable docker pushing during deployment.
+
+DataHub synchronization
+++++++++++++++++++++++++++++++++
+
+The deployment also sends metadata to ``DataHub`` based on receipt created in ``datahub.yml`` file. Use ``--datahub-ingest``
+flag to enable DataHub synchronization.
+
 Packing and publishing
 ----------------------
 
-The built project can be processed to a **dbt** package by calling ``dp publish``. ``dp publish`` parses ``manifest.json``
-and prepares a package that lists models outputted by transformations, saving it in the ``build/package`` directory.
+Sometimes there is a need to reuse data created in other projects and/or by a different team. The built project can be
+converted to a **dbt** package by calling ``dp publish``. ``dp publish`` parses ``manifest.json``
+and prepares a package from the presentation layer. It lists models created by transformations and they usually are a final product of a project. The models are prepared in form of **dbt** sources. Created metadata files are saved in the ``build/package`` directory and sent to a git repository
+configured in ``publish.yml`` file.
 
-Preparing dbt environment
--------------------------
+Publication repo usually is private for a company and appropriate permissions are required. We recommend key-based
+communication. You can use ``--key-path`` as a parameter to point to the key file with push permissions.
 
-Sometimes you would like to use standalone **dbt** or an application that interfaces with it (like VS Code plugin).
-``dp prepare-env`` prepares your local environment to be more conformant with standalone **dbt** requirements, e.g.,
-by saving ``profiles.yml`` in the home directory.
+Using published sources
+++++++++++++++++++++++++++++++++
 
-However, be aware that most of the time you do not need to do so, and you can comfortably use ``dp run`` and ``dp test``
-commands to interface with the **dbt** instead.
+Published packages can be used as standard **dbt** packages by adding them in ``packages.yml`` in the following form:
+
+.. code-block:: yaml
+
+ packages:
+  - git: "https://{{env_var('DBT_GIT_USER_NAME', '')}}:{{env_var('DBT_GIT_SECRET_TOKEN', '')}}@gitlab.com/<path to you repository>"
+    subdirectory: "<upstream project name>"
+
+Dependencies metadata
+++++++++++++++++++++++++++++++++
+
+Created metadata files containing extra information about the project name (which can be also Airflow DAG name).
+
+.. code-block:: json
+
+ "source_meta": {
+    "dag": "<project name>"
+ }
+
+This way explicit dependencies can be created in the execution environment. For more information see the documentation of
+`dbt-airflow-factory <https://dbt-airflow-factory.readthedocs.io/en/latest/features.html#source-dependencies>`
 
 Clean project
 -------------
 
-When finished, call ``dp clean`` to remove compilation-related directories.
+If needed call ``dp clean`` to remove compilation-related directories.
+
+Load seed
+-------------
+
+One can use ``dp seed`` to load seeds from the project. Use ``--env`` to choose a different environment.
+
+Serve documentation
+-------------
+
+dbt creates quite good documentation and sometimes it is useful to expose them to your coworkers on a custom port. To do that you can run
+``dbt docs --port <port>`` command.

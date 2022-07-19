@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   Documentation improvements
+
 ## [0.20.1] - 2022-06-17
 
 ### Fixed
