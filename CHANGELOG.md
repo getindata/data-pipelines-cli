@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   `dp compile` default environment hes been set to `local`
+
 ## [0.21.0] - 2022-07-19
 
 -   Documentation improvements
