@@ -7,13 +7,20 @@ import click
 import yaml
 from dbt.contracts.graph.manifest import Manifest, ManifestNode
 from dbt.contracts.graph.parsed import ColumnInfo
-from git import Repo
 
 from ..cli_constants import BUILD_DIR
-from ..cli_utils import echo_info
+from ..cli_utils import echo_info, echo_warning
 from ..config_generation import read_dictionary_from_config_directory
 from ..data_structures import DbtModel, DbtSource, DbtTableColumn
 from ..errors import DataPipelinesError
+
+try:
+    from git import Repo
+
+    GIT_EXISTS = True
+except ImportError:
+    echo_warning("Git support not installed.")
+    GIT_EXISTS = False
 
 
 def _get_project_name_and_version() -> Tuple[str, str]:
@@ -132,17 +139,18 @@ def _copy_publication_to_repo(package_dest: pathlib.Path, package_path: pathlib.
     shutil.copytree(package_path, package_dest)
 
 
-def _configure_git_env(repo: Repo, config: Dict[str, Any]) -> None:
-    repo.config_writer().set_value("user", "name", config["username"]).release()
-    repo.config_writer().set_value("user", "email", config["email"]).release()
+if GIT_EXISTS:
 
+    def _configure_git_env(repo: Repo, config: Dict[str, Any]) -> None:
+        repo.config_writer().set_value("user", "name", config["username"]).release()
+        repo.config_writer().set_value("user", "email", config["email"]).release()
 
-def _commit_and_push_changes(repo: Repo, project_name: str, project_version: str) -> None:
-    echo_info("Publishing")
-    repo.git.add(all=True)
-    repo.index.commit(f"Publication from project {project_name}, version: {project_version}")
-    origin = repo.remote(name="origin")
-    origin.push()
+    def _commit_and_push_changes(repo: Repo, project_name: str, project_version: str) -> None:
+        echo_info("Publishing")
+        repo.git.add(all=True)
+        repo.index.commit(f"Publication from project {project_name}, version: {project_version}")
+        origin = repo.remote(name="origin")
+        origin.push()
 
 
 def publish_package(package_path: pathlib.Path, key_path: str, env: str) -> None:

@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
--   `dp compile` default environment hes been set to `local`
+- `dp compile` default environment hes been set to `local`
+- GitPython is not required anymore
+- Installation documentation upgrade
 
 ## [0.21.0] - 2022-07-19
 
