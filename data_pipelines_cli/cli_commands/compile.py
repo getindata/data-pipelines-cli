@@ -128,7 +128,7 @@ def compile_project(
 )
 @click.option(
     "--env",
-    default="base",
+    default="local",
     type=str,
     show_default=True,
     required=True,
