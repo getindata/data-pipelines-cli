@@ -7,8 +7,8 @@ from typing import Any, Dict
 
 import requests
 import yaml
-from cli_constants import BUILD_DIR
-from cli_utils import echo_error, echo_info
+from .cli_constants import BUILD_DIR
+from .cli_utils import echo_error, echo_info
 
 
 def find_config_file(env: str, config_name: str) -> pathlib.Path:
