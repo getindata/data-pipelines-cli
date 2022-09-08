@@ -17,8 +17,7 @@ def find_config_file(env: str, config_name: str) -> pathlib.Path:
     return BUILD_DIR.joinpath("dag", "config", "base", f"{config_name}.yml")
 
 
-def factory(env: str, config_name: str) -> None:
-    airbyte_config_path = find_config_file(env, config_name)
+def factory(airbyte_config_path: pathlib.Path) -> None:
     with open(airbyte_config_path, "r") as airbyte_config_file:
         airbyte_config = yaml.safe_load(airbyte_config_file)
     airbyte_url = airbyte_config["airbyte_url"]
