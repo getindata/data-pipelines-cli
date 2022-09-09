@@ -20,7 +20,7 @@ from ..docker_response_reader import DockerResponseReader
 from ..errors import DockerErrorResponseError, DockerNotInstalledError
 from ..io_utils import replace
 from ..jinja import replace_vars_with_values
-
+from ..airbyte_utils import find_config_file, factory
 
 def _docker_build(docker_args: DockerArgs) -> None:
     """
@@ -89,11 +89,17 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
         yaml.dump(updated_config, datahub_config_file)
 
 
+def _airbyte_ingest(env: str) -> None:
+    echo_info("Ingesting airbyte config")
+    airbyte_config_path = find_config_file(env, "airbyte")
+    factory(airbyte_config_path)
+
 def compile_project(
     env: str,
     docker_tag: Optional[str] = None,
     docker_build: bool = False,
     docker_build_args: Optional[Dict[str, str]] = None,
+    airbyte_ingest: bool = False
 ) -> None:
     """
     Create local working directories and build artifacts.
@@ -117,6 +123,9 @@ def compile_project(
 
     _dbt_compile(env)
     _copy_dbt_manifest()
+
+    if airbyte_ingest:
+        _airbyte_ingest(env)
 
     if docker_build:
         _docker_build(docker_args)
@@ -146,7 +155,13 @@ def compile_project(
 @click.option(
     "--docker-args", type=str, required=False, help="Args required to build project in json format"
 )
+@click.option(
+    "--airbyte-ingest",
+    is_flag=True,
+    default=False,
+    help="Whether to ingest airbyte config",
+)
 def compile_project_command(
-    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str]
+    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str], airbyte_ingest: bool,
 ) -> None:
-    compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"))
+    compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"), airbyte_ingest)

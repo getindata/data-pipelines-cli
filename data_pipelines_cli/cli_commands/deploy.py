@@ -19,7 +19,6 @@ from ..errors import (
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
-from ..airbyte_utils import find_config_file, factory
 
 class DeployCommand:
     """A class used to push and deploy the project to the remote machine."""
@@ -43,11 +42,9 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
-        airbyte_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
-        self.airbyte_ingest = airbyte_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
 
@@ -74,9 +71,6 @@ class DeployCommand:
 
         if self.datahub_ingest:
             self._datahub_ingest()
-
-        if self.airbyte_ingest:
-            self._airbyte_ingest()
 
         self._sync_bucket()
 
@@ -128,11 +122,6 @@ class DeployCommand:
             ]
         )
 
-    def _airbyte_ingest(self) -> None:
-        echo_info("Ingesting airbyte config")
-        airbyte_config_path = find_config_file(self.env, "airbyte")
-        factory(airbyte_config_path)
-
     def _sync_bucket(self) -> None:
         echo_info("Syncing Bucket")
         LocalRemoteSync(
@@ -166,19 +155,12 @@ class DeployCommand:
     default=False,
     help="Whether to ingest DataHub metadata",
 )
-@click.option(
-    "--airbyte-ingest",
-    is_flag=True,
-    default=False,
-    help="Whether to ingest airbyte config",
-)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    airbyte_ingest: bool,
 ) -> None:
     if blob_args:
         try:
@@ -195,5 +177,4 @@ def deploy_command(
         dags_path,
         provider_kwargs_dict,
         datahub_ingest,
-        airbyte_ingest
     ).deploy()
