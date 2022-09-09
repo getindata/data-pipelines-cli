@@ -70,4 +70,5 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
         connection_config_copy.pop("sourceId", None)
         connection_config_copy.pop("destinationId", None)
         connection_config_copy["connectionId"] = response_search["connections"][0]["connectionId"]
-        request_handler(f"{airbyte_url}/api/v1/connections/update", connection_config_copy)
+        response_update = request_handler(f"{airbyte_url}/api/v1/connections/update", connection_config_copy)
+        os.environ[response_update["name"]] = response_update["connectionId"]
