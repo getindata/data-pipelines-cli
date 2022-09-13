@@ -53,7 +53,7 @@ def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Dict[str, A
 def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str) -> None:
     connection_config_copy = copy.deepcopy(connection_config)
     response_search = request_handler(
-        f"{airbyte_url}/api/v1/connections/search",
+        f"{airbyte_url}/api/v1/web_backend/connections/search",
         {
             "sourceId": connection_config_copy["sourceId"],
             "destinationId": connection_config_copy["destinationId"],
@@ -62,7 +62,7 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
     if not response_search["connections"]:
         echo_info(f"Creating connection config for {connection_config_copy['name']}")
         response_create = request_handler(
-            f"{airbyte_url}/api/v1/connections/create", connection_config_copy
+            f"{airbyte_url}/api/v1/web_backend/connections/create", connection_config_copy
         )
         os.environ[response_create["name"]] = response_create["connectionId"]
     else:
@@ -70,5 +70,5 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
         connection_config_copy.pop("sourceId", None)
         connection_config_copy.pop("destinationId", None)
         connection_config_copy["connectionId"] = response_search["connections"][0]["connectionId"]
-        response_update = request_handler(f"{airbyte_url}/api/v1/connections/update", connection_config_copy)
+        response_update = request_handler(f"{airbyte_url}/api/v1/web_backend/connections/update", connection_config_copy)
         os.environ[response_update["name"]] = response_update["connectionId"]
