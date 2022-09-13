@@ -85,6 +85,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     _blob_address,
                     provider_kwargs_dict,
                     _datahub_ingest,
+                    _airbyte_ingest
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
@@ -152,7 +153,7 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", False, self.storage_uri, self.provider_args, True).deploy()
+                DeployCommand("base", False, self.storage_uri, self.provider_args, True, False).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     @patch("data_pipelines_cli.cli_configs.BUILD_DIR", goldens_dir_path)
@@ -160,7 +161,7 @@ class DeployCommandTestCase(unittest.TestCase):
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.subprocess_run", self._mock_run
         ), patch.dict("sys.modules", datahub=MagicMock()):
-            DeployCommand("base", False, self.storage_uri, self.provider_args, True).deploy()
+            DeployCommand("base", False, self.storage_uri, self.provider_args, True, False).deploy()
             self.assertListEqual(
                 [
                     "datahub",
@@ -176,7 +177,7 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()
+                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False).deploy()
 
     @patch(
         "data_pipelines_cli.cli_commands.deploy.BUILD_DIR",
@@ -184,7 +185,7 @@ class DeployCommandTestCase(unittest.TestCase):
     )
     def test_no_airflow_address(self):
         with self.assertRaises(AirflowDagsPathKeyError):
-            DeployCommand("base", False, None, None, False)
+            DeployCommand("base", False, None, None, False, False)
 
     def test_airflow_address(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
@@ -199,7 +200,7 @@ class DeployCommandTestCase(unittest.TestCase):
                 tmp_airflow_path,
             )
 
-            deploy_command = DeployCommand("base", False, None, None, False)
+            deploy_command = DeployCommand("base", False, None, None, False, False)
         self.assertEqual(
             "gcs://test-sync-project/sync-dir/dags/my-project-name",
             deploy_command.blob_address_path,
@@ -221,7 +222,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     tmp_file_path,
                 )
 
-            deploy_command = DeployCommand("staging", False, None, None, False)
+            deploy_command = DeployCommand("staging", False, None, None, False, False)
         self.assertEqual(
             "gcs://test/jinja/path/com/my/project/name",
             deploy_command.blob_address_path,
@@ -250,7 +251,7 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
-            DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()
+            DeployCommand("base", True, self.storage_uri, self.provider_args, False, False).deploy()
 
         self.assertEqual("my_docker_repository_uri", docker_kwargs.get("repository"))
         self.assertEqual("sha1234", docker_kwargs.get("tag"))
@@ -278,4 +279,4 @@ class DeployCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
             with self.assertRaises(DataPipelinesError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False).deploy()
+                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False).deploy()
