@@ -57,6 +57,8 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
         {
             "sourceId": connection_config_copy["sourceId"],
             "destinationId": connection_config_copy["destinationId"],
+            "namespaceDefinition": connection_config_copy["namespaceDefinition"],
+            "namespaceFormat": connection_config_copy["namespaceFormat"]
         },
     )
     if not response_search["connections"]:
