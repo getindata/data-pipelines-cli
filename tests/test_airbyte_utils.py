@@ -3,10 +3,12 @@ import os
 import pathlib
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import yaml
+from requests import HTTPError
 
-from data_pipelines_cli.airbyte_utils import env_replacer, update_file
+from data_pipelines_cli.airbyte_utils import env_replacer, request_handler, update_file
 
 
 def read_file(file_path: pathlib.Path):
@@ -41,3 +43,15 @@ class AirbyteUtilsTest(unittest.TestCase):
             with open(pathlib.Path(tmp_dir).joinpath("airbyte.yml"), "r") as airbyte_file:
                 airbyte_config = yaml.safe_load(airbyte_file)
                 self.assertDictEqual(config, airbyte_config)
+
+    @patch("data_pipelines_cli.airbyte_utils.request_handler")
+    def test_request_handler(self, mock_run):
+        mock_run.side_effect = self.raise_helper
+        try:
+            request_handler(self.airbyte_url, self.airbyte_config)
+        except HTTPError as e:
+            self.assertIsInstance(e, HTTPError)
+
+    @staticmethod
+    def raise_helper() -> None:
+        raise HTTPError
