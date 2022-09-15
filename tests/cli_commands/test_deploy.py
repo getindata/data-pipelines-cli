@@ -85,7 +85,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     _blob_address,
                     provider_kwargs_dict,
                     _datahub_ingest,
-                    _enable_ingestion
+                    _enable_ingest,
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
@@ -153,7 +153,9 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", False, self.storage_uri, self.provider_args, True, False).deploy()
+                DeployCommand(
+                    "base", False, self.storage_uri, self.provider_args, True, False
+                ).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     @patch("data_pipelines_cli.cli_configs.BUILD_DIR", goldens_dir_path)
@@ -177,7 +179,9 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False).deploy()
+                DeployCommand(
+                    "base", True, self.storage_uri, self.provider_args, False, False
+                ).deploy()
 
     @patch(
         "data_pipelines_cli.cli_commands.deploy.BUILD_DIR",
@@ -279,4 +283,6 @@ class DeployCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
             with self.assertRaises(DataPipelinesError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False).deploy()
+                DeployCommand(
+                    "base", True, self.storage_uri, self.provider_args, False, False
+                ).deploy()

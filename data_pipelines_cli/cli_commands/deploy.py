@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
+from ..airbyte_utils import factory, find_config_file
 from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_error, echo_info, subprocess_run
@@ -19,7 +20,7 @@ from ..errors import (
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
-from ..airbyte_utils import find_config_file, factory
+
 
 class DeployCommand:
     """A class used to push and deploy the project to the remote machine."""
@@ -43,11 +44,11 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
-        enable_ingestion: bool,
+        enable_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
-        self.enable_ingestion = enable_ingestion
+        self.enable_ingest = enable_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
 
@@ -75,8 +76,8 @@ class DeployCommand:
         if self.datahub_ingest:
             self._datahub_ingest()
 
-        if self.enable_ingestion:
-            self._enable_ingestion()
+        if self.enable_ingest:
+            self._enable_ingest()
 
         self._sync_bucket()
 
@@ -128,7 +129,7 @@ class DeployCommand:
             ]
         )
 
-    def _enable_ingestion(self) -> None:
+    def _enable_ingest(self) -> None:
         echo_info("Ingesting airbyte config")
         airbyte_config_path = find_config_file(self.env, "airbyte")
         factory(airbyte_config_path)
@@ -178,7 +179,7 @@ def deploy_command(
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    enable_ingestion: bool,
+    enable_ingest: bool,
 ) -> None:
     if blob_args:
         try:
@@ -190,10 +191,5 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
-        env,
-        docker_push,
-        dags_path,
-        provider_kwargs_dict,
-        datahub_ingest,
-        enable_ingestion
+        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, enable_ingest
     ).deploy()
