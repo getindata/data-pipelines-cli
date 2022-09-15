@@ -43,11 +43,11 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
-        airbyte_ingest: bool,
+        enable_ingestion: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
-        self.airbyte_ingest = airbyte_ingest
+        self.enable_ingestion = enable_ingestion
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
 
@@ -75,8 +75,8 @@ class DeployCommand:
         if self.datahub_ingest:
             self._datahub_ingest()
 
-        if self.airbyte_ingest:
-            self._airbyte_ingest()
+        if self.enable_ingestion:
+            self._enable_ingestion()
 
         self._sync_bucket()
 
@@ -128,7 +128,7 @@ class DeployCommand:
             ]
         )
 
-    def _airbyte_ingest(self) -> None:
+    def _enable_ingestion(self) -> None:
         echo_info("Ingesting airbyte config")
         airbyte_config_path = find_config_file(self.env, "airbyte")
         factory(airbyte_config_path)
@@ -167,7 +167,7 @@ class DeployCommand:
     help="Whether to ingest DataHub metadata",
 )
 @click.option(
-    "--airbyte-ingest",
+    "--enable-ingest",
     is_flag=True,
     default=False,
     help="Whether to ingest airbyte config",
@@ -178,7 +178,7 @@ def deploy_command(
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    airbyte_ingest: bool,
+    enable_ingestion: bool,
 ) -> None:
     if blob_args:
         try:
@@ -195,5 +195,5 @@ def deploy_command(
         dags_path,
         provider_kwargs_dict,
         datahub_ingest,
-        airbyte_ingest
+        enable_ingestion
     ).deploy()

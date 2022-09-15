@@ -85,7 +85,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     _blob_address,
                     provider_kwargs_dict,
                     _datahub_ingest,
-                    _airbyte_ingest
+                    _enable_ingestion
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
