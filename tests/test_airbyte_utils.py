@@ -8,7 +8,12 @@ from unittest.mock import patch
 import yaml
 from requests import HTTPError
 
-from data_pipelines_cli.airbyte_utils import env_replacer, request_handler, update_file
+from data_pipelines_cli.airbyte_utils import (
+    create_update_connection,
+    env_replacer,
+    request_handler,
+    update_file,
+)
 
 
 def read_file(file_path: pathlib.Path):
@@ -55,3 +60,37 @@ class AirbyteUtilsTest(unittest.TestCase):
     @staticmethod
     def raise_helper() -> None:
         raise HTTPError
+
+    @patch("data_pipelines_cli.airbyte_utils.request_handler")
+    def test_create_connection(self, mock_run):
+        mock_run.side_effect = [
+            {"connections": []},
+            {
+                "name": "POSTGRES_BQ_CONNECTION",
+                "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
+            },
+        ]
+        create_update_connection(
+            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"], self.airbyte_url
+        )
+        self.assertEqual(
+            os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
+        )
+
+    @patch("data_pipelines_cli.airbyte_utils.request_handler")
+    def test_update_connection(self, mock_run):
+        mock_run.side_effect = [
+            {"connections": [{"connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952"}]},
+            {
+                "name": "POSTGRES_BQ_CONNECTION",
+                "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
+                "sourceId": "d96241c6-f3af-4736-bd51-dcfce0f68f28",
+                "destinationId": "ae11b31a-3e4f-432b-b6f4-967a79535270",
+            },
+        ]
+        create_update_connection(
+            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"], self.airbyte_url
+        )
+        self.assertEqual(
+            os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
+        )
