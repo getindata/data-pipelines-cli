@@ -3,10 +3,11 @@ import copy
 import json
 import os
 import pathlib
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 import requests
 import yaml
+
 from .cli_constants import BUILD_DIR
 from .cli_utils import echo_error, echo_info
 
@@ -39,7 +40,7 @@ def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
     return ast.literal_eval(os.path.expandvars(f"{config}"))
 
 
-def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Union[Dict[str, Any], Any]:
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     try:
         response = requests.post(url=airbyte_api_url, headers=headers, data=json.dumps(config))
@@ -48,9 +49,10 @@ def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Dict[str, A
         return data
     except requests.exceptions.HTTPError as e:
         echo_error(e.response.text)
+        return None
 
 
-def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str) -> None:
+def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str) -> Any:
     connection_config_copy = copy.deepcopy(connection_config)
     response_search = request_handler(
         f"{airbyte_url}/api/v1/web_backend/connections/search",
@@ -58,7 +60,7 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
             "sourceId": connection_config_copy["sourceId"],
             "destinationId": connection_config_copy["destinationId"],
             "namespaceDefinition": connection_config_copy["namespaceDefinition"],
-            "namespaceFormat": connection_config_copy["namespaceFormat"]
+            "namespaceFormat": connection_config_copy["namespaceFormat"],
         },
     )
     if not response_search["connections"]:
@@ -72,5 +74,7 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
         connection_config_copy.pop("sourceId", None)
         connection_config_copy.pop("destinationId", None)
         connection_config_copy["connectionId"] = response_search["connections"][0]["connectionId"]
-        response_update = request_handler(f"{airbyte_url}/api/v1/web_backend/connections/update", connection_config_copy)
+        response_update = request_handler(
+            f"{airbyte_url}/api/v1/web_backend/connections/update", connection_config_copy
+        )
         os.environ[response_update["name"]] = response_update["connectionId"]
