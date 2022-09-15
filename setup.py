@@ -13,7 +13,7 @@ INSTALL_REQUIREMENTS = [
     "questionary==1.10.0",
     "pyyaml>=5.1, <6.0",
     "types-PyYAML>=6.0",
-    "copier==6.1.0",
+    "copier==5.1.0",
     "Jinja2>=2.11,<2.12",
     "fsspec",
     "packaging>=20.4,<21.0",
