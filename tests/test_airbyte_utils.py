@@ -3,7 +3,7 @@ import os
 import pathlib
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import yaml
 from requests import HTTPError
@@ -11,6 +11,8 @@ from requests import HTTPError
 from data_pipelines_cli.airbyte_utils import (
     create_update_connection,
     env_replacer,
+    factory,
+    find_config_file,
     request_handler,
     update_file,
 )
@@ -29,6 +31,59 @@ class AirbyteUtilsTest(unittest.TestCase):
         )
         self.airbyte_config = read_file(self.airbyte_file)
         self.airbyte_url = self.airbyte_config["airbyte_url"]
+
+    def test_find_config_file(self):
+        with tempfile.TemporaryDirectory() as tmp_dir, patch(
+            "data_pipelines_cli.airbyte_utils.BUILD_DIR", pathlib.Path(tmp_dir)
+        ):
+            self.assertEqual(
+                find_config_file("some_nonexistent_env", "some_file_name"),
+                pathlib.Path(tmp_dir) / "dag" / "config" / "base" / "some_file_name.yml",
+            )
+
+        env_name, config_name = "some_env", "some_config_name"
+        with tempfile.TemporaryDirectory(prefix="asssd") as tmp_dir, patch(
+            "data_pipelines_cli.airbyte_utils.BUILD_DIR", pathlib.Path(tmp_dir)
+        ):
+            configpath = pathlib.Path(tmp_dir).joinpath("dag", "config", env_name)
+            configpath.mkdir(parents=True)
+            configpath.joinpath(f"{config_name}.yml").touch()
+            self.assertEqual(
+                find_config_file(env_name, config_name),
+                pathlib.Path(tmp_dir) / "dag" / "config" / env_name / f"{config_name}.yml",
+            )
+
+    @patch.dict(os.environ, {"CONNECTION_1_ID": "CONN-1-ID", "CONNECTION_2_ID": "CONN-2-ID"})
+    @patch("data_pipelines_cli.airbyte_utils.create_update_connection")
+    def test_factory(self, mock_create_update_connection):
+        mock_create_update_connection.return_value = None
+        test_airbyte_url = "http://some-airbyte/url"
+        connection_1_config = {"name": "connection_1_name"}
+        connection_2_config = {"name": "connection_2_name"}
+        task_1_config = {"api_version": "v1", "connection_id": "${CONNECTION_1_ID}"}
+        task_2_config = {"api_version": "v2", "connection_id": "${CONNECTION_2_ID}"}
+        config = {
+            "airbyte_url": test_airbyte_url,
+            "connections": {
+                "connection_1": connection_1_config,
+                "connection_2": connection_2_config,
+            },
+            "tasks": [task_1_config, task_2_config],
+        }
+        with tempfile.NamedTemporaryFile(mode="w") as tmp_file:
+            with open(tmp_file.name, "w") as f:
+                yaml.dump(config, f, default_flow_style=False)
+            factory(pathlib.Path(tmp_file.name))
+            mock_create_update_connection.assert_has_calls(
+                [
+                    call(connection_1_config, test_airbyte_url),
+                    call(connection_2_config, test_airbyte_url),
+                ]
+            )
+            with open(tmp_file.name, "r") as f:
+                updated_config = yaml.safe_load(f.read())
+            self.assertEqual(updated_config["tasks"][0]["connection_id"], "CONN-1-ID")
+            self.assertEqual(updated_config["tasks"][1]["connection_id"], "CONN-2-ID")
 
     def test_env_replacer(self):
         os.environ["POSTGRES_BQ_CONNECTION"] = "123"
