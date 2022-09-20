@@ -20,6 +20,7 @@ from ..docker_response_reader import DockerResponseReader
 from ..errors import DockerErrorResponseError, DockerNotInstalledError
 from ..io_utils import replace
 from ..jinja import replace_vars_with_values
+from .bi import bi
 
 
 def _docker_build(docker_args: DockerArgs) -> None:
@@ -53,8 +54,6 @@ def _dbt_compile(env: str) -> None:
     run_dbt_command(("deps",), env, profiles_path)
     run_dbt_command(("compile",), env, profiles_path)
     run_dbt_command(("docs", "generate"), env, profiles_path)
-    run_dbt_command(("source", "freshness"), env, profiles_path)
-
 
 def _copy_dbt_manifest() -> None:
     echo_info("Copying DBT manifest")
@@ -94,6 +93,7 @@ def compile_project(
     docker_tag: Optional[str] = None,
     docker_build: bool = False,
     docker_build_args: Optional[Dict[str, str]] = None,
+    bi_build: bool = False
 ) -> None:
     """
     Create local working directories and build artifacts.
@@ -104,6 +104,8 @@ def compile_project(
     :type docker_tag: Optional[str]
     :param docker_build: Whether to build a Docker image
     :type docker_build: bool
+    :param bi_build: Whether to generate a BI codes
+    :type bi_build: bool
     :raises DataPipelinesError:
     """
     copy_dag_dir_to_build_dir()
@@ -121,6 +123,9 @@ def compile_project(
     if docker_build:
         _docker_build(docker_args)
 
+    if bi_build:
+        echo_info("Generating BI codes")
+        bi(env, bi_build)
 
 @click.command(
     name="compile",
@@ -146,7 +151,13 @@ def compile_project(
 @click.option(
     "--docker-args", type=str, required=False, help="Args required to build project in json format"
 )
+@click.option(
+    "--bi-build",
+    is_flag=True,
+    default=False,
+    help="Whether to generate a BI codes",
+)
 def compile_project_command(
-    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str]
+    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str], bi_build: bool
 ) -> None:
-    compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"))
+    compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"), bi_build)

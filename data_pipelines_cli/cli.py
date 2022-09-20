@@ -18,7 +18,7 @@ from .cli_commands.test import test_command
 from .cli_commands.update import update_command
 from .cli_utils import echo_error, echo_suberror
 from .errors import DataPipelinesError
-
+from .cli_commands.bi import bi_command
 
 @click.group()
 @click.version_option(prog_name="dp")
@@ -50,3 +50,4 @@ _cli.add_command(run_command)
 _cli.add_command(seed_command)
 _cli.add_command(test_command)
 _cli.add_command(update_command)
+_cli.add_command(bi_command)

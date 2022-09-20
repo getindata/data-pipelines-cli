@@ -19,6 +19,7 @@ from ..errors import (
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
+from .bi import bi
 
 
 class DeployCommand:
@@ -35,6 +36,7 @@ class DeployCommand:
     """Dictionary of arguments required by a specific cloud storage provider,
     e.g. path to a token, username, password, etc."""
     env: str
+    bi_push: bool
 
     def __init__(
         self,
@@ -43,11 +45,13 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
+        bi_push: bool
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
+        self.bi_push = bi_push
 
         try:
             self.blob_address_path = (
@@ -73,7 +77,13 @@ class DeployCommand:
         if self.datahub_ingest:
             self._datahub_ingest()
 
-        self._sync_bucket()
+        if self.bi_push:
+            self._bi_push()
+        #TODO: ppinkos odkomentowac po testach
+        #self._sync_bucket()
+
+    def _bi_push(self) -> None:
+        bi(self.env, False, self.bi_push)
 
     def _docker_push(self) -> None:
         """
@@ -156,12 +166,19 @@ class DeployCommand:
     default=False,
     help="Whether to ingest DataHub metadata",
 )
+@click.option(
+    "--bi-push",
+    is_flag=True,
+    default=False,
+    help="Whether to push to BI",
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
+    bi_push: bool
 ) -> None:
     if blob_args:
         try:
@@ -178,4 +195,5 @@ def deploy_command(
         dags_path,
         provider_kwargs_dict,
         datahub_ingest,
+        bi_push
     ).deploy()

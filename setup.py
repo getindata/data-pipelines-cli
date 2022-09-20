@@ -18,6 +18,8 @@ INSTALL_REQUIREMENTS = [
     "fsspec",
     "packaging>=20.4,<21.0",
     "colorama==0.4.4",
+    "dbt2looker==0.10.0",
+    "GitPython>=3.1.26",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -64,7 +66,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.22.0",
+    version="0.22.1",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
