@@ -37,6 +37,7 @@ class DeployCommand:
     e.g. path to a token, username, password, etc."""
     env: str
     bi_git_key_path: str
+    bi_push: bool
 
     def __init__(
         self,
@@ -46,12 +47,14 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
+        bi_push: bool
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
         self.bi_git_key_path = bi_git_key_path
+        self.bi_push = bi_push
 
         try:
             self.blob_address_path = (
@@ -80,6 +83,9 @@ class DeployCommand:
         self._bi_push()
 
         self._sync_bucket()
+
+    def _bi_push(self) -> None:
+        bi(self.env, False, self.bi_push)
 
     def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
