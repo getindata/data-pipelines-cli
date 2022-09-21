@@ -60,7 +60,6 @@ class CompileCommandTestCase(unittest.TestCase):
             self.assertIn("dbt deps", args_str)
             self.assertIn("dbt compile", args_str)
             self.assertIn("dbt docs generate", args_str)
-            self.assertIn("dbt source freshness", args_str)
 
             tmp_dir_path = pathlib.Path(tmp_dir)
             with open(tmp_dir_path.joinpath("dag", "manifest.json"), "r") as tmp_manifest, open(
