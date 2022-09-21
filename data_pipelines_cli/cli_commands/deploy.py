@@ -183,7 +183,7 @@ def deploy_command(
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    bi_git_key_path: str,
+    bi_push: bool
 ) -> None:
     if blob_args:
         try:
