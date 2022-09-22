@@ -4,16 +4,16 @@ from ..cli_constants import BUILD_DIR
 from ..config_generation import read_dictionary_from_config_directory
 from ..looker_utils import generate_lookML_model, deploy_lookML_model
 from ..errors import NotSuppertedBIError, DataPipelinesError
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 def read_bi_config(env: str) -> Dict[str, Any]:
     return read_dictionary_from_config_directory(
         BUILD_DIR.joinpath("dag"), env, "bi.yml"
     )
 
-def _bi_looker(env: str, generate_code: bool, deploy: bool = False, key_path: str = None) -> None:
+def _bi_looker(env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None) -> None:
     if generate_code:
-        generate_lookML_model(env)
+        generate_lookML_model()
 
     if deploy:
         if key_path is None:
@@ -23,7 +23,7 @@ def _bi_looker(env: str, generate_code: bool, deploy: bool = False, key_path: st
             )
         deploy_lookML_model(key_path, env)
 
-def bi(env: str, generate_code: bool, deploy: bool = False, key_path: str = None) -> None:
+def bi(env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None) -> None:
     bi_config = read_bi_config(env)
  
     if bi_config["target_bi"] == "looker":
