@@ -4,15 +4,13 @@ import os
 import yaml
 import requests
 
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, Tuple
 from git import Repo
-from shutil import rmtree, copytree, copy
+from shutil import rmtree, copy
 
 from .config_generation import read_dictionary_from_config_directory
 from .cli_constants import BUILD_DIR
-from .cli_utils import echo_info, echo_subinfo, subprocess_run
-from .config_generation import generate_profiles_yml
-from .dbt_utils import run_dbt_command
+from .cli_utils import echo_info, subprocess_run
 
 LOOKML_DEST_PATH: pathlib.Path = BUILD_DIR.joinpath("lookml")
 
@@ -22,7 +20,6 @@ def read_looker_config(env: str) -> Dict[str, Any]:
     )
 
 def generate_lookML_model(env: bool) -> None:
-    looker_config = read_looker_config(env)
     subprocess_run([
         "dbt2looker",
         "--output-dir",
@@ -87,7 +84,7 @@ def _commit_and_push_changes(repo: Repo, project_name: str, project_version: str
 
 def _deploy_looker_project_to_production(looker_instance_url: str, project_id: str, branch: str, webhook_secret: str) -> None:
     headers = {"X-Looker-Deploy-Secret": webhook_secret}
-    response = requests.post(
-            url=f"{looker_instance_url}/webhooks/projects/{project_id}/deploy/branch/{branch}", 
-            headers=headers
-        )
+    requests.post(
+        url=f"{looker_instance_url}/webhooks/projects/{project_id}/deploy/branch/{branch}", 
+        headers=headers
+    )

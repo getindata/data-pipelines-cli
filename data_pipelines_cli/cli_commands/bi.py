@@ -1,6 +1,5 @@
 import click
 
-from ..cli_utils import echo_info, echo_subinfo
 from ..cli_constants import BUILD_DIR
 from ..config_generation import read_dictionary_from_config_directory
 from ..looker_utils import generate_lookML_model, deploy_lookML_model
