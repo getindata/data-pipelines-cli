@@ -18,8 +18,6 @@ INSTALL_REQUIREMENTS = [
     "fsspec",
     "packaging>=20.4,<21.0",
     "colorama==0.4.4",
-    "dbt2looker==0.10.0",
-    "GitPython>=3.1.26",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
