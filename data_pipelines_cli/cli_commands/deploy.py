@@ -37,7 +37,7 @@ class DeployCommand:
     e.g. path to a token, username, password, etc."""
     env: str
     bi_push: bool
-    key_path: str
+    bi_git_key_path: str
 
     def __init__(
         self,
@@ -47,14 +47,14 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_push: bool,
-        key_path: str
+        bi_git_key_path: str
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
         self.bi_push = bi_push
-        self.key_path = key_path
+        self.bi_git_key_path = bi_git_key_path
 
         try:
             self.blob_address_path = (
@@ -86,7 +86,7 @@ class DeployCommand:
         self._sync_bucket()
 
     def _bi_push(self) -> None:
-        bi(self.env, False, self.bi_push, self.key_path)
+        bi(self.env, False, self.bi_push, self.bi_git_key_path)
 
     def _docker_push(self) -> None:
         """
@@ -176,7 +176,7 @@ class DeployCommand:
     help="Whether to push to BI",
 )
 @click.option(
-    "--key-path",
+    "--bi-git-key-path",
     type=str,
     required=False,
     help="Path to the key with write access to repo",
@@ -188,7 +188,7 @@ def deploy_command(
     docker_push: bool,
     datahub_ingest: bool,
     bi_push: bool,
-    key_path: str
+    bi_git_key_path: str
 ) -> None:
     if blob_args:
         try:
@@ -206,5 +206,5 @@ def deploy_command(
         provider_kwargs_dict,
         datahub_ingest,
         bi_push,
-        key_path
+        bi_git_key_path
     ).deploy()

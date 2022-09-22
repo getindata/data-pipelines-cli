@@ -18,8 +18,6 @@ INSTALL_REQUIREMENTS = [
     "fsspec",
     "packaging>=20.4,<21.0",
     "colorama==0.4.4",
-    "dbt2looker==0.10.0",
-    "GitPython>=3.1.26",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -37,6 +35,7 @@ EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub[dbt]==0.8.43.2"],
     "git": ["GitPython==3.1.26"],
+    "looker": ["dbt2looker==0.10.0"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",

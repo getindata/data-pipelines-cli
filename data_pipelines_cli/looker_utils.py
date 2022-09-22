@@ -19,14 +19,14 @@ def read_looker_config(env: str) -> Dict[str, Any]:
         BUILD_DIR.joinpath("dag"), env, "looker.yml"
     )
 
-def generate_lookML_model(env: bool) -> None:
+def generate_lookML_model() -> None:
     subprocess_run([
         "dbt2looker",
         "--output-dir",
-        LOOKML_DEST_PATH
+        str(LOOKML_DEST_PATH)
         ])
 
-def deploy_lookML_model(key_path: str, env: bool) -> None:
+def deploy_lookML_model(key_path: str, env: str) -> None:
     looker_config = read_looker_config(env)
     local_repo_path = BUILD_DIR.joinpath("looker_project_repo")
 
@@ -76,13 +76,14 @@ def _get_project_name_and_version() -> Tuple[str, str]:
         return dbt_project_config["name"], dbt_project_config["version"]
 
 def _commit_and_push_changes(repo: Repo, project_name: str, project_version: str) -> None:
-        echo_info("Publishing")
+        echo_info("Publishing BI codes to Looker repository")
         repo.git.add(all=True)
         repo.index.commit(f"Publication from project {project_name}, version: {project_version}")
         origin = repo.remote(name="origin")
         origin.push()
 
 def _deploy_looker_project_to_production(looker_instance_url: str, project_id: str, branch: str, webhook_secret: str) -> None:
+    echo_info("Deploying Looker project to production")
     headers = {"X-Looker-Deploy-Secret": webhook_secret}
     requests.post(
         url=f"{looker_instance_url}/webhooks/projects/{project_id}/deploy/branch/{branch}", 
