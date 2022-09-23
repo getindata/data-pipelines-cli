@@ -2,6 +2,7 @@ import sys
 
 import click
 
+from .cli_commands.bi import bi_command
 from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
@@ -18,7 +19,7 @@ from .cli_commands.test import test_command
 from .cli_commands.update import update_command
 from .cli_utils import echo_error, echo_suberror
 from .errors import DataPipelinesError
-from .cli_commands.bi import bi_command
+
 
 @click.group()
 @click.version_option(prog_name="dp")
