@@ -55,6 +55,7 @@ def _dbt_compile(env: str) -> None:
     run_dbt_command(("compile",), env, profiles_path)
     run_dbt_command(("docs", "generate"), env, profiles_path)
 
+
 def _copy_dbt_manifest() -> None:
     echo_info("Copying DBT manifest")
     shutil.copyfile(
@@ -93,7 +94,7 @@ def compile_project(
     docker_tag: Optional[str] = None,
     docker_build: bool = False,
     docker_build_args: Optional[Dict[str, str]] = None,
-    bi_build: bool = False
+    bi_build: bool = False,
 ) -> None:
     """
     Create local working directories and build artifacts.
@@ -127,6 +128,7 @@ def compile_project(
         echo_info("Generating BI codes")
         bi(env, bi_build)
 
+
 @click.command(
     name="compile",
     help="Create local working directories and build artifacts",
@@ -158,6 +160,10 @@ def compile_project(
     help="Whether to generate a BI codes",
 )
 def compile_project_command(
-    env: str, docker_build: bool, docker_tag: Optional[str], docker_args: Optional[str], bi_build: bool
+    env: str,
+    docker_build: bool,
+    docker_tag: Optional[str],
+    docker_args: Optional[str],
+    bi_build: bool,
 ) -> None:
     compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"), bi_build)

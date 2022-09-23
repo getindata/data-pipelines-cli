@@ -92,10 +92,12 @@ class DockerErrorResponseError(DataPipelinesError):
     def __init__(self, error_msg: str) -> None:
         super().__init__("Error raised when using Docker.\n" + error_msg)
 
+
 class NotSuppertedBIError(DataPipelinesError):
     """Exception raised if there is no ``target_id`` in `bi.yml`"""
 
     def __init__(self) -> None:
-        super().__init__("Variable 'target_id' cannot be found in 'bi.yml' "
+        super().__init__(
+            "Variable 'target_id' cannot be found in 'bi.yml' "
             "config file or the value not matched supported solutions."
         )

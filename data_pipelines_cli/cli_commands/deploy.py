@@ -47,7 +47,7 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_push: bool,
-        bi_git_key_path: str
+        bi_git_key_path: str,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
@@ -82,7 +82,7 @@ class DeployCommand:
 
         if self.bi_push:
             self._bi_push()
- 
+
         self._sync_bucket()
 
     def _bi_push(self) -> None:
@@ -188,7 +188,7 @@ def deploy_command(
     docker_push: bool,
     datahub_ingest: bool,
     bi_push: bool,
-    bi_git_key_path: str
+    bi_git_key_path: str,
 ) -> None:
     if blob_args:
         try:
@@ -200,11 +200,5 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
-        env,
-        docker_push,
-        dags_path,
-        provider_kwargs_dict,
-        datahub_ingest,
-        bi_push,
-        bi_git_key_path
+        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_push, bi_git_key_path
     ).deploy()

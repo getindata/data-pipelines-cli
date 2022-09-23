@@ -1,17 +1,20 @@
+from typing import Any, Dict, Optional
+
 import click
 
 from ..cli_constants import BUILD_DIR
 from ..config_generation import read_dictionary_from_config_directory
-from ..looker_utils import generate_lookML_model, deploy_lookML_model
-from ..errors import NotSuppertedBIError, DataPipelinesError
-from typing import Any, Dict, Optional
+from ..errors import DataPipelinesError, NotSuppertedBIError
+from ..looker_utils import deploy_lookML_model, generate_lookML_model
+
 
 def read_bi_config(env: str) -> Dict[str, Any]:
-    return read_dictionary_from_config_directory(
-        BUILD_DIR.joinpath("dag"), env, "bi.yml"
-    )
+    return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "bi.yml")
 
-def _bi_looker(env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None) -> None:
+
+def _bi_looker(
+    env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None
+) -> None:
     if generate_code:
         generate_lookML_model()
 
@@ -23,13 +26,15 @@ def _bi_looker(env: str, generate_code: bool, deploy: bool = False, key_path: Op
             )
         deploy_lookML_model(key_path, env)
 
+
 def bi(env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None) -> None:
     bi_config = read_bi_config(env)
- 
+
     if bi_config["target_bi"] == "looker":
         _bi_looker(env, generate_code, deploy, key_path)
     else:
         raise NotSuppertedBIError()
+
 
 @click.command(name="bi", help="Generate and push BI codes")
 @click.option(

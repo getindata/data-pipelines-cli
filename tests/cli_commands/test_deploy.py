@@ -86,7 +86,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     provider_kwargs_dict,
                     _datahub_ingest,
                     _bi_push,
-                    _key_path
+                    _key_path,
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
@@ -154,7 +154,9 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", False, self.storage_uri, self.provider_args, True, False, None).deploy()
+                DeployCommand(
+                    "base", False, self.storage_uri, self.provider_args, True, False, None
+                ).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
     @patch("data_pipelines_cli.cli_configs.BUILD_DIR", goldens_dir_path)
@@ -162,7 +164,9 @@ class DeployCommandTestCase(unittest.TestCase):
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.subprocess_run", self._mock_run
         ), patch.dict("sys.modules", datahub=MagicMock()):
-            DeployCommand("base", False, self.storage_uri, self.provider_args, True, False, None).deploy()
+            DeployCommand(
+                "base", False, self.storage_uri, self.provider_args, True, False, None
+            ).deploy()
             self.assertListEqual(
                 [
                     "datahub",
@@ -178,7 +182,9 @@ class DeployCommandTestCase(unittest.TestCase):
             "pathlib.Path.cwd", lambda: self.dbt_project_config_dir
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False, None).deploy()
+                DeployCommand(
+                    "base", True, self.storage_uri, self.provider_args, False, False, None
+                ).deploy()
 
     @patch(
         "data_pipelines_cli.cli_commands.deploy.BUILD_DIR",
@@ -252,7 +258,9 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
-            DeployCommand("base", True, self.storage_uri, self.provider_args, False, False, None).deploy()
+            DeployCommand(
+                "base", True, self.storage_uri, self.provider_args, False, False, None
+            ).deploy()
 
         self.assertEqual("my_docker_repository_uri", docker_kwargs.get("repository"))
         self.assertEqual("sha1234", docker_kwargs.get("tag"))
@@ -280,4 +288,6 @@ class DeployCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir
         ):
             with self.assertRaises(DataPipelinesError):
-                DeployCommand("base", True, self.storage_uri, self.provider_args, False, False, None).deploy()
+                DeployCommand(
+                    "base", True, self.storage_uri, self.provider_args, False, False, None
+                ).deploy()
