@@ -1,18 +1,16 @@
-import json
+import os
 import pathlib
-import unittest
-from unittest.mock import MagicMock, patch
-from data_pipelines_cli.looker_utils import deploy_lookML_model, generate_lookML_model
-from git import Repo
-import pathlib
-import tempfile
 import shutil
+import tempfile
+import unittest
 from os import PathLike
 from typing import Any
-import yaml
-import os
+from unittest.mock import MagicMock, patch
+
+from data_pipelines_cli.looker_utils import deploy_lookML_model, generate_lookML_model
 
 goldens_dir_path = pathlib.Path(__file__).parent.joinpath("goldens")
+
 
 class LookerUtilsTestCase(unittest.TestCase):
 
@@ -29,7 +27,7 @@ class LookerUtilsTestCase(unittest.TestCase):
         dags_path.mkdir(parents=True)
         shutil.copytree(goldens_dir_path.joinpath("config"), dags_path.joinpath("config"))
         shutil.copytree(goldens_dir_path.joinpath("lookml"), self.build_temp_dir.joinpath("lookml"))
-    
+
     def tearDown(self) -> None:
         shutil.rmtree(self.build_temp_dir)
 
@@ -71,24 +69,41 @@ class LookerUtilsTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_bi_deploy_looker(self):
-        with patch("data_pipelines_cli.looker_utils.BUILD_DIR", self.build_temp_dir
-        ), patch("data_pipelines_cli.looker_utils.Repo", self.repo_class_mock()
-        ), patch("data_pipelines_cli.looker_utils._deploy_looker_project_to_production"
-        ), patch("data_pipelines_cli.looker_utils.LOOKML_DEST_PATH", self.build_temp_dir.joinpath("lookml")):
+        with patch("data_pipelines_cli.looker_utils.BUILD_DIR", self.build_temp_dir), patch(
+            "data_pipelines_cli.looker_utils.Repo", self.repo_class_mock()
+        ), patch("data_pipelines_cli.looker_utils._deploy_looker_project_to_production"), patch(
+            "data_pipelines_cli.looker_utils.LOOKML_DEST_PATH",
+            self.build_temp_dir.joinpath("lookml"),
+        ):
             deploy_lookML_model("/path/to/key", "env")
-            
-        self.assertTrue(os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "dp_code", "views", "view1.view.lkml")))
-        self.assertTrue(os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "dp_code", "models", "model1.model.lkml")))
-        self.assertTrue(os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "dp_code", "readme.txt")))
+
+        self.assertTrue(
+            os.path.exists(
+                self.build_temp_dir.joinpath(
+                    "looker_project_repo", "dp_code", "views", "view1.view.lkml"
+                )
+            )
+        )
+        self.assertTrue(
+            os.path.exists(
+                self.build_temp_dir.joinpath(
+                    "looker_project_repo", "dp_code", "models", "model1.model.lkml"
+                )
+            )
+        )
+        self.assertTrue(
+            os.path.exists(
+                self.build_temp_dir.joinpath("looker_project_repo", "dp_code", "readme.txt")
+            )
+        )
 
     def test_bi_compile_looker(self):
         subprocess_run_mock = MagicMock()
-        with patch(
-             "data_pipelines_cli.looker_utils.subprocess_run", subprocess_run_mock
-             ), patch("data_pipelines_cli.looker_utils.LOOKML_DEST_PATH", "/path/for/lookml"
-             ):
-             generate_lookML_model()
+        with patch("data_pipelines_cli.looker_utils.subprocess_run", subprocess_run_mock), patch(
+            "data_pipelines_cli.looker_utils.LOOKML_DEST_PATH", "/path/for/lookml"
+        ):
+            generate_lookML_model()
 
-        subprocess_run_mock.assert_called_once_with(["dbt2looker", "--output-dir", "/path/for/lookml"])
-
-
+        subprocess_run_mock.assert_called_once_with(
+            ["dbt2looker", "--output-dir", "/path/for/lookml"]
+        )
