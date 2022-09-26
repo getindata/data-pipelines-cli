@@ -55,6 +55,7 @@ def bi(env: str, bi_action: BiAction, key_path: Optional[str] = None) -> None:
     :raises NotSuppertedBIError: Not supported bi in bi.yml configuration
     """
     bi_config = read_bi_config(env)
+
     if not bi_config["is_bi_enabled"]:
         echo_info("BI is disabled")
         return
