@@ -16,14 +16,33 @@ LOOKML_DEST_PATH: pathlib.Path = BUILD_DIR.joinpath("lookml")
 
 
 def read_looker_config(env: str) -> Dict[str, Any]:
+    """
+    Read Looker configuration.
+
+    :param env: Name of the environment
+    :type env: str
+    :return: Compiled dictionary
+    :rtype: Dict[str, Any]
+    """
     return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "looker.yml")
 
 
 def generate_lookML_model() -> None:
+    """
+    Generate lookML codes based on compiled dbt project.
+    """
     subprocess_run(["dbt2looker", "--output-dir", str(LOOKML_DEST_PATH)])
 
 
 def deploy_lookML_model(key_path: str, env: str) -> None:
+    """
+    Write compiled lookML to Looker's repository and deploy project to production
+
+    :param key_path: Path to the key with write access to git repository
+    :type key_path: str
+    :param env: Name of the environment
+    :type env: str
+    """
     looker_config = read_looker_config(env)
     local_repo_path = BUILD_DIR.joinpath("looker_project_repo")
 

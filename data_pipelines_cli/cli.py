@@ -2,7 +2,6 @@ import sys
 
 import click
 
-from .cli_commands.bi import bi_command
 from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
@@ -51,4 +50,3 @@ _cli.add_command(run_command)
 _cli.add_command(seed_command)
 _cli.add_command(test_command)
 _cli.add_command(update_command)
-_cli.add_command(bi_command)

@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
+from ..bi_utils import BiAction, bi
 from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_error, echo_info, subprocess_run
@@ -19,7 +20,6 @@ from ..errors import (
     DockerNotInstalledError,
 )
 from ..filesystem_utils import LocalRemoteSync
-from .bi import bi
 
 
 class DeployCommand:
@@ -36,7 +36,6 @@ class DeployCommand:
     """Dictionary of arguments required by a specific cloud storage provider,
     e.g. path to a token, username, password, etc."""
     env: str
-    bi_push: bool
     bi_git_key_path: str
 
     def __init__(
@@ -46,14 +45,12 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
-        bi_push: bool,
         bi_git_key_path: str,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
-        self.bi_push = bi_push
         self.bi_git_key_path = bi_git_key_path
 
         try:
@@ -80,13 +77,12 @@ class DeployCommand:
         if self.datahub_ingest:
             self._datahub_ingest()
 
-        if self.bi_push:
-            self._bi_push()
+        self._bi_push()
 
         self._sync_bucket()
 
     def _bi_push(self) -> None:
-        bi(self.env, False, self.bi_push, self.bi_git_key_path)
+        bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
 
     def _docker_push(self) -> None:
         """
@@ -170,12 +166,6 @@ class DeployCommand:
     help="Whether to ingest DataHub metadata",
 )
 @click.option(
-    "--bi-push",
-    is_flag=True,
-    default=False,
-    help="Whether to push to BI",
-)
-@click.option(
     "--bi-git-key-path",
     type=str,
     required=False,
@@ -187,7 +177,6 @@ def deploy_command(
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    bi_push: bool,
     bi_git_key_path: str,
 ) -> None:
     if blob_args:
@@ -200,5 +189,5 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
-        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_push, bi_git_key_path
+        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_git_key_path
     ).deploy()
