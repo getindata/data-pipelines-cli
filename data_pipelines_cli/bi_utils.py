@@ -1,17 +1,17 @@
+from enum import Enum
 from typing import Any, Dict, Optional
 
-import click
-
 from .cli_constants import BUILD_DIR
+from .cli_utils import echo_info
 from .config_generation import read_dictionary_from_config_directory
 from .errors import DataPipelinesError, NotSuppertedBIError
 from .looker_utils import deploy_lookML_model, generate_lookML_model
-from .cli_utils import echo_info
-from enum import Enum
+
 
 class BiAction(Enum):
     COMPILE = 1
     DEPLOY = 2
+
 
 def read_bi_config(env: str) -> Dict[str, Any]:
     """
@@ -23,6 +23,7 @@ def read_bi_config(env: str) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
     return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "bi.yml")
+
 
 def _bi_looker(
     env: str, generate_code: bool, deploy: bool = False, key_path: Optional[str] = None
