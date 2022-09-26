@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 from .cli_constants import BUILD_DIR
 from .cli_utils import echo_info
@@ -55,19 +55,22 @@ def bi(env: str, bi_action: BiAction, key_path: Optional[str] = None) -> None:
     :raises NotSuppertedBIError: Not supported bi in bi.yml configuration
     """
     bi_config = read_bi_config(env)
-
-    if bi_action == BiAction.COMPILE:
-        compile = bi_config["is_bi_compile"]
-        deploy = False
-    elif bi_action == BiAction.DEPLOY:
-        compile = False
-        deploy = bi_config["is_bi_deploy"]
-
-    if bi_config["is_bi_enabled"]:
-        echo_info("Running BI...")
-        if bi_config["bi_target"] == "looker":
-            _bi_looker(env, compile, deploy, key_path)
-        else:
-            raise NotSuppertedBIError()
-    else:
+    if not bi_config["is_bi_enabled"]:
         echo_info("BI is disabled")
+        return
+
+    if bi_config["bi_target"] == "looker":
+        echo_info("Running BI...")
+        compile, deploy = _prepare_bi_parameters(bi_action, bi_config)
+        _bi_looker(env, compile, deploy, key_path)
+    else:
+        raise NotSuppertedBIError()
+
+
+def _prepare_bi_parameters(bi_action: BiAction, bi_config: Dict[str, Any]) -> Tuple[bool, bool]:
+    if bi_action == BiAction.COMPILE:
+        return bi_config["is_bi_compile"], False
+    elif bi_action == BiAction.DEPLOY:
+        return False, bi_config["is_bi_deploy"]
+    else:
+        return False, False
