@@ -7,7 +7,7 @@ a structure looking similar to this:
 | config
 | ├── base
 | │   ├── dbt.yml
-| │   ├── bigquery.ymldbt2
+| │   ├── bigquery.yml
 | │   └── ...
 | ├── dev
 | │   └── bigquery.yml
@@ -166,3 +166,64 @@ Data governance configuration
 **dp** can sends **dbt** metadata to DataHub. All related configuration is stored in ``config/<ENV>/datahub.yml`` file.
 More information about it can be found `here <https://datahubproject.io/docs/metadata-ingestion#recipes>`_ and `here <https://datahubproject.io/docs/generated/ingestion/sources/dbt>`_.
 
+Business Intelligence configuration
+++++++++++++++++++++++++++++++
+
+BI configuration is divided into two levels:
+
+- General: ``config/<ENV>/bi.yml`` file
+- BI tool related: e.g. ``config/<ENV>/looker.yml``
+
+``config/<ENV>/bi.yml`` contains basic configuration about BI integration:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - is_bi_enabled
+     - bool
+     - Flag for enable/disable BI option in **dp**.
+   * - bi_target
+     - string
+     - BI tool you want to working with (currently only Looker is supported).
+   * - is_bi_compile
+     - bool
+     - Whether generate BI code in compile phase?
+   * - is_bi_deploy
+     - bool
+     - Whether deploy and push BI codes?
+
+``config/<ENV>/looker.yml`` contains more detailed configuration related to BI tool:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - looker_repository
+     - string
+     - Git repository used by Looker project you want to integrate.
+   * - looker_repository_username
+     - string
+     - Git config - username for operating with repository
+   * - looker_repository_email
+     - string
+     - Git config - user email for operating with repository
+   * - looker_project_id
+     - string
+     - Looker's project ID
+   * - looker_webhook_secret
+     - string
+     - Looker's project webhook secret for deployment
+   * - looker_repository_branch
+     - string
+     - Looker's repository branch for deploy new codes
+   * - looker_instance_url
+     - string
+     - URL for you Looker instance
+     
