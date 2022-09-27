@@ -226,4 +226,3 @@ BI configuration is divided into two levels:
    * - looker_instance_url
      - string
      - URL for you Looker instance
-     
