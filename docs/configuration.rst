@@ -7,7 +7,7 @@ a structure looking similar to this:
 | config
 | ├── base
 | │   ├── dbt.yml
-| │   ├── bigquery.yml
+| │   ├── bigquery.ymldbt2
 | │   └── ...
 | ├── dev
 | │   └── bigquery.yml

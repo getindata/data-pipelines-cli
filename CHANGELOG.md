@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.22.1] - 2022-08-22
+
+-   Looker integration
+-   `dp compile` is able generate lookML project for Looker
+-   `dp deploy` is able to publish lookML codes in Looker's repo and deploy project.
+
 ## [0.22.0] - 2022-08-22
 
 -   `dp compile` default environment hes been set to `local`
