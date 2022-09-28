@@ -79,22 +79,14 @@ class LookerUtilsTestCase(unittest.TestCase):
 
         self.assertTrue(
             os.path.exists(
-                self.build_temp_dir.joinpath(
-                    "looker_project_repo", "dp_code", "views", "view1.view.lkml"
-                )
+                self.build_temp_dir.joinpath("looker_project_repo", "views", "view1.view.lkml")
             )
         )
         self.assertTrue(
-            os.path.exists(
-                self.build_temp_dir.joinpath(
-                    "looker_project_repo", "dp_code", "models", "model1.model.lkml"
-                )
-            )
+            os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "model1.model.lkml"))
         )
         self.assertTrue(
-            os.path.exists(
-                self.build_temp_dir.joinpath("looker_project_repo", "dp_code", "readme.txt")
-            )
+            os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "readme.txt"))
         )
 
     def test_bi_compile_looker(self):
