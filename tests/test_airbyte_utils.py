@@ -3,7 +3,7 @@ import os
 import pathlib
 import tempfile
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
 
 import yaml
 from requests import HTTPError
@@ -104,9 +104,15 @@ class AirbyteUtilsTest(unittest.TestCase):
                 airbyte_config = yaml.safe_load(airbyte_file)
                 self.assertDictEqual(config, airbyte_config)
 
-    @patch("data_pipelines_cli.airbyte_utils.request_handler")
-    def test_request_handler(self, mock_run):
-        mock_run.side_effect = self.raise_helper
+    @patch("requests.post")
+    def test_request_handler(self, mock_post):
+        mock_post.side_effect = [
+            Mock(status_code=200, json=lambda: {"data": {"id": "test"}}),
+            Mock(status_code=404),
+        ]
+        self.assertTrue(
+            request_handler(self.airbyte_url, self.airbyte_config), {"data": {"id": "test"}}
+        )
         try:
             request_handler(self.airbyte_url, self.airbyte_config)
         except HTTPError as e:

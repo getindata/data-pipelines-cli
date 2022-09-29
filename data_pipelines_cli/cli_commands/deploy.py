@@ -44,11 +44,9 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
-        enable_ingest: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
-        self.enable_ingest = enable_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
 
@@ -63,6 +61,10 @@ class DeployCommand:
             )
         except KeyError as key_error:
             raise AirflowDagsPathKeyError from key_error
+
+        self.enable_ingest = read_dictionary_from_config_directory(
+            BUILD_DIR.joinpath("dag"), env, "ingestion.yml"
+        ).get("enable", False)
 
     def deploy(self) -> None:
         """Push and deploy the project to the remote machine.
@@ -167,19 +169,12 @@ class DeployCommand:
     default=False,
     help="Whether to ingest DataHub metadata",
 )
-@click.option(
-    "--enable-ingest",
-    is_flag=True,
-    default=False,
-    help="Whether to ingest airbyte config",
-)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
-    enable_ingest: bool,
 ) -> None:
     if blob_args:
         try:
@@ -190,6 +185,4 @@ def deploy_command(
     else:
         provider_kwargs_dict = None
 
-    DeployCommand(
-        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, enable_ingest
-    ).deploy()
+    DeployCommand(env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest).deploy()
