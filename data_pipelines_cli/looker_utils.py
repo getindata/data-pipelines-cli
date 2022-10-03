@@ -96,14 +96,18 @@ def _prepare_repo_changes(src: pathlib.Path, local_repo_gen_path: pathlib.Path) 
 
 def _clear_repo_before_writing_lookml(local_repo_gen_path: pathlib.Path) -> None:
     if local_repo_gen_path.exists():
-        for file in os.listdir(local_repo_gen_path):
-            if file.endswith(".dp.model.lkml"):
-                os.remove(local_repo_gen_path.joinpath(file))
+        _remove_dp_files_from_repo(local_repo_gen_path, ".dp.model.lkml")
 
         if local_repo_gen_path.joinpath(LOOKML_VIEWS_SUBDIR).exists():
-            for file in os.listdir(local_repo_gen_path):
-                if file.endswith(".dp.view.lkml"):
-                    os.remove(local_repo_gen_path.joinpath(file))
+            _remove_dp_files_from_repo(
+                local_repo_gen_path.joinpath(LOOKML_VIEWS_SUBDIR), ".dp.view.lkml"
+            )
+
+
+def _remove_dp_files_from_repo(dir_path: pathlib.Path, files_extention: str) -> None:
+    for file in os.listdir(dir_path):
+        if file.endswith(files_extention):
+            os.remove(dir_path.joinpath(file))
 
 
 def _configure_git_env(repo: Repo, config: Dict[str, Any]) -> None:

@@ -96,3 +96,19 @@ class BiUtilsTestCase(unittest.TestCase):
             self.assertRaises(DataPipelinesError, _bi_looker, "env", False, True)
 
         generate_lookML_model_mock.assert_not_called()
+
+    def test_bi_not_supported_action(self):
+        bi_config = {
+            "is_bi_enabled": True,
+            "bi_target": "looker",
+            "is_bi_compile": True,
+            "is_bi_deploy": False,
+        }
+
+        _bi_looker_mock = MagicMock()
+
+        with patch("data_pipelines_cli.bi_utils.read_bi_config", return_value=bi_config), patch(
+            "data_pipelines_cli.bi_utils._bi_looker", _bi_looker_mock
+        ):
+            bi("env", 2)
+            _bi_looker_mock.assert_called_with("env", False, False, None)

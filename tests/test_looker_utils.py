@@ -8,6 +8,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 from data_pipelines_cli.looker_utils import (
+    _clear_repo_before_writing_lookml,
     _deploy_looker_project_to_production,
     deploy_lookML_model,
     generate_lookML_model,
@@ -73,6 +74,7 @@ class LookerUtilsTestCase(unittest.TestCase):
 
     @patch("pathlib.Path.cwd", lambda: goldens_dir_path)
     def test_bi_deploy_looker(self):
+        os.mkdir(self.build_temp_dir.joinpath("looker_project_repo"))
         with patch("data_pipelines_cli.looker_utils.BUILD_DIR", self.build_temp_dir), patch(
             "data_pipelines_cli.looker_utils.Repo", self.repo_class_mock()
         ), patch("data_pipelines_cli.looker_utils._deploy_looker_project_to_production"), patch(
@@ -127,3 +129,13 @@ class LookerUtilsTestCase(unittest.TestCase):
             url="getindata.looker.com/webhooks/projects/getindata_unittest/deploy/branch/master",
             headers=headers,
         )
+
+    def test_bi_clear_repo_before_writing_lookml(self):
+        local_repo_dir = self.build_temp_dir.joinpath("looker_project_repo")
+        os.mkdir(local_repo_dir)
+        os.mkdir(local_repo_dir.joinpath("views"))
+        with open(f"{local_repo_dir}/test.dp.model.lkml", "w") as tst:
+            tst.write("test")
+
+        _clear_repo_before_writing_lookml(local_repo_dir)
+        self.assertFalse(os.path.isfile(f"{local_repo_dir}/test.dp.model.lkml"))
