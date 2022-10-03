@@ -7,7 +7,11 @@ from os import PathLike
 from typing import Any
 from unittest.mock import MagicMock, patch
 
-from data_pipelines_cli.looker_utils import deploy_lookML_model, generate_lookML_model
+from data_pipelines_cli.looker_utils import (
+    _deploy_looker_project_to_production,
+    deploy_lookML_model,
+    generate_lookML_model,
+)
 
 goldens_dir_path = pathlib.Path(__file__).parent.joinpath("goldens")
 
@@ -74,16 +78,22 @@ class LookerUtilsTestCase(unittest.TestCase):
         ), patch("data_pipelines_cli.looker_utils._deploy_looker_project_to_production"), patch(
             "data_pipelines_cli.looker_utils.LOOKML_DEST_PATH",
             self.build_temp_dir.joinpath("lookml"),
+        ), patch(
+            "data_pipelines_cli.looker_utils.generate_profiles_yml"
+        ), patch(
+            "data_pipelines_cli.looker_utils.run_dbt_command"
         ):
             deploy_lookML_model("/path/to/key", "env")
 
         self.assertTrue(
             os.path.exists(
-                self.build_temp_dir.joinpath("looker_project_repo", "views", "view1.view.lkml")
+                self.build_temp_dir.joinpath("looker_project_repo", "views", "view1.dp.view.lkml")
             )
         )
         self.assertTrue(
-            os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "model1.model.lkml"))
+            os.path.exists(
+                self.build_temp_dir.joinpath("looker_project_repo", "model1.dp.model.lkml")
+            )
         )
         self.assertTrue(
             os.path.exists(self.build_temp_dir.joinpath("looker_project_repo", "readme.txt"))
@@ -98,4 +108,22 @@ class LookerUtilsTestCase(unittest.TestCase):
 
         subprocess_run_mock.assert_called_once_with(
             ["dbt2looker", "--output-dir", "/path/for/lookml"]
+        )
+
+    def test_bi_deploy_looker_project_to_production(self):
+        looker_instance_url = "getindata.looker.com"
+        project_id = "getindata_unittest"
+        branch = "master"
+        webhook_secret = "super_secret_value"
+
+        headers = {"X-Looker-Deploy-Secret": webhook_secret}
+        requests_post = MagicMock()
+        with patch("data_pipelines_cli.looker_utils.requests.post", requests_post):
+            _deploy_looker_project_to_production(
+                looker_instance_url, project_id, branch, webhook_secret
+            )
+
+        requests_post.assert_called_once_with(
+            url="getindata.looker.com/webhooks/projects/getindata_unittest/deploy/branch/master",
+            headers=headers,
         )
