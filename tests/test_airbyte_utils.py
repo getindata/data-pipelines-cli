@@ -104,23 +104,25 @@ class AirbyteUtilsTest(unittest.TestCase):
                 airbyte_config = yaml.safe_load(airbyte_file)
                 self.assertDictEqual(config, airbyte_config)
 
+    @patch("data_pipelines_cli.airbyte_utils.echo_error")
     @patch("requests.post")
-    def test_request_handler(self, mock_post):
+    def test_request_handler(self, mock_post, mock_echo):
         mock_post.side_effect = [
             Mock(status_code=200, json=lambda: {"data": {"id": "test"}}),
-            Mock(status_code=404),
+            Mock(status_code=404, raise_for_status=self.raise_helper()),
         ]
         self.assertTrue(
             request_handler(self.airbyte_url, self.airbyte_config), {"data": {"id": "test"}}
         )
-        try:
-            request_handler(self.airbyte_url, self.airbyte_config)
-        except HTTPError as e:
-            self.assertIsInstance(e, HTTPError)
+        res = request_handler(self.airbyte_url, self.airbyte_config)
+        mock_echo.assert_called_with("Not Found")
+        self.assertIsNone(res)
 
     @staticmethod
-    def raise_helper() -> None:
-        raise HTTPError
+    def raise_helper() -> Mock:
+        exception = HTTPError()
+        exception.response = Mock(text="Not Found")
+        return Mock(side_effect=exception)
 
     @patch("data_pipelines_cli.airbyte_utils.request_handler")
     def test_create_connection(self, mock_run):
