@@ -1,0 +1,7 @@
+looker_repository: https://gitlab.com/getindata/dataops/some_looker_repo.git
+looker_repository_username: DataOps Team
+looker_repository_email: DataOps-Team@getindata.com
+looker_project_id: dbt-looker-test
+looker_webhook_secret: 9809k8909k345testTest
+looker_repository_branch: master
+looker_instance_url: https://test.looker.com
