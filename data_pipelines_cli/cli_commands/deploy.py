@@ -6,6 +6,7 @@ import click
 import yaml
 
 from ..airbyte_utils import factory, find_config_file
+from ..bi_utils import BiAction, bi
 from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_error, echo_info, subprocess_run
@@ -36,6 +37,7 @@ class DeployCommand:
     """Dictionary of arguments required by a specific cloud storage provider,
     e.g. path to a token, username, password, etc."""
     env: str
+    bi_git_key_path: str
 
     def __init__(
         self,
@@ -44,11 +46,13 @@ class DeployCommand:
         dags_path: Optional[str],
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
+        bi_git_key_path: str,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
+        self.bi_git_key_path = bi_git_key_path
 
         try:
             self.blob_address_path = (
@@ -80,8 +84,13 @@ class DeployCommand:
 
         if self.enable_ingest:
             self._enable_ingest()
+            
+        self._bi_push()
 
         self._sync_bucket()
+
+    def _bi_push(self) -> None:
+        bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
 
     def _docker_push(self) -> None:
         """
@@ -169,12 +178,19 @@ class DeployCommand:
     default=False,
     help="Whether to ingest DataHub metadata",
 )
+@click.option(
+    "--bi-git-key-path",
+    type=str,
+    required=False,
+    help="Path to the key with write access to repo",
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
     blob_args: Optional[io.TextIOWrapper],
     docker_push: bool,
     datahub_ingest: bool,
+    bi_git_key_path: str,
 ) -> None:
     if blob_args:
         try:
@@ -185,4 +201,6 @@ def deploy_command(
     else:
         provider_kwargs_dict = None
 
-    DeployCommand(env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest).deploy()
+    DeployCommand(
+        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_git_key_path
+    ).deploy()

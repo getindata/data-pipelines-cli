@@ -35,6 +35,7 @@ EXTRA_REQUIRE = {
     "docker": ["docker>=5.0"],
     "datahub": ["acryl-datahub[dbt]==0.8.43.2"],
     "git": ["GitPython==3.1.26"],
+    "looker": ["dbt2looker==0.10.0"],
     "tests": [
         "pytest>=6.2.2, <7.0.0",
         "pytest-cov>=2.8.0, <3.0.0",
@@ -65,7 +66,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.22.0",
+    version="0.22.1",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

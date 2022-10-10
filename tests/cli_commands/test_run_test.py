@@ -38,6 +38,8 @@ class RunTestCommandTestCase(unittest.TestCase):
                 "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
             ), patch(
                 "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
+            ), patch(
+                "data_pipelines_cli.cli_commands.compile.bi"
             ):
                 runner = CliRunner()
                 result = runner.invoke(_cli, [cmd])
@@ -71,6 +73,8 @@ class RunTestCommandTestCase(unittest.TestCase):
                     "data_pipelines_cli.cli_constants.BUILD_DIR", pathlib.Path(tmp_dir)
                 ), patch(
                     "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
+                ), patch(
+                    "data_pipelines_cli.cli_commands.compile.bi"
                 ):
                     runner = CliRunner()
                     result = runner.invoke(_cli, [cmd, "--env", env])
