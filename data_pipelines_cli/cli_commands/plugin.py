@@ -1,8 +1,10 @@
 import sys
-import click
-from pluggy import PluginManager, HookimplMarker
+from pluggy import PluginManager, HookimplMarker, HookspecMarker
 
-hookimpl = HookimplMarker("data_pipelines_cli")
+CLI_HOOK_NAMESPACE = "data_pipelines_cli"
+
+hookspec = HookspecMarker(CLI_HOOK_NAMESPACE)
+hookimpl = HookimplMarker(CLI_HOOK_NAMESPACE)
 
 
 @hookimpl
@@ -20,4 +22,3 @@ pm = PluginManager("data_pipelines_cli")
 
 # load all hookimpls from the local module's namespace
 plugin_name = pm.register(sys.modules[__name__])
-
