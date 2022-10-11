@@ -54,6 +54,7 @@ def _dbt_compile(env: str) -> None:
     run_dbt_command(("deps",), env, profiles_path)
     run_dbt_command(("compile",), env, profiles_path)
     run_dbt_command(("docs", "generate"), env, profiles_path)
+    run_dbt_command(("source", "freshness"), env, profiles_path)
 
 
 def _copy_dbt_manifest() -> None:
