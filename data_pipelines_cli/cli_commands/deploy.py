@@ -47,12 +47,14 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
+        gcp_sa_key_path: str,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
         self.bi_git_key_path = bi_git_key_path
+        self.gcp_sa_key_path = gcp_sa_key_path
 
         try:
             self.blob_address_path = (
@@ -84,7 +86,7 @@ class DeployCommand:
 
         if self.enable_ingest:
             self._enable_ingest()
-            
+
         self._bi_push()
 
         self._sync_bucket()
@@ -143,7 +145,7 @@ class DeployCommand:
     def _enable_ingest(self) -> None:
         echo_info("Ingesting airbyte config")
         airbyte_config_path = find_config_file(self.env, "airbyte")
-        factory(airbyte_config_path)
+        factory(airbyte_config_path, self.gcp_sa_key_path)
 
     def _sync_bucket(self) -> None:
         echo_info("Syncing Bucket")
@@ -184,6 +186,12 @@ class DeployCommand:
     required=False,
     help="Path to the key with write access to repo",
 )
+@click.option(
+    "--gcp-sa-key-path",
+    type=str,
+    required=False,
+    help="Path to the key file of GCP service account for communication with IAP",
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
@@ -191,6 +199,7 @@ def deploy_command(
     docker_push: bool,
     datahub_ingest: bool,
     bi_git_key_path: str,
+    gcp_sa_key_path: str,
 ) -> None:
     if blob_args:
         try:
@@ -202,5 +211,11 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
-        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_git_key_path
+        env,
+        docker_push,
+        dags_path,
+        provider_kwargs_dict,
+        datahub_ingest,
+        bi_git_key_path,
+        gcp_sa_key_path,
     ).deploy()

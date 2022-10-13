@@ -3,13 +3,15 @@ import copy
 import json
 import os
 import pathlib
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 import requests
 import yaml
+from google.oauth2 import service_account
 
 from .cli_constants import BUILD_DIR
 from .cli_utils import echo_error, echo_info
+from .errors import DataPipelinesError
 
 
 def find_config_file(env: str, config_name: str) -> pathlib.Path:
@@ -18,13 +20,15 @@ def find_config_file(env: str, config_name: str) -> pathlib.Path:
     return BUILD_DIR.joinpath("dag", "config", "base", f"{config_name}.yml")
 
 
-def factory(airbyte_config_path: pathlib.Path) -> None:
+def factory(airbyte_config_path: pathlib.Path, gcp_sa_key_path: Optional[str] = None) -> None:
     with open(airbyte_config_path, "r") as airbyte_config_file:
         airbyte_config = yaml.safe_load(airbyte_config_file)
     airbyte_url = airbyte_config["airbyte_url"]
     if airbyte_config["connections"]:
         [
-            create_update_connection(airbyte_config["connections"][connection], airbyte_url)
+            create_update_connection(
+                airbyte_config["connections"][connection], airbyte_url, gcp_sa_key_path
+            )
             for connection in airbyte_config["connections"]
         ]
         [task.update(env_replacer(task)) for task in airbyte_config["tasks"]]
@@ -40,8 +44,21 @@ def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
     return ast.literal_eval(os.path.expandvars(f"{config}"))
 
 
-def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Union[Dict[str, Any], Any]:
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+def request_handler(
+    airbyte_api_url: str, config: Dict[str, Any], gcp_sa_key_path: Optional[str] = None
+) -> Union[Dict[str, Any], Any]:
+    if gcp_sa_key_path is not None:
+        credentials = service_account.Credentials.from_service_account_file(gcp_sa_key_path)
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {credentials.token}",
+        }
+    else:
+        raise DataPipelinesError(
+            "Service account key file path is missing from environment variables. Could not authorize IAP request"
+        )
+
     try:
         response = requests.post(url=airbyte_api_url, headers=headers, data=json.dumps(config))
         response.raise_for_status()
@@ -52,7 +69,9 @@ def request_handler(airbyte_api_url: str, config: Dict[str, Any]) -> Union[Dict[
         return None
 
 
-def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str) -> Any:
+def create_update_connection(
+    connection_config: Dict[str, Any], airbyte_url: str, gcp_sa_key_path: Optional[str] = None
+) -> Any:
     connection_config_copy = copy.deepcopy(connection_config)
     response_search = request_handler(
         f"{airbyte_url}/api/v1/web_backend/connections/search",
@@ -62,11 +81,14 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
             "namespaceDefinition": connection_config_copy["namespaceDefinition"],
             "namespaceFormat": connection_config_copy["namespaceFormat"],
         },
+        gcp_sa_key_path,
     )
     if not response_search["connections"]:
         echo_info(f"Creating connection config for {connection_config_copy['name']}")
         response_create = request_handler(
-            f"{airbyte_url}/api/v1/web_backend/connections/create", connection_config_copy
+            f"{airbyte_url}/api/v1/web_backend/connections/create",
+            connection_config_copy,
+            gcp_sa_key_path,
         )
         os.environ[response_create["name"]] = response_create["connectionId"]
     else:
@@ -75,6 +97,8 @@ def create_update_connection(connection_config: Dict[str, Any], airbyte_url: str
         connection_config_copy.pop("destinationId", None)
         connection_config_copy["connectionId"] = response_search["connections"][0]["connectionId"]
         response_update = request_handler(
-            f"{airbyte_url}/api/v1/web_backend/connections/update", connection_config_copy
+            f"{airbyte_url}/api/v1/web_backend/connections/update",
+            connection_config_copy,
+            gcp_sa_key_path,
         )
         os.environ[response_update["name"]] = response_update["connectionId"]
