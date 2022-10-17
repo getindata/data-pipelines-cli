@@ -69,4 +69,5 @@ Under development
 Looker
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-Under development
+**dp** can generate lookML codes for your models and views, publish and deploy your `Looker <https://www.looker.com/>`_ project
+

@@ -16,6 +16,14 @@ Subpackages
 Submodules
 ----------
 
+data\_pipelines\_cli.bi\_utils module
+-------------------------------------
+
+.. automodule:: data_pipelines_cli.bi_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli module
 -------------------------------
 
@@ -108,6 +116,14 @@ data\_pipelines\_cli.jinja module
 ---------------------------------
 
 .. automodule:: data_pipelines_cli.jinja
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+data\_pipelines\_cli.looker\_utils module
+-----------------------------------------
+
+.. automodule:: data_pipelines_cli.looker_utils
    :members:
    :undoc-members:
    :show-inheritance:

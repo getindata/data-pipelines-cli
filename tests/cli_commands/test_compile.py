@@ -49,6 +49,8 @@ class CompileCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
+        ), patch(
+            "data_pipelines_cli.cli_commands.compile.bi"
         ):
             result = runner.invoke(_cli, ["compile"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -60,7 +62,6 @@ class CompileCommandTestCase(unittest.TestCase):
             self.assertIn("dbt deps", args_str)
             self.assertIn("dbt compile", args_str)
             self.assertIn("dbt docs generate", args_str)
-            self.assertIn("dbt source freshness", args_str)
 
             tmp_dir_path = pathlib.Path(tmp_dir)
             with open(tmp_dir_path.joinpath("dag", "manifest.json"), "r") as tmp_manifest, open(
@@ -141,6 +142,8 @@ class CompileCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.dbt_utils.BUILD_DIR", pathlib.Path(tmp_dir)
         ), patch(
             "data_pipelines_cli.dbt_utils.subprocess_run", self._mock_run
+        ), patch(
+            "data_pipelines_cli.cli_commands.compile.bi"
         ):
             result = runner.invoke(_cli, ["compile", "--docker-build"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -249,6 +252,8 @@ class CompileCommandTestCase(unittest.TestCase):
             "os.environ", SECRET_KEY="very_secret_keeeeeeeeeeeeeeeeeey.abcd"
         ), tempfile.TemporaryDirectory() as tmp_dir_2, patch(
             "pathlib.Path.cwd", lambda: pathlib.Path(tmp_dir_2)
+        ), patch(
+            "data_pipelines_cli.cli_commands.compile.bi"
         ):
             for dir in ["config", "dag", "target"]:
                 shutil.copytree(

@@ -32,3 +32,7 @@ If you want to deploy created artifacts (docker images and DataHub metadata) add
 * datahub
 
 These are not usually used by a person user.
+
+If you need Business Intelligence integration you can use following options:
+
+* looker

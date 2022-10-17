@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.22.1] - 2022-10-11
+
+## [0.22.1] - 2022-08-22
+
+-   Looker integration
+-   `dp compile` is able generate lookML project for Looker
+-   `dp deploy` is able to publish lookML codes in Looker's repo and deploy project.
+
 ## [0.22.0] - 2022-08-22
 
 -   `dp compile` default environment hes been set to `local`
@@ -217,7 +225,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.22.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.22.1...HEAD
+
+[0.22.1]: https://github.com/getindata/data-pipelines-cli/compare/0.22.1...0.22.1
 
 [0.22.0]: https://github.com/getindata/data-pipelines-cli/compare/0.21.0...0.22.0
 
