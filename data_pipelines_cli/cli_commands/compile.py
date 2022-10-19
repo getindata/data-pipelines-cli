@@ -90,10 +90,10 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
 
 
 def compile_project(
-        env: str,
-        docker_tag: Optional[str] = None,
-        docker_build: bool = False,
-        docker_build_args: Optional[Dict[str, str]] = None,
+    env: str,
+    docker_tag: Optional[str] = None,
+    docker_build: bool = False,
+    docker_build_args: Optional[Dict[str, str]] = None,
 ) -> None:
     """
     Create local working directories and build artifacts.
@@ -150,9 +150,9 @@ def compile_project(
     "--docker-args", type=str, required=False, help="Args required to build project in json format"
 )
 def compile_project_command(
-        env: str,
-        docker_build: bool,
-        docker_tag: Optional[str],
-        docker_args: Optional[str],
+    env: str,
+    docker_build: bool,
+    docker_tag: Optional[str],
+    docker_args: Optional[str],
 ) -> None:
     compile_project(env, docker_tag, docker_build, json.loads(docker_args or "{}"))
