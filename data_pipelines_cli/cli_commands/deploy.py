@@ -37,7 +37,6 @@ class DeployCommand:
     e.g. path to a token, username, password, etc."""
     env: str
     bi_git_key_path: str
-    bi_push: bool
 
     def __init__(
         self,
@@ -47,14 +46,12 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
-        bi_push: bool
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
         self.bi_git_key_path = bi_git_key_path
-        self.bi_push = bi_push
 
         try:
             self.blob_address_path = (
@@ -153,7 +150,7 @@ class DeployCommand:
     required=False,
     type=click.File("r"),
     help="Path to JSON or YAML file with arguments that should be passed to "
-         "your Bucket/blob provider",
+    "your Bucket/blob provider",
 )
 @click.option(
     "--docker-push",
@@ -175,12 +172,12 @@ class DeployCommand:
     help="Path to the key with write access to repo",
 )
 def deploy_command(
-        env: str,
-        dags_path: Optional[str],
-        blob_args: Optional[io.TextIOWrapper],
-        docker_push: bool,
-        datahub_ingest: bool,
-        bi_git_key_path: str,
+    env: str,
+    dags_path: Optional[str],
+    blob_args: Optional[io.TextIOWrapper],
+    docker_push: bool,
+    datahub_ingest: bool,
+    bi_git_key_path: str,
 ) -> None:
     if blob_args:
         try:
