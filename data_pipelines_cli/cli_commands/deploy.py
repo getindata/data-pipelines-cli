@@ -85,9 +85,6 @@ class DeployCommand:
         self._sync_bucket()
 
     def _bi_push(self) -> None:
-        bi(self.env, False, self.bi_push)
-
-    def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
 
     def _docker_push(self) -> None:
@@ -156,7 +153,7 @@ class DeployCommand:
     required=False,
     type=click.File("r"),
     help="Path to JSON or YAML file with arguments that should be passed to "
-    "your Bucket/blob provider",
+         "your Bucket/blob provider",
 )
 @click.option(
     "--docker-push",
@@ -178,12 +175,12 @@ class DeployCommand:
     help="Path to the key with write access to repo",
 )
 def deploy_command(
-    env: str,
-    dags_path: Optional[str],
-    blob_args: Optional[io.TextIOWrapper],
-    docker_push: bool,
-    datahub_ingest: bool,
-    bi_push: bool
+        env: str,
+        dags_path: Optional[str],
+        blob_args: Optional[io.TextIOWrapper],
+        docker_push: bool,
+        datahub_ingest: bool,
+        bi_git_key_path: str,
 ) -> None:
     if blob_args:
         try:
