@@ -142,7 +142,7 @@ def get_idToken_from_service_account_file(
         filename=json_credentials_path,
         target_audience=target_audience
     )
-    request = google.auth.transport.request.requests.Request()
+    request = google.auth.transport.requests.Request()
     try:
         credentials.refresh(request)
     except google.auth.exceptions.RefreshError as err:
