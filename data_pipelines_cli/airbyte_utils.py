@@ -7,10 +7,9 @@ from typing import Any, Dict, Optional, Union
 
 import requests
 import yaml
-from google.oauth2 import service_account
 
 from .cli_constants import BUILD_DIR
-from .cli_utils import echo_error, echo_info
+from .cli_utils import echo_error, echo_info, get_idToken_from_service_account_file
 from .errors import DataPipelinesError
 
 
@@ -47,18 +46,16 @@ def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
 def request_handler(
     airbyte_api_url: str, config: Dict[str, Any], gcp_sa_key_path: Optional[str] = None
 ) -> Union[Dict[str, Any], Any]:
-    if gcp_sa_key_path is not None:
-        credentials = service_account.Credentials.from_service_account_file(gcp_sa_key_path)
-        headers = {
+    if gcp_sa_key_path is None:
+        raise DataPipelinesError(
+            "Could not authorize IAP request. Make sure that argument `--gcp-sa-key-path` is supplied to the command"
+        )
+    idToken = get_idToken_from_service_account_file(gcp_sa_key_path, airbyte_api_url)
+    headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {credentials.token}",
+            "Authorization": f"Bearer {idToken}",
         }
-    else:
-        raise DataPipelinesError(
-            "Service account key file path is missing from environment variables. Could not authorize IAP request"
-        )
-
     try:
         response = requests.post(url=airbyte_api_url, headers=headers, data=json.dumps(config))
         response.raise_for_status()

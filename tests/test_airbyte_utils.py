@@ -53,12 +53,12 @@ class AirbyteUtilsTest(unittest.TestCase):
                 pathlib.Path(tmp_dir) / "dag" / "config" / env_name / f"{config_name}.yml",
             )
 
-    @unittest.skip("todo auth airbyte calls")
     @patch.dict(os.environ, {"CONNECTION_1_ID": "CONN-1-ID", "CONNECTION_2_ID": "CONN-2-ID"})
     @patch("data_pipelines_cli.airbyte_utils.create_update_connection")
     def test_factory(self, mock_create_update_connection):
         mock_create_update_connection.return_value = None
         test_airbyte_url = "http://some-airbyte/url"
+        gcp_sa_key_path = 'some_json_key_path'
         connection_1_config = {"name": "connection_1_name"}
         connection_2_config = {"name": "connection_2_name"}
         task_1_config = {"api_version": "v1", "connection_id": "${CONNECTION_1_ID}"}
@@ -74,11 +74,11 @@ class AirbyteUtilsTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w") as tmp_file:
             with open(tmp_file.name, "w") as f:
                 yaml.dump(config, f, default_flow_style=False)
-            factory(pathlib.Path(tmp_file.name))
+            factory(pathlib.Path(tmp_file.name), gcp_sa_key_path)
             mock_create_update_connection.assert_has_calls(
                 [
-                    call(connection_1_config, test_airbyte_url),
-                    call(connection_2_config, test_airbyte_url),
+                    call(connection_1_config, test_airbyte_url, gcp_sa_key_path),
+                    call(connection_2_config, test_airbyte_url, gcp_sa_key_path),
                 ]
             )
             with open(tmp_file.name, "r") as f:
@@ -105,18 +105,19 @@ class AirbyteUtilsTest(unittest.TestCase):
                 airbyte_config = yaml.safe_load(airbyte_file)
                 self.assertDictEqual(config, airbyte_config)
 
-    @unittest.skip("todo auth airbyte calls")
+    @patch('data_pipelines_cli.airbyte_utils.get_idToken_from_service_account_file')
     @patch("data_pipelines_cli.airbyte_utils.echo_error")
     @patch("requests.post")
-    def test_request_handler(self, mock_post, mock_echo):
+    def test_request_handler(self, mock_post, mock_echo, mock_get_idToken):
         mock_post.side_effect = [
             Mock(status_code=200, json=lambda: {"data": {"id": "test"}}),
             Mock(status_code=404, raise_for_status=self.raise_helper()),
         ]
+        mock_get_idToken.return_value = '09bd35cbd98760148714d'
         self.assertTrue(
-            request_handler(self.airbyte_url, self.airbyte_config), {"data": {"id": "test"}}
+            request_handler(self.airbyte_url, self.airbyte_config, 'gcp_sa_key_path'), {"data": {"id": "test"}}
         )
-        res = request_handler(self.airbyte_url, self.airbyte_config)
+        res = request_handler(self.airbyte_url, self.airbyte_config, 'gcp_sa_key_path')
         mock_echo.assert_called_with("Not Found")
         self.assertIsNone(res)
 
