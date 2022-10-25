@@ -139,7 +139,7 @@ def get_idToken_from_service_account_file(
     :type target_audience: str
     """
     credentials = service_account.IDTokenCredentials.from_service_account_file(
-        filenmae=json_credentials_path,
+        filename=json_credentials_path,
         target_audience=target_audience
     )
     request = google.auth.transport.request.requests.Request()
