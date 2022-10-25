@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
-from ..airbyte_utils import factory, find_config_file
+from ..airbyte_utils import AirbyteFactory
 from ..bi_utils import BiAction, bi
 from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
@@ -48,6 +48,7 @@ class DeployCommand:
         datahub_ingest: bool,
         bi_git_key_path: str,
         gcp_sa_key_path: str,
+        airbyte_iap_client_id: str,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
@@ -55,6 +56,7 @@ class DeployCommand:
         self.env = env
         self.bi_git_key_path = bi_git_key_path
         self.gcp_sa_key_path = gcp_sa_key_path
+        self.airbyte_iap_client_id = airbyte_iap_client_id
 
         try:
             self.blob_address_path = (
@@ -144,8 +146,13 @@ class DeployCommand:
 
     def _enable_ingest(self) -> None:
         echo_info("Ingesting airbyte config")
-        airbyte_config_path = find_config_file(self.env, "airbyte")
-        factory(airbyte_config_path, self.gcp_sa_key_path)
+        airbyte_config_path = AirbyteFactory.find_config_file(self.env, "airbyte")
+        AirbyteFactory(
+            airbyte_config_path=airbyte_config_path,
+            iap_enabled=True,
+            airbyte_iap_client_id=self.airbyte_iap_client_id,
+            gcp_sa_key_path=self.gcp_sa_key_path,
+        ).create_update_connections()
 
     def _sync_bucket(self) -> None:
         echo_info("Syncing Bucket")
@@ -192,6 +199,9 @@ class DeployCommand:
     required=False,
     help="Path to the key file of GCP service account for communication with IAP",
 )
+@click.option(
+    "--airbyte-iap-client-id", type=str, required=False, help="IAP Client ID of Airbyte instance"
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
@@ -200,6 +210,7 @@ def deploy_command(
     datahub_ingest: bool,
     bi_git_key_path: str,
     gcp_sa_key_path: str,
+    airbyte_iap_client_id: str,
 ) -> None:
     if blob_args:
         try:
@@ -218,4 +229,5 @@ def deploy_command(
         datahub_ingest,
         bi_git_key_path,
         gcp_sa_key_path,
+        airbyte_iap_client_id,
     ).deploy()

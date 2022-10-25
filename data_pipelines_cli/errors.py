@@ -101,3 +101,10 @@ class NotSuppertedBIError(DataPipelinesError):
             "Variable 'target_id' cannot be found in 'bi.yml' "
             "config file or the value not matched supported solutions."
         )
+
+
+class AirbyteFactoryError(DataPipelinesError):
+    """Exception raised during Airbyte connections creation"""
+
+    def __init__(self, error_message: str) -> None:
+        super().__init__("An error occured during Airbyte connections creation." f"{error_message}")

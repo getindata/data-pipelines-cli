@@ -6,16 +6,15 @@ import sys
 from typing import Any, List, Optional
 
 import click
+import google.auth.transport.requests
+import requests
+from google.oauth2 import service_account
 
 from data_pipelines_cli.errors import (
     DataPipelinesError,
     SubprocessNonZeroExitError,
     SubprocessNotFound,
 )
-
-from google.oauth2 import service_account
-import google.auth.transport.requests
-import requests
 
 
 def echo_error(text: str, **kwargs: Any) -> None:
@@ -127,10 +126,8 @@ def subprocess_run(
             err.output.decode(encoding=sys.stdout.encoding or "utf-8") if err.output else None,
         )
 
-def get_idToken_from_service_account_file(
-    json_credentials_path: str,
-    target_audience: str
-) -> str:
+
+def get_idToken_from_service_account_file(json_credentials_path: str, target_audience: str) -> str:
     """
     Obtain ID Token for a Service Account against a provided target audience
 
@@ -140,14 +137,13 @@ def get_idToken_from_service_account_file(
     :type target_audience: str
     """
     credentials = service_account.IDTokenCredentials.from_service_account_file(
-        filename=json_credentials_path,
-        target_audience=target_audience
+        filename=json_credentials_path, target_audience=target_audience
     )
     request = google.auth.transport.requests.Request()
     try:
         credentials.refresh(request)
     except google.auth.exceptions.RefreshError as err:
         raise DataPipelinesError(
-            'An error occured while refreshing GCP Service Account credentials.'
+            "An error occured while refreshing GCP Service Account credentials."
         )
     return credentials.token
