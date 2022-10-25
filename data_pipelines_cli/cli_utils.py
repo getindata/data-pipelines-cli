@@ -14,7 +14,8 @@ from data_pipelines_cli.errors import (
 )
 
 from google.oauth2 import service_account
-import google.auth
+import google.auth.transport.requests
+import requests
 
 
 def echo_error(text: str, **kwargs: Any) -> None:
