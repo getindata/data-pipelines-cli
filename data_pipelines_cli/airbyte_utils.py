@@ -38,24 +38,20 @@ class AirbyteFactory:
         self.id_token = None
 
         if iap_enabled:
-            if airbyte_iap_client_id is None or gcp_sa_key_path is None:
-                missing_attributes = ["Missing information to authorize IAP request."]
-                if airbyte_iap_client_id is None:
-                    missing_attributes.append(
-                        "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
-                    )
-                if gcp_sa_key_path is None:
-                    missing_attributes.append(
-                        "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
-                    )
+            if airbyte_iap_client_id is None:
                 raise AirbyteFactoryError(
-                    "\n".join(
-                        missing_attributes,
-                    )
+                    "Missing information to authorize IAP request to Airbyte."
+                    "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
                 )
-            self.id_token = get_idToken_from_service_account_file(
-                gcp_sa_key_path, airbyte_iap_client_id
-            )
+            elif gcp_sa_key_path is None:
+                raise AirbyteFactoryError(
+                    "Missing information to authorize IAP request to Airbyte."
+                    "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
+                )
+            else:
+                self.id_token = get_idToken_from_service_account_file(
+                    gcp_sa_key_path, airbyte_iap_client_id
+                )
 
         with open(self.airbyte_config_path, "r") as airbyte_config_file:
             self.airbyte_config = yaml.safe_load(airbyte_config_file)

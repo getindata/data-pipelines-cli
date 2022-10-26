@@ -29,25 +29,22 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.airbyte_iap_client_id = "536234aj-666e350l.apps.googleusercontent.com"
         self.gcp_sa_key_path = "some/sa/keyfile/path.json"
         self.test_airbyte_factory = AirbyteFactory(self.airbyte_file, False)
-        self.test_airbyte_factory_iap = AirbyteFactory(
-            self.airbyte_file, True, self.airbyte_iap_client_id, self.gcp_sa_key_path
-        )
 
     def test_init_with_iap_without_required_attributes(self):
-        err_general = "Missing information to authorize IAP request."
+        err_general = "Missing information to authorize IAP request to Airbyte."
         err_client_id = (
             "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
         )
         err_key_path = "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
 
         with self.assertRaises(AirbyteFactoryError) as err_airbyte_iap_client_id:
-            AirbyteFactory(self.airbyte_config, True, None, self.gcp_sa_key_path)
+            AirbyteFactory(self.airbyte_file, True, None, self.gcp_sa_key_path)
         self.assertTrue(err_general in str(err_airbyte_iap_client_id.exception))
         self.assertTrue(err_client_id in str(err_airbyte_iap_client_id.exception))
         self.assertTrue(err_key_path not in str(err_airbyte_iap_client_id.exception))
 
         with self.assertRaises(AirbyteFactoryError) as err_gcp_sa_key_path:
-            AirbyteFactory(self.airbyte_config, True, self.airbyte_iap_client_id, None)
+            AirbyteFactory(self.airbyte_file, True, self.airbyte_iap_client_id, None)
         self.assertTrue(err_general in str(err_gcp_sa_key_path.exception))
         self.assertTrue(err_client_id not in str(err_gcp_sa_key_path.exception))
         self.assertTrue(err_key_path in str(err_gcp_sa_key_path.exception))
@@ -155,12 +152,16 @@ class AirbyteUtilsTest(unittest.TestCase):
             Mock(status_code=404, raise_for_status=self.raise_helper()),
         ]
         mock_get_idToken.return_value = "7bnjf820ds02d"
+
+        test_airbyte_factory_iap = AirbyteFactory(
+            self.airbyte_file, True, self.airbyte_iap_client_id, self.gcp_sa_key_path
+        )
         self.assertTrue(
-            self.test_airbyte_factory_iap.request_handler(self.airbyte_url, self.airbyte_config),
+            test_airbyte_factory_iap.request_handler(self.airbyte_url, self.airbyte_config),
             {"data": {"id": "test"}},
         )
         self.assertIsNone(
-            self.test_airbyte_factory_iap.request_handler(self.airbyte_url, self.airbyte_config)
+            test_airbyte_factory_iap.request_handler(self.airbyte_url, self.airbyte_config)
         )
         mock_echo.assert_called_with("Not Found")
         headers = {
