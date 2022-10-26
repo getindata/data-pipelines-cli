@@ -40,9 +40,9 @@ class DeployCommand:
     bi_git_key_path: str
     """Path to JSON file containing key for GCP service account 
     used to communicate with IAP-secured applications"""
-    gcp_sa_key_path: str
+    gcp_sa_key_path: Optional[str]
     """Client ID of Airbyte IAP-secured instance"""
-    airbyte_iap_client_id: str
+    airbyte_iap_client_id: Optional[str]
 
     def __init__(
         self,
@@ -52,8 +52,8 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
-        gcp_sa_key_path: str = None,
-        airbyte_iap_client_id: str = None,
+        gcp_sa_key_path: Optional[str] = None,
+        airbyte_iap_client_id: Optional[str] = None,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
@@ -214,8 +214,8 @@ def deploy_command(
     docker_push: bool,
     datahub_ingest: bool,
     bi_git_key_path: str,
-    gcp_sa_key_path: str,
-    airbyte_iap_client_id: str,
+    gcp_sa_key_path: Optional[str],
+    airbyte_iap_client_id: Optional[str],
 ) -> None:
     if blob_args:
         try:
