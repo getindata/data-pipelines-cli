@@ -34,26 +34,27 @@ class AirbyteFactory:
         gcp_sa_key_path: Optional[str] = None,
     ) -> None:
         self.airbyte_config_path = airbyte_config_path
-        self.iap_enabled = iap_enabled
-        self.airbyte_iap_client_id = airbyte_iap_client_id
-        self.gcp_sa_key_path = gcp_sa_key_path
+        self.airbyte_url = None
+        self.id_token = None
 
-        if self.iap_enabled and (
-            self.airbyte_iap_client_id is None or self.gcp_sa_key_path is None
-        ):
-            missing_attributes = ["Missing information to authorize IAP request."]
-            if self.airbyte_iap_client_id is None:
-                missing_attributes.append(
-                    "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
+        if iap_enabled:
+            if airbyte_iap_client_id is None or gcp_sa_key_path is None:
+                missing_attributes = ["Missing information to authorize IAP request."]
+                if airbyte_iap_client_id is None:
+                    missing_attributes.append(
+                        "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
+                    )
+                if gcp_sa_key_path is None:
+                    missing_attributes.append(
+                        "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
+                    )
+                raise AirbyteFactoryError(
+                    "\n".join(
+                        missing_attributes,
+                    )
                 )
-            if self.gcp_sa_key_path is None:
-                missing_attributes.append(
-                    "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
-                )
-            raise AirbyteFactoryError(
-                "\n".join(
-                    missing_attributes,
-                )
+            self.id_token = get_idToken_from_service_account_file(
+                gcp_sa_key_path, airbyte_iap_client_id
             )
 
         with open(self.airbyte_config_path, "r") as airbyte_config_file:
@@ -120,11 +121,9 @@ class AirbyteFactory:
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
-        if self.iap_enabled:
-            idToken = get_idToken_from_service_account_file(
-                self.gcp_sa_key_path, self.airbyte_iap_client_id
-            )
-            headers["Authorization"] = f"Bearer {idToken}"
+        if self.id_token is not None:
+            headers["Authorization"] = f"Bearer {self.id_token}"
+
         try:
             response = requests.post(url=url, headers=headers, data=json.dumps(config))
             response.raise_for_status()
