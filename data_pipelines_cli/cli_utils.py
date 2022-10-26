@@ -7,7 +7,6 @@ from typing import Any, List, Optional
 
 import click
 import google.auth.transport.requests
-import requests
 from google.oauth2 import service_account
 
 from data_pipelines_cli.errors import (
@@ -144,6 +143,7 @@ def get_idToken_from_service_account_file(json_credentials_path: str, target_aud
         credentials.refresh(request)
     except google.auth.exceptions.RefreshError as err:
         raise DataPipelinesError(
-            "An error occured while refreshing GCP Service Account credentials."
+            "An error occured while refreshing GCP Service Account credentials.",
+            err
         )
     return credentials.token

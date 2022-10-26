@@ -38,7 +38,7 @@ class DeployCommand:
     e.g. path to a token, username, password, etc."""
     env: str
     bi_git_key_path: str
-    """Path to JSON file containing key for GCP service account 
+    """Path to JSON file containing key for GCP service account
     used to communicate with IAP-secured applications"""
     gcp_sa_key_path: Optional[str]
     """Client ID of Airbyte IAP-secured instance"""
