@@ -52,8 +52,8 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
-        gcp_sa_key_path: str,
-        airbyte_iap_client_id: str,
+        gcp_sa_key_path: str = None,
+        airbyte_iap_client_id: str = None,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
