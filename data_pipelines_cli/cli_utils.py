@@ -143,7 +143,6 @@ def get_idToken_from_service_account_file(json_credentials_path: str, target_aud
         credentials.refresh(request)
     except google.auth.exceptions.RefreshError as err:
         raise DataPipelinesError(
-            "An error occured while refreshing GCP Service Account credentials.",
-            err
+            "An error occured while refreshing GCP Service Account credentials.", err
         )
     return credentials.token
