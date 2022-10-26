@@ -83,7 +83,7 @@ class AirbyteFactory:
     def create_update_connection(self, connection_config: Dict[str, Any]) -> Any:
         connection_config_copy = copy.deepcopy(connection_config)
         response_search = self.request_handler(
-            f"{self.airbyte_url}/api/v1/web_backend/connections/search",
+            f"{self.airbyte_url}/api/v1/connections/search",
             {
                 "sourceId": connection_config_copy["sourceId"],
                 "destinationId": connection_config_copy["destinationId"],
@@ -94,7 +94,7 @@ class AirbyteFactory:
         if not response_search["connections"]:
             echo_info(f"Creating connection config for {connection_config_copy['name']}")
             response_create = self.request_handler(
-                f"{self.airbyte_url}/api/v1/web_backend/connections/create",
+                f"{self.airbyte_url}/api/v1/connections/create",
                 connection_config_copy,
             )
             os.environ[response_create["name"]] = response_create["connectionId"]
@@ -106,7 +106,7 @@ class AirbyteFactory:
                 "connectionId"
             ]
             response_update = self.request_handler(
-                f"{self.airbyte_url}/api/v1/web_backend/connections/update",
+                f"{self.airbyte_url}/api/v1/connections/update",
                 connection_config_copy,
             )
             os.environ[response_update["name"]] = response_update["connectionId"]
