@@ -33,9 +33,9 @@ class AirbyteUtilsTest(unittest.TestCase):
     def test_init_with_iap_without_required_attributes(self):
         err_general = "Missing information to authorize IAP request to Airbyte."
         err_client_id = (
-            "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
+            "Provide `--airbyte-iap-client-id` argument to the dp command."
         )
-        err_key_path = "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
+        err_key_path = "Provide `--gcp-sa-key-path` argument to the dp command."
 
         with self.assertRaises(AirbyteFactoryError) as err_airbyte_iap_client_id:
             AirbyteFactory(self.airbyte_file, True, None, self.gcp_sa_key_path)

@@ -41,12 +41,12 @@ class AirbyteFactory:
             if airbyte_iap_client_id is None:
                 raise AirbyteFactoryError(
                     "Missing information to authorize IAP request to Airbyte."
-                    "Make sure that argument `--airbyte-iap-client-id` is supplied to the dp command."
+                    "Provide `--airbyte-iap-client-id` argument to the dp command."
                 )
             elif gcp_sa_key_path is None:
                 raise AirbyteFactoryError(
                     "Missing information to authorize IAP request to Airbyte."
-                    "Make sure that argument `--gcp-sa-key-path` is supplied to the dp command."
+                    "Provide `--gcp-sa-key-path` argument to the dp command."
                 )
             else:
                 self.id_token = get_idToken_from_service_account_file(
