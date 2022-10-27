@@ -6,6 +6,8 @@ import sys
 from typing import Any, List, Optional
 
 import click
+import google.auth.transport.requests
+from google.oauth2 import service_account
 
 from data_pipelines_cli.errors import (
     DataPipelinesError,
@@ -122,3 +124,25 @@ def subprocess_run(
             err.returncode,
             err.output.decode(encoding=sys.stdout.encoding or "utf-8") if err.output else None,
         )
+
+
+def get_idToken_from_service_account_file(json_credentials_path: str, target_audience: str) -> str:
+    """
+    Obtain ID Token for a Service Account against a provided target audience
+
+    :param json_credentials_path: Path to Service Account JSON credentials file
+    :type json_credentials_path: str
+    :param target_audience: The URL or target audience to obtain the ID token for.
+    :type target_audience: str
+    """
+    credentials = service_account.IDTokenCredentials.from_service_account_file(
+        filename=json_credentials_path, target_audience=target_audience
+    )
+    request = google.auth.transport.requests.Request()
+    try:
+        credentials.refresh(request)
+    except google.auth.exceptions.RefreshError as err:
+        raise DataPipelinesError(
+            "An error occured while refreshing GCP Service Account credentials.", err
+        )
+    return credentials.token

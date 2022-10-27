@@ -44,6 +44,7 @@ EXTRA_REQUIRE = {
         "moto[s3]==3.1.12",
         "gcp-storage-emulator==2022.6.11",
         "GitPython==3.1.26",
+        "types-requests==2.28.10",
         *(
             [
                 require

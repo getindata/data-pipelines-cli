@@ -41,7 +41,7 @@ def _get_template_path(
     return to_return
 
 
-def create(project_path: str, template_path: Optional[str]) -> None:
+def create(project_path: str, template_path: Optional[str], vcs_ref: str) -> None:
     """
     Create a new project using a template.
 
@@ -54,7 +54,7 @@ def create(project_path: str, template_path: Optional[str]) -> None:
     config = read_env_config()
     config_templates = config["templates"]
     src_template_path = _get_template_path(config_templates, template_path)
-    copier.copy(src_path=src_template_path, dst_path=project_path)
+    copier.copy(src_path=src_template_path, dst_path=project_path, vcs_ref=vcs_ref)
 
 
 @click.command(name="create", help="Create a new project using a template")
@@ -63,7 +63,8 @@ def create(project_path: str, template_path: Optional[str]) -> None:
     type=click.Path(writable=True, path_type=str, dir_okay=True, file_okay=False),
 )
 @click.argument("template-path", nargs=-1)
-def create_command(project_path: str, template_path: Sequence[str]) -> None:
+@click.option("--vcs-ref", default="HEAD", type=str, help="Git reference to checkout")
+def create_command(project_path: str, template_path: Sequence[str], vcs_ref: str) -> None:
     if template_path and len(template_path) > 1:
         echo_warning("dp create expects at most two arguments -- project-path and template-path")
-    create(project_path, template_path[0] if template_path else None)
+    create(project_path, template_path[0] if template_path else None, vcs_ref)

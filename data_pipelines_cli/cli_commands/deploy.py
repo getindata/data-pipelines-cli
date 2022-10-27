@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import yaml
 
+from ..airbyte_utils import AirbyteFactory
 from ..bi_utils import BiAction, bi
 from ..cli_configs import find_datahub_config_file
 from ..cli_constants import BUILD_DIR
@@ -37,6 +38,11 @@ class DeployCommand:
     e.g. path to a token, username, password, etc."""
     env: str
     bi_git_key_path: str
+    """Path to JSON file containing key for GCP service account
+    used to communicate with IAP-secured applications"""
+    gcp_sa_key_path: Optional[str]
+    """Client ID of Airbyte IAP-secured instance"""
+    airbyte_iap_client_id: Optional[str]
 
     def __init__(
         self,
@@ -46,12 +52,16 @@ class DeployCommand:
         provider_kwargs_dict: Optional[Dict[str, Any]],
         datahub_ingest: bool,
         bi_git_key_path: str,
+        gcp_sa_key_path: Optional[str] = None,
+        airbyte_iap_client_id: Optional[str] = None,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
         self.provider_kwargs_dict = provider_kwargs_dict or {}
         self.env = env
         self.bi_git_key_path = bi_git_key_path
+        self.gcp_sa_key_path = gcp_sa_key_path
+        self.airbyte_iap_client_id = airbyte_iap_client_id
 
         try:
             self.blob_address_path = (
@@ -65,6 +75,10 @@ class DeployCommand:
         except KeyError as key_error:
             raise AirflowDagsPathKeyError from key_error
 
+        self.enable_ingest = read_dictionary_from_config_directory(
+            BUILD_DIR.joinpath("dag"), env, "ingestion.yml"
+        ).get("enable", False)
+
     def deploy(self) -> None:
         """Push and deploy the project to the remote machine.
 
@@ -76,6 +90,9 @@ class DeployCommand:
 
         if self.datahub_ingest:
             self._datahub_ingest()
+
+        if self.enable_ingest:
+            self._enable_ingest()
 
         self._bi_push()
 
@@ -132,6 +149,16 @@ class DeployCommand:
             ]
         )
 
+    def _enable_ingest(self) -> None:
+        echo_info("Ingesting airbyte config")
+        airbyte_config_path = AirbyteFactory.find_config_file(self.env, "airbyte")
+        AirbyteFactory(
+            airbyte_config_path=airbyte_config_path,
+            iap_enabled=True,
+            airbyte_iap_client_id=self.airbyte_iap_client_id,
+            gcp_sa_key_path=self.gcp_sa_key_path,
+        ).create_update_connections()
+
     def _sync_bucket(self) -> None:
         echo_info("Syncing Bucket")
         LocalRemoteSync(
@@ -171,6 +198,15 @@ class DeployCommand:
     required=False,
     help="Path to the key with write access to repo",
 )
+@click.option(
+    "--gcp-sa-key-path",
+    type=str,
+    required=False,
+    help="Path to the key file of GCP service account for communication with IAP",
+)
+@click.option(
+    "--airbyte-iap-client-id", type=str, required=False, help="IAP Client ID of Airbyte instance"
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
@@ -178,6 +214,8 @@ def deploy_command(
     docker_push: bool,
     datahub_ingest: bool,
     bi_git_key_path: str,
+    gcp_sa_key_path: Optional[str],
+    airbyte_iap_client_id: Optional[str],
 ) -> None:
     if blob_args:
         try:
@@ -189,5 +227,12 @@ def deploy_command(
         provider_kwargs_dict = None
 
     DeployCommand(
-        env, docker_push, dags_path, provider_kwargs_dict, datahub_ingest, bi_git_key_path
+        env,
+        docker_push,
+        dags_path,
+        provider_kwargs_dict,
+        datahub_ingest,
+        bi_git_key_path,
+        gcp_sa_key_path,
+        airbyte_iap_client_id,
     ).deploy()
