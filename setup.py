@@ -7,10 +7,10 @@ with open("README.md") as f:
 
 INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.0.1",
-    "Werkzeug",
-    "click",
+    "Werkzeug==2.1.2",
+    "click==8.1.3",
     "questionary",
-    "pyyaml==5.4.1",
+    "pyyaml<6.0.0,>=5.3.1",
     "types-PyYAML",
     "copier==5.1.0",
     "Jinja2",
