@@ -10,7 +10,7 @@ INSTALL_REQUIREMENTS = [
     "Werkzeug",
     "click",
     "questionary",
-    "pyyaml==5.4.1",
+    "pyyaml<6.0.0,>=5.3.1",
     "types-PyYAML",
     "copier==5.1.0",
     "Jinja2",
