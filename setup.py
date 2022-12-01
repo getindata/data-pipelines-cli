@@ -10,13 +10,14 @@ INSTALL_REQUIREMENTS = [
     "Werkzeug",
     "click",
     "questionary",
-    "pyyaml<6.0.0,>=5.3.1",
+    "pyyaml",
     "types-PyYAML",
     "copier==5.1.0",
     "Jinja2",
     "fsspec",
     "packaging",
     "colorama",
+    "dbt-core",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
