@@ -6,17 +6,17 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe",
-    "Werkzeug",
-    "click",
-    "questionary",
+    "MarkupSafe==2.0.1",
+    "Werkzeug==2.1.2",
+    "click==8.1.3",
+    "questionary==1.10.0",
     "pyyaml==5.4.1",
-    "types-PyYAML",
+    "types-PyYAML==6.0.12.2",
     "copier==5.1.0",
     "Jinja2==2.11.3",
-    "fsspec",
-    "packaging",
-    "colorama",
+    "fsspec==2022.11.0",
+    "packaging==20.9",
+    "colorama==0.4.5",
     "dbt-core==1.2.3",
 ]
 
