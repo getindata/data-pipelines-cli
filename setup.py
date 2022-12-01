@@ -43,6 +43,7 @@ EXTRA_REQUIRE = {
         "moto[s3]",
         "gcp-storage-emulator",
         "GitPython",
+        "types-requests",
         *(
             [
                 require

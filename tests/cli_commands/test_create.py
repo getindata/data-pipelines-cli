@@ -13,11 +13,13 @@ from data_pipelines_cli.errors import DataPipelinesError, NoConfigFileError
 class CreateCommandTestCase(unittest.TestCase):
     copier_src_path = "source_path"
     copier_dst_path = "destination_path"
+    vcs_ref = "0ffedb3edc9dc588e6f466cbcea953ad26fbc037"
     goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
 
-    def _mock_copier(self, src_path: str, dst_path: str):
+    def _mock_copier(self, src_path: str, dst_path: str, vcs_ref: str):
         self.assertEqual(self.copier_src_path, src_path)
         self.assertEqual(self.copier_dst_path, dst_path)
+        # self.assertEqual(self.vcs_ref, vcs_ref)
 
     def test_create_no_config(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
