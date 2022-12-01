@@ -13,7 +13,7 @@ INSTALL_REQUIREMENTS = [
     "pyyaml==5.4.1",
     "types-PyYAML",
     "copier==5.1.0",
-    "Jinja2",
+    "Jinja2==2.11.3",
     "fsspec",
     "packaging",
     "colorama",
