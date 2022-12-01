@@ -6,18 +6,17 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe<2.1",
-    "Werkzeug==2.0.3",
-    "dbt-core==1.1.1",
-    "click>=8.0.3,<9.0",
-    "questionary==1.10.0",
-    "pyyaml>=5.1, <6.0",
-    "types-PyYAML>=6.0",
+    "MarkupSafe",
+    "Werkzeug",
+    "click",
+    "questionary",
+    "pyyaml",
+    "types-PyYAML",
     "copier==5.1.0",
-    "Jinja2>=2.11,<2.12",
+    "Jinja2",
     "fsspec",
-    "packaging>=20.4,<21.0",
-    "colorama==0.4.4",
+    "packaging",
+    "colorama",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -27,23 +26,23 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.1.1"],
-    "postgres": ["dbt-postgres==1.1.1"],
-    "snowflake": ["dbt-snowflake==1.1.0"],
-    "redshift": ["dbt-redshift==1.1.0"],
+    "bigquery": ["dbt-bigquery"],
+    "postgres": ["dbt-postgres"],
+    "snowflake": ["dbt-snowflake"],
+    "redshift": ["dbt-redshift"],
     # ---
-    "docker": ["docker>=5.0"],
-    "datahub": ["acryl-datahub[dbt]==0.8.43.2"],
-    "git": ["GitPython==3.1.26"],
-    "looker": ["dbt2looker==0.10.0"],
+    "docker": ["docker"],
+    "datahub": ["acryl-datahub[dbt]"],
+    "git": ["GitPython"],
+    "looker": ["dbt2looker"],
     "tests": [
-        "pytest>=6.2.2, <7.0.0",
-        "pytest-cov>=2.8.0, <3.0.0",
-        "pre-commit==2.15.0",
-        "tox==3.21.1",
-        "moto[s3]==3.1.12",
-        "gcp-storage-emulator==2022.6.11",
-        "GitPython==3.1.26",
+        "pytest",
+        "pytest-cov",
+        "pre-commit",
+        "tox",
+        "moto[s3]",
+        "gcp-storage-emulator",
+        "GitPython",
         *(
             [
                 require
@@ -53,12 +52,12 @@ EXTRA_REQUIRE = {
         ),
     ],
     "docs": [
-        "sphinx==4.5.0",
-        "sphinx-rtd-theme==1.0.0",
-        "sphinx-click>=4.0,<4.1",
-        "myst-parser>=0.17, <0.18",
-        "GitPython==3.1.26",
-        "colorama==0.4.4",
+        "sphinx",
+        "sphinx-rtd-theme",
+        "sphinx-clic",
+        "myst-parser",
+        "GitPython",
+        "colorama",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
