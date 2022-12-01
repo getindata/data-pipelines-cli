@@ -55,7 +55,7 @@ EXTRA_REQUIRE = {
     "docs": [
         "sphinx",
         "sphinx-rtd-theme",
-        "sphinx-clic",
+        "sphinx-click",
         "myst-parser",
         "GitPython",
         "colorama",
