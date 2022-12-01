@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+      "config:base",
+      ":rebaseStalePrs"
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "baseBranches": [
+      "develop"
+  ],
+  "packageRules": [
+      {
+          "updateTypes": [
+              "major"
+          ],
+          "addLabels": [
+              "major"
+          ]
+      },
+      {
+          "updateTypes": [
+              "minor"
+          ],
+          "addLabels": [
+              "minor"
+          ]
+      },
+      {
+          "updateTypes": [
+              "patch",
+              "digest",
+              "bump"
+          ],
+          "addLabels": [
+              "patch"
+          ]
+      }
+  ],
+  "pip_requirements": {
+      "fileMatch": ["(^|/)([\\w-]*)requirements(^|/)([\\w-]*).(txt|pip)$"]
+    }
+}
