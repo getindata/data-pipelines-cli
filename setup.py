@@ -6,45 +6,44 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe==2.0.1",
-    "Werkzeug==2.1.2",
-    "click==8.1.3",
-    "questionary==1.10.0",
-    "pyyaml==5.4.1",
-    "types-PyYAML==6.0.12.2",
-    "copier==5.1.0",
-    "Jinja2==2.11.3",
-    "fsspec==2022.11.0",
-    "packaging==20.9",
-    "colorama==0.4.5",
-    "dbt-core==1.2.3",
+    "MarkupSafe",
+    "Werkzeug",
+    "click",
+    "pyyaml",
+    "types-PyYAML",
+    "copier",
+    "Jinja2",
+    "fsspec",
+    "packaging",
+    "colorama",
+    "dbt-core",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcs": ["gcsfs==2022.11.0"],
-    "s3": ["s3fs==2022.11.0"],
+    "gcs": ["gcsfs"],
+    "s3": ["s3fs"],
 }
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.2.0"],
-    "postgres": ["dbt-postgres==1.2.3"],
-    "snowflake": ["dbt-snowflake==1.2.0"],
-    "redshift": ["dbt-redshift==1.2.1"],
+    "bigquery": ["dbt-bigquery"],
+    "postgres": ["dbt-postgres"],
+    "snowflake": ["dbt-snowflake"],
+    "redshift": ["dbt-redshift"],
     # ---
-    "docker": ["docker==6.0.1"],
-    "datahub": ["acryl-datahub[dbt]==0.9.3"],
-    "git": ["GitPython==3.1.29"],
+    "docker": ["docker"],
+    "datahub": ["acryl-datahub[dbt]"],
+    "git": ["GitPython"],
     "looker": ["dbt2looker"],
     "tests": [
-        "pytest==7.2.0",
-        "pytest-cov==4.0.0",
-        "pre-commit==2.20.0",
-        "tox==3.27.1",
-        "moto[s3]==4.0.11",
-        "gcp-storage-emulator==2022.6.11",
-        "GitPython==3.1.29",
-        "types-requests==2.28.11.5",
+        "pytest",
+        "pytest-cov",
+        "pre-commit",
+        "tox",
+        "moto[s3]",
+        "gcp-storage-emulator",
+        "GitPython",
+        "types-requests",
         *(
             [
                 require
@@ -54,12 +53,12 @@ EXTRA_REQUIRE = {
         ),
     ],
     "docs": [
-        "sphinx==5.1.1",
-        "sphinx-rtd-theme==1.1.1",
-        "sphinx-click==4.3.0",
-        "myst-parser==0.18.1",
-        "GitPython==3.1.29",
-        "colorama==0.4.5",
+        "sphinx",
+        "sphinx-rtd-theme",
+        "sphinx-click",
+        "myst-parser",
+        "GitPython",
+        "colorama",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }

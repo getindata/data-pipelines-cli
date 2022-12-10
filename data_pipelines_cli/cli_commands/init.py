@@ -17,7 +17,7 @@ def _download_global_config(config_path: str) -> DataPipelinesConfig:
     config_path = add_suffix_to_git_template_path(config_path)
 
     with tempfile.TemporaryDirectory() as tmp:
-        copier.copy(config_path, tmp, quiet=True)
+        copier.run_auto(config_path, tmp, quiet=True)
         with open(pathlib.Path(tmp).joinpath("dp.yml")) as config_file:
             config = yaml.safe_load(config_file)
     return config
