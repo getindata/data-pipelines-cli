@@ -1,6 +1,5 @@
 import click
 import copier
-from copier.config.objects import NoSrcPathError
 
 from data_pipelines_cli.cli_utils import echo_warning
 from data_pipelines_cli.errors import NotAProjectDirectoryError
@@ -17,7 +16,7 @@ def update(project_path: str, vcs_ref: str) -> None:
     """
     try:
         copier.copy(dst_path=project_path, vcs_ref=vcs_ref, force=True)
-    except NoSrcPathError:
+    except ValueError:
         raise NotAProjectDirectoryError(project_path)
 
 
