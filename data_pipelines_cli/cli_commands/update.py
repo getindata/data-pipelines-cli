@@ -15,7 +15,7 @@ def update(project_path: str, vcs_ref: str) -> None:
     :type vcs_ref: str
     """
     try:
-        copier.copy(dst_path=project_path, vcs_ref=vcs_ref, force=True)
+        copier.run_auto(dst_path=project_path, vcs_ref=vcs_ref)
     except ValueError:
         raise NotAProjectDirectoryError(project_path)
 

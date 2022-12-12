@@ -18,7 +18,7 @@ class UpdateCommandTestCase(unittest.TestCase):
         self.vcs_ref = vcs_ref
 
     def test_update_with_dst_path(self):
-        with patch("copier.copy", self._mock_copier):
+        with patch("copier.run_auto", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
             result = runner.invoke(_cli, ["update", "/some_path/", "/other_path/"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -26,7 +26,7 @@ class UpdateCommandTestCase(unittest.TestCase):
             self.assertEqual("/some_path/", self.dst_path)
 
     def test_update_with_dst_path_and_vcs_ref(self):
-        with patch("copier.copy", self._mock_copier):
+        with patch("copier.run_auto", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
             result = runner.invoke(
                 _cli,

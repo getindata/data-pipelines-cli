@@ -36,7 +36,7 @@ class CreateCommandTestCase(unittest.TestCase):
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_create_with_template_path(self):
-        with patch("copier.copy", self._mock_copier):
+        with patch("copier.run_auto", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
             result = runner.invoke(_cli, ["create", self.copier_dst_path, self.copier_src_path])
             self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -46,7 +46,7 @@ class CreateCommandTestCase(unittest.TestCase):
         goldens_dir_path.joinpath("example_config.yml"),
     )
     def test_create_with_template_name(self):
-        with patch("copier.copy", self._mock_copier):
+        with patch("copier.run_auto", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
             result = runner.invoke(_cli, ["create", self.copier_dst_path, "create_test"])
             self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -61,7 +61,7 @@ class CreateCommandTestCase(unittest.TestCase):
         magic_mock.configure_mock(**{"ask": lambda: "create_test"})
         mock_select.return_value = magic_mock
 
-        with patch("copier.copy", self._mock_copier):
+        with patch("copier.run_auto", self._mock_copier):
             runner = CliRunner(mix_stderr=False)
             result = runner.invoke(_cli, ["create", self.copier_dst_path])
             self.assertEqual(0, result.exit_code, msg=result.exception)
