@@ -1,6 +1,6 @@
 # data-pipelines-cli
 
-[![Python Version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/getindata/data-pipelines-cli)
+[![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/getindata/data-pipelines-cli)
 [![PyPI Version](https://badge.fury.io/py/data-pipelines-cli.svg)](https://pypi.org/project/data-pipelines-cli/)
 [![Downloads](https://pepy.tech/badge/data-pipelines-cli)](https://pepy.tech/project/data-pipelines-cli)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/maintainability)](https://codeclimate.com/github/getindata/data-pipelines-cli/maintainability)
