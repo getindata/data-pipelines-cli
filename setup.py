@@ -46,6 +46,7 @@ EXTRA_REQUIRE = {
         "pytest-cov==4.0.0",
         "pre-commit==2.20.0",
         "tox==3.27.1",
+        "tox-gh-actions=2.12.0",
         "moto[s3]==4.0.11",
         "gcp-storage-emulator==2022.6.11",
         "GitPython==3.1.29",
