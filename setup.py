@@ -75,7 +75,7 @@ setup(
     license_files=("LICENSE",),
     python_requires=">=3.8",
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 1 - Planning d",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
