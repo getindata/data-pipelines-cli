@@ -39,6 +39,7 @@ class DeployCommand:
     env: str
     bi_git_key_path: str
     auth_token: Optional[str]
+    """Authorization OIDC ID token for a service account to communication with Airbyte instance"""
 
     def __init__(
         self,
