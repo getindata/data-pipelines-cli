@@ -25,7 +25,7 @@ Working with Data Pipelines usually requires local variables to be set to run an
 decided to use templates that will ask a series of questions and generate local configuration in a home directory.
 
 It requires a repository with a global configuration template file that you or your organization will be using.
-The repository should contain ``dp.yml.tmpl`` file looking similar to this:
+The repository should contain ``dp.yml.jinja`` file looking similar to this:
 
 .. code-block:: yaml
 
