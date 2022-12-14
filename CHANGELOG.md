@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.24.0] - 2022-10-28
+
+-   Airbyte integration
+-   `dp deploy` is able to add / update connections on Airbyte instance
+-   `dp deploy` is able to create DAG at the beggining of dbt builds that will execute ingestion tasks
+-   `dp deploy` accept additional attribute `auth-token` that can be used to authorize access to cloud services
+
 ## [0.23.0] - 2022-10-19
 
 ## [0.22.1] - 2022-10-11
