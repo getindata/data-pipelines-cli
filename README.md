@@ -22,17 +22,29 @@ pip install data-pipelines-cli[bigquery,docker,datahub,gcs]
 
 ## Usage
 First, create a repository with a global configuration file that you or your organization will be using. The repository
-should contain `dp.yml.jinja` file looking similar to this:
+should contain `dp.yml.tmpl` file looking similar to this:
 ```yaml
+_templates_suffix: ".tmpl"
+_envops:
+    autoescape: false
+    block_end_string: "%]"
+    block_start_string: "[%"
+    comment_end_string: "#]"
+    comment_start_string: "[#"
+    keep_trailing_newline: true
+    variable_end_string: "]]"
+    variable_start_string: "[["
+
 templates:
   my-first-template:
     template_name: my-first-template
     template_path: https://github.com/<YOUR_USERNAME>/<YOUR_TEMPLATE>.git
+
 vars:
-  username: YOUR_USERNAME
+  username: [[ YOUR_USERNAME ]]
 ```
-Thanks to the [copier](https://copier.readthedocs.io/en/stable/), you can leverage Jinja template syntax to create
-easily modifiable configuration templates. Just create a `copier.yml` file next to the `dp.yml.jinja` one and configure
+Thanks to the [copier](https://copier.readthedocs.io/en/stable/), you can leverage tmpl template syntax to create
+easily modifiable configuration templates. Just create a `copier.yml` file next to the `dp.yml.tmpl` one and configure
 the template questions (read more at [copier documentation](https://copier.readthedocs.io/en/stable/configuring/)).
 
 Then, run `dp init <CONFIG_REPOSITORY_URL>` to initialize **dp**. You can also drop `<CONFIG_REPOSITORY_URL>` argument,
