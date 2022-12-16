@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [0.24.0] - 2022-10-28
+## [0.24.0] - 2022-12-16
 
 -   Airbyte integration
 -   `dp deploy` is able to add / update connections on Airbyte instance
