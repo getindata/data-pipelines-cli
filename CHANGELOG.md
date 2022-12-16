@@ -4,6 +4,8 @@
 
 ## [0.24.0] - 2022-12-16
 
+## [0.24.0] - 2022-12-16
+
 -   Airbyte integration
 -   `dp deploy` is able to add / update connections on Airbyte instance
 -   `dp deploy` is able to create DAG at the beggining of dbt builds that will execute ingestion tasks
@@ -233,7 +235,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.23.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.24.0...HEAD
+
+[0.24.0]: https://github.com/getindata/data-pipelines-cli/compare/0.24.0...0.24.0
 
 [0.23.0]: https://github.com/getindata/data-pipelines-cli/compare/0.22.1...0.23.0
 
