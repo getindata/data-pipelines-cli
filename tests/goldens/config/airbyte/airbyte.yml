@@ -1,0 +1,109 @@
+airbyte_connection_id: airbyte_connection_id
+airbyte_url: https://airbyte.dataops-dev.getindata.dev
+connections:
+  POSTGRES_BQ_CONNECTION:
+    destinationId: b3696ac3-93b2-4039-9021-e1f884b03a95
+    name: POSTGRES_BQ_CONNECTION
+    namespaceDefinition: customformat
+    namespaceFormat: jaffle_shop
+    operationIds: []
+    operations:
+    - name: Normalization
+      operatorConfiguration:
+        normalization:
+          option: basic
+        operatorType: normalization
+      workspaceId: 2e1fabea-1066-4094-82e5-8dd0e9d09dd3
+    sourceId: 06a6f19f-b747-4672-a191-80b96f67c36e
+    status: inactive
+    syncCatalog:
+      streams:
+      - config:
+          aliasName: raw_orders
+          cursorField: []
+          destinationSyncMode: append
+          primaryKey: []
+          selected: true
+          syncMode: full_refresh
+        stream:
+          defaultCursorField: []
+          jsonSchema:
+            properties:
+              id:
+                airbyte_type: integer
+                type: number
+              order_date:
+                format: date
+                type: string
+              status:
+                type: string
+              user_id:
+                airbyte_type: integer
+                type: number
+            type: object
+          name: raw_orders
+          namespace: public
+          sourceDefinedPrimaryKey: []
+          supportedSyncModes:
+          - full_refresh
+      - config:
+          aliasName: raw_payments
+          cursorField: []
+          destinationSyncMode: append
+          primaryKey: []
+          selected: true
+          syncMode: full_refresh
+        stream:
+          defaultCursorField: []
+          jsonSchema:
+            properties:
+              amount:
+                airbyte_type: integer
+                type: number
+              id:
+                airbyte_type: integer
+                type: number
+              order_id:
+                airbyte_type: integer
+                type: number
+              payment_method:
+                type: string
+            type: object
+          name: raw_payments
+          namespace: public
+          sourceDefinedPrimaryKey: []
+          supportedSyncModes:
+          - full_refresh
+      - config:
+          aliasName: raw_customers
+          cursorField: []
+          destinationSyncMode: append
+          primaryKey: []
+          selected: true
+          syncMode: full_refresh
+        stream:
+          defaultCursorField: []
+          jsonSchema:
+            properties:
+              first_name:
+                type: string
+              id:
+                airbyte_type: integer
+                type: number
+              last_name:
+                type: string
+            type: object
+          name: raw_customers
+          namespace: public
+          sourceDefinedPrimaryKey: []
+          supportedSyncModes:
+          - full_refresh
+destinations: {}
+sources: {}
+tasks:
+- api_version: v1
+  asyncrounous: false
+  connection_id: ${POSTGRES_BQ_CONNECTION}
+  task_id: postgres_bq_connection_task
+  timeout: 110.0
+  wait_seconds: 3

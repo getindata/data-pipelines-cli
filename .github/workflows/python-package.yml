@@ -10,13 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup python
-        uses: actions/setup-python@v2.2.1
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-version }}
 
       - name: Setup virtualenv
         run: |
@@ -35,7 +39,7 @@ jobs:
 
       - name: Test with tox
         run: |
-          tox -e py37
+          tox
 
       - name: Report coverage
         uses: paambaati/codeclimate-action@v2.7.5

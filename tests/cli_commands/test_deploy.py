@@ -59,12 +59,14 @@ class DeployCommandTestCase(unittest.TestCase):
 
         self.subprocess_run_args = []
 
+        print(f"BUILD_DIR_TEMP {self.build_temp_dir}")
+
     def _mock_run(self, args: List[str]):
         self.subprocess_run_args = args
 
     def tearDown(self) -> None:
         shutil.rmtree(self.storage_uri)
-        shutil.rmtree(self.build_temp_dir)
+        # shutil.rmtree(self.build_temp_dir)
         shutil.rmtree(self.dbt_project_config_dir)
         os.remove(self.blob_json_filename)
 
@@ -86,6 +88,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     provider_kwargs_dict,
                     _datahub_ingest,
                     _bi_git_key_path,
+                    _auth_token,
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
@@ -156,7 +159,7 @@ class DeployCommandTestCase(unittest.TestCase):
         ):
             with self.assertRaises(DependencyNotInstalledError):
                 DeployCommand(
-                    "base", False, self.storage_uri, self.provider_args, True, None
+                    "base", False, self.storage_uri, self.provider_args, True, None, None
                 ).deploy()
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
@@ -167,7 +170,9 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch.dict("sys.modules", datahub=MagicMock()), patch(
             "data_pipelines_cli.cli_commands.deploy.bi"
         ):
-            DeployCommand("base", False, self.storage_uri, self.provider_args, True, None).deploy()
+            DeployCommand(
+                "base", False, self.storage_uri, self.provider_args, True, None, None
+            ).deploy()
             self.assertListEqual(
                 [
                     "datahub",
@@ -184,7 +189,7 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir):
             with self.assertRaises(DependencyNotInstalledError):
                 DeployCommand(
-                    "base", True, self.storage_uri, self.provider_args, False, None
+                    "base", True, self.storage_uri, self.provider_args, False, None, None
                 ).deploy()
 
     @patch(
@@ -193,7 +198,7 @@ class DeployCommandTestCase(unittest.TestCase):
     )
     def test_no_airflow_address(self):
         with self.assertRaises(AirflowDagsPathKeyError):
-            DeployCommand("base", False, None, None, False, None)
+            DeployCommand("base", False, None, None, False, None, None)
 
     def test_airflow_address(self):
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
@@ -208,7 +213,7 @@ class DeployCommandTestCase(unittest.TestCase):
                 tmp_airflow_path,
             )
 
-            deploy_command = DeployCommand("base", False, None, None, False, None)
+            deploy_command = DeployCommand("base", False, None, None, False, None, None)
         self.assertEqual(
             "gcs://test-sync-project/sync-dir/dags/my-project-name",
             deploy_command.blob_address_path,
@@ -230,7 +235,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     tmp_file_path,
                 )
 
-            deploy_command = DeployCommand("staging", False, None, None, False, None)
+            deploy_command = DeployCommand("staging", False, None, None, False, None, None)
         self.assertEqual(
             "gcs://test/jinja/path/com/my/project/name",
             deploy_command.blob_address_path,
@@ -261,7 +266,9 @@ class DeployCommandTestCase(unittest.TestCase):
         ), patch(
             "data_pipelines_cli.cli_commands.deploy.bi"
         ):
-            DeployCommand("base", True, self.storage_uri, self.provider_args, False, None).deploy()
+            DeployCommand(
+                "base", True, self.storage_uri, self.provider_args, False, None, None
+            ).deploy()
 
         self.assertEqual("my_docker_repository_uri", docker_kwargs.get("repository"))
         self.assertEqual("sha1234", docker_kwargs.get("tag"))
@@ -290,5 +297,23 @@ class DeployCommandTestCase(unittest.TestCase):
         ):
             with self.assertRaises(DataPipelinesError):
                 DeployCommand(
-                    "base", True, self.storage_uri, self.provider_args, False, None
+                    "base", True, self.storage_uri, self.provider_args, False, None, None
                 ).deploy()
+
+    def test_ingestion_is_false_by_default(self):
+        with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir), patch(
+            "data_pipelines_cli.cli_commands.deploy.BUILD_DIR", self.build_temp_dir
+        ):
+            deploy_command = DeployCommand(
+                "prod", True, self.storage_uri, self.provider_args, False, None, None
+            )
+            self.assertEqual(deploy_command.enable_ingest, False)
+
+    def test_ingestion_is_read_from_env_directory(self):
+        with patch("data_pipelines_cli.cli_constants.BUILD_DIR", self.build_temp_dir), patch(
+            "data_pipelines_cli.cli_commands.deploy.BUILD_DIR", self.build_temp_dir
+        ):
+            deploy_command = DeployCommand(
+                "dev", True, self.storage_uri, self.provider_args, False, None, None
+            )
+            self.assertEqual(deploy_command.enable_ingest, True)

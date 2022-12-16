@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Tuple, cast
 
 import click
 import yaml
-from dbt.contracts.graph.manifest import Manifest, ManifestNode
+from dbt.contracts.graph.compiled import ManifestNode
+from dbt.contracts.graph.manifest import Manifest
 from dbt.contracts.graph.parsed import ColumnInfo
 
 from ..cli_constants import BUILD_DIR

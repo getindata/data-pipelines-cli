@@ -29,7 +29,7 @@ class InitCommandTestCase(unittest.TestCase):
             ),
             "local-template": TemplateConfig(
                 template_name="local-template",
-                template_path="/var/tmp/Documents/project-template",
+                template_path="/Users/test_user/Documents/project-template",
             ),
         },
         vars={
@@ -37,7 +37,8 @@ class InitCommandTestCase(unittest.TestCase):
         },
     )
 
-    def test_init(self):
+    @patch("data_pipelines_cli.cli_commands.init._download_global_config")
+    def test_init(self, mock_download):
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmp_dir, patch(
             "data_pipelines_cli.cli_commands.init.ENV_CONFIGURATION_PATH",
@@ -46,11 +47,8 @@ class InitCommandTestCase(unittest.TestCase):
             "data_pipelines_cli.cli_constants.ENV_CONFIGURATION_PATH",
             pathlib.Path(tmp_dir).joinpath(".dp.yml"),
         ):
-            result = runner.invoke(
-                _cli,
-                ["init", str(self.test_config_template_path)],
-                input="test_user\n/var/tmp",
-            )
+            mock_download.return_value = self.example_config_dict
+            result = runner.invoke(_cli, ["init", str(self.test_config_template_path)])
             self.assertEqual(0, result.exit_code, msg=result.exception)
             self.assertEqual(self.example_config_dict, read_env_config())
 

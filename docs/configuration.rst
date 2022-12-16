@@ -115,7 +115,7 @@ and then run your ``dp run --env <SNOWFLAKE_ENV>`` (or any similar command).
 
 You can also add "global" variables to your **dp** config file ``$HOME/.dp.yml``. Be aware, however, that those variables
 get erased on every ``dp init`` call. It is a great idea to put *commonly used* variables in your organization's
-``dp.yml.tmpl`` template and make **copier** ask for those when initializing **dp**. By doing so, each member of your
+``dp.yml.jinja`` template and make **copier** ask for those when initializing **dp**. By doing so, each member of your
 organization will end up with a list of user-specific variables reusable across different projects on its machine.
 Just remember, **global-scoped variables take precedence over project-scoped ones.**
 
