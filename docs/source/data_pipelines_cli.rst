@@ -16,6 +16,14 @@ Subpackages
 Submodules
 ----------
 
+data\_pipelines\_cli.airbyte\_utils module
+------------------------------------------
+
+.. automodule:: data_pipelines_cli.airbyte_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.bi\_utils module
 -------------------------------------
 
