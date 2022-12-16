@@ -9,7 +9,6 @@
 -   `dp deploy` is able to create DAG at the beggining of dbt builds that will execute ingestion tasks
 -   `dp deploy` accept additional attribute `auth-token` that can be used to authorize access to cloud services
 -   Bump packages
--   Drop support for `dbt2looker` due to bumping copier to `7.0.1`
 
 ## [0.23.0] - 2022-10-19
 
