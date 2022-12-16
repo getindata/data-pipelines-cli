@@ -4,8 +4,6 @@
 
 ## [0.24.0] - 2022-12-16
 
-## [0.24.0] - 2022-12-16
-
 -   Airbyte integration
 -   `dp deploy` is able to add / update connections on Airbyte instance
 -   `dp deploy` is able to create DAG at the beggining of dbt builds that will execute ingestion tasks
