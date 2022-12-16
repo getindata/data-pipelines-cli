@@ -6,60 +6,61 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe<2.1",
-    "Werkzeug==2.0.3",
-    "dbt-core==1.1.1",
-    "click>=8.0.3,<9.0",
-    "questionary==1.10.0",
-    "pyyaml>=5.1, <6.0",
-    "types-PyYAML>=6.0",
-    "copier==5.1.0",
-    "Jinja2>=2.11,<2.12",
-    "fsspec",
-    "packaging>=20.4,<21.0",
-    "colorama==0.4.4",
+    "MarkupSafe==2.1.1",
+    "Werkzeug==2.2.2",
+    "click==8.1.3",
+    "pyyaml==6.0",
+    "types-PyYAML==6.0.12.2",
+    "copier==7.0.1",
+    "Jinja2==3.1.2",
+    "fsspec==2022.11.0",
+    "packaging==21.3",
+    "colorama==0.4.5",
+    "dbt-core==1.3.1",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcs": ["gcsfs"],
-    "s3": ["s3fs"],
+    "gcs": ["gcsfs==2022.11.0"],
+    "s3": ["s3fs==2022.11.0"],
 }
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.1.1"],
-    "postgres": ["dbt-postgres==1.1.1"],
-    "snowflake": ["dbt-snowflake==1.1.0"],
-    "redshift": ["dbt-redshift==1.1.0"],
+    "bigquery": ["dbt-bigquery==1.3.0"],
+    "postgres": ["dbt-postgres==1.3.1"],
+    "snowflake": ["dbt-snowflake==1.3.0"],
+    "redshift": ["dbt-redshift==1.3.0"],
+    "dbt-all": [
+        "dbt-bigquery==1.3.0",
+        "dbt-postgres==1.3.1",
+        "dbt-snowflake==1.3.0",
+        "dbt-redshift==1.3.0",
+    ],
     # ---
-    "docker": ["docker>=5.0"],
-    "datahub": ["acryl-datahub[dbt]==0.8.43.2"],
-    "git": ["GitPython==3.1.26"],
-    "looker": ["dbt2looker==0.10.0"],
+    "docker": ["docker==6.0.1"],
+    "datahub": ["acryl-datahub[dbt]==0.9.3.2"],
+    "git": ["GitPython==3.1.29"],
+    "looker": ["dbt2looker==0.11.0"],
     "tests": [
-        "pytest>=6.2.2, <7.0.0",
-        "pytest-cov>=2.8.0, <3.0.0",
-        "pre-commit==2.15.0",
-        "tox==3.21.1",
-        "moto[s3]==3.1.12",
+        "pytest==7.2.0",
+        "pytest-cov==4.0.0",
+        "pre-commit==2.20.0",
+        "tox==3.27.1",
+        "tox-gh-actions==2.12.0",
+        "moto[s3]==4.0.11",
         "gcp-storage-emulator==2022.6.11",
-        "GitPython==3.1.26",
-        "types-requests==2.28.10",
-        *(
-            [
-                require
-                for requires_list in EXTRA_FILESYSTEMS_REQUIRE.values()
-                for require in requires_list
-            ]
-        ),
+        "GitPython==3.1.29",
+        "types-requests==2.28.11.5",
+        "gcsfs==2022.11.0",
+        "s3fs==2022.11.0",
     ],
     "docs": [
-        "sphinx==4.5.0",
-        "sphinx-rtd-theme==1.0.0",
-        "sphinx-click>=4.0,<4.1",
-        "myst-parser>=0.17, <0.18",
-        "GitPython==3.1.26",
-        "colorama==0.4.4",
+        "sphinx==5.3.0",
+        "sphinx-rtd-theme==1.1.1",
+        "sphinx-click==4.4.0",
+        "myst-parser==0.18.1",
+        "GitPython==3.1.29",
+        "colorama==0.4.5",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
@@ -72,12 +73,12 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache Software License (Apache 2.0)",
     license_files=("LICENSE",),
-    python_requires=">=3",
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     keywords="dbt airflow cli",
     author="Andrzej Swatowski",

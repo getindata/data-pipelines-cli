@@ -1,6 +1,2 @@
 username:
   type: str
-
-homedir:
-  type: str
-  default: "/Users/[[ username ]]"

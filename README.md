@@ -1,6 +1,6 @@
 # data-pipelines-cli
 
-[![Python Version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/getindata/data-pipelines-cli)
+[![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/getindata/data-pipelines-cli)
 [![PyPI Version](https://badge.fury.io/py/data-pipelines-cli.svg)](https://pypi.org/project/data-pipelines-cli/)
 [![Downloads](https://pepy.tech/badge/data-pipelines-cli)](https://pepy.tech/project/data-pipelines-cli)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/maintainability)](https://codeclimate.com/github/getindata/data-pipelines-cli/maintainability)
@@ -24,14 +24,26 @@ pip install data-pipelines-cli[bigquery,docker,datahub,gcs]
 First, create a repository with a global configuration file that you or your organization will be using. The repository
 should contain `dp.yml.tmpl` file looking similar to this:
 ```yaml
+_templates_suffix: ".tmpl"
+_envops:
+    autoescape: false
+    block_end_string: "%]"
+    block_start_string: "[%"
+    comment_end_string: "#]"
+    comment_start_string: "[#"
+    keep_trailing_newline: true
+    variable_end_string: "]]"
+    variable_start_string: "[["
+
 templates:
   my-first-template:
     template_name: my-first-template
     template_path: https://github.com/<YOUR_USERNAME>/<YOUR_TEMPLATE>.git
+
 vars:
-  username: YOUR_USERNAME
+  username: [[ YOUR_USERNAME ]]
 ```
-Thanks to the [copier](https://copier.readthedocs.io/en/stable/), you can leverage Jinja template syntax to create
+Thanks to the [copier](https://copier.readthedocs.io/en/stable/), you can leverage tmpl template syntax to create
 easily modifiable configuration templates. Just create a `copier.yml` file next to the `dp.yml.tmpl` one and configure
 the template questions (read more at [copier documentation](https://copier.readthedocs.io/en/stable/configuring/)).
 
