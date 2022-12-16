@@ -40,7 +40,7 @@ EXTRA_REQUIRE = {
     "docker": ["docker==6.0.1"],
     "datahub": ["acryl-datahub[dbt]==0.9.3.2"],
     "git": ["GitPython==3.1.29"],
-    "looker": ["dbt2looker"],
+    "looker": ["dbt2looker==0.11.0"],
     "tests": [
         "pytest==7.2.0",
         "pytest-cov==4.0.0",
