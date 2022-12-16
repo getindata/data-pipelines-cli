@@ -16,7 +16,7 @@ a series of questions to build the final project.
 
 Thanks to the ``copier`` you can leverage Jinja template syntax to create easily modifiable configuration templates.
 Just create a ``copier.yml`` and configure the template questions (read more at
-`copier documentation <https://copier.readthedocs.io/en/stable/configuring/>`_).
+`copier documentation <https://copier.readthedocs.io/en/stable/configuring/#the-copieryml-file/>`_).
 
 Create a template to setup a local environment
 ----------------
@@ -25,16 +25,27 @@ Working with Data Pipelines usually requires local variables to be set to run an
 decided to use templates that will ask a series of questions and generate local configuration in a home directory.
 
 It requires a repository with a global configuration template file that you or your organization will be using.
-The repository should contain ``dp.yml.jinja`` file looking similar to this:
+The repository should contain ``dp.yml.tmpl`` file looking similar to this:
 
 .. code-block:: yaml
+
+_templates_suffix: ".tmpl"
+_envops:
+    autoescape: false
+    block_end_string: "%]"
+    block_start_string: "[%"
+    comment_end_string: "#]"
+    comment_start_string: "[#"
+    keep_trailing_newline: true
+    variable_end_string: "]]"
+    variable_start_string: "[["
 
  templates:
    my-first-template:
      template_name: my-first-template
      template_path: https://github.com/<YOUR_USERNAME>/<YOUR_TEMPLATE>.git
  vars:
-   username: YOUR_USERNAME
+   username: [[ YOUR_USERNAME ]]
 
 The file must contain a list of available templates. The templates will be displayed and available for selection in
 Data Pipelines CLI. The next section contains variables that will be passed to the project whenever running in the configured environment. The
