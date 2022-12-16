@@ -44,8 +44,8 @@ def init(config_path: Optional[str]) -> None:
     else:
         config = DEFAULT_GLOBAL_CONFIG
 
-    with open(ENV_CONFIGURATION_PATH, "w") as f:
-        yaml.dump(config, f, default_flow_style=False)
+    with open(ENV_CONFIGURATION_PATH, "w") as config_file:
+        yaml.dump(config, config_file, default_flow_style=False)
 
 
 @click.command(name="init", help="Configure the tool for the first time")
