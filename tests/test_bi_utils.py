@@ -54,6 +54,13 @@ class BiUtilsTestCase(unittest.TestCase):
             bi("env", BiAction.COMPILE)
             _bi_looker_mock.assert_not_called()
 
+    @patch("data_pipelines_cli.bi_utils._bi_looker")
+    @patch("data_pipelines_cli.bi_utils.read_bi_config")
+    def test_bi_disabled_when_config_not_exists(self, mock_read_bi_config, mock__bi_looker):
+        mock_read_bi_config.return_value = {}
+        bi("non_existent_env", BiAction.COMPILE)
+        mock__bi_looker.assert_not_called()
+
     def test_bi_not_supported_bi(self):
         bi_config = {
             "is_bi_enabled": True,
