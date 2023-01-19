@@ -38,7 +38,7 @@ EXTRA_REQUIRE = {
     ],
     # ---
     "docker": ["docker==6.0.1"],
-    "datahub": ["acryl-datahub[dbt]==0.9.3.2"],
+    "datahub": ["acryl-datahub[dbt]==0.9.6"],
     "git": ["GitPython==3.1.29"],
     "looker": ["dbt2looker==0.11.0"],
     "tests": [
