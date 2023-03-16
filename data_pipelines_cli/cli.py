@@ -16,6 +16,7 @@ from .cli_commands.seed import seed_command
 from .cli_commands.template import list_templates_command
 from .cli_commands.test import test_command
 from .cli_commands.update import update_command
+from .cli_commands.cloud import configure_cloud_command
 from .cli_utils import echo_error, echo_suberror
 from .errors import DataPipelinesError
 
@@ -50,3 +51,4 @@ _cli.add_command(run_command)
 _cli.add_command(seed_command)
 _cli.add_command(test_command)
 _cli.add_command(update_command)
+_cli.add_command(configure_cloud_command)
