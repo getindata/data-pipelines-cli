@@ -84,12 +84,12 @@ class DbtCloudApiClient:
             new_repository_data)
         return response["data"]["id"], response["data"]["deploy_key"]["public_key"]
 
-    def create_development_environment(self, project_id, credentials_id):
+    def create_development_environment(self, project_id):
         """
         Create development environment
 
-        :param name: Name of the project
-        :return: ID of created project
+        :param project_id: ID of the project
+        :return: ID of created environment
         """
         new_env = {
             "id": None,
@@ -102,7 +102,6 @@ class DbtCloudApiClient:
             "custom_branch": None,
             "dbt_version": "1.0.0",
             "supports_docs": False,
-            "credentials_id": credentials_id
         }
 
         new_env_data = json.dumps(new_env)

@@ -1,24 +1,9 @@
 import json
-from typing import Any, Dict, Optional
 
 import click
 
 from data_pipelines_cli.dbt_cloud_api_client import DbtCloudApiClient
-from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info
-from ..config_generation import read_dictionary_from_config_directory
-
-
-def read_bigquery_config(env: str) -> Dict[str, Any]:
-    """
-    Read Bigquery configuration.
-
-    :param env: Name of the environment
-    :type env: str
-    :return: Compiled dictionary
-    :rtype: Dict[str, Any]
-    """
-    return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "bigquery.yml")
 
 
 @click.command(name="configure-cloud", help="Create dbt Cloud project")
@@ -52,25 +37,29 @@ def read_bigquery_config(env: str) -> Dict[str, Any]:
     default="Data Pipelines Project",
     help="Project Name",
 )
-@click.option("--keyfile", required=False, help="Bigquery keyfile")
-@click.option("--env", default="local", type=str, help="Name of the environment", show_default=True)
+@click.option(
+    "--keyfile",
+    type=str,
+    required=True,
+    help="Bigquery keyfile"
+)
+@click.option(
+    "--dataset",
+    type=str,
+    required=True,
+    help="Name of the dataset"
+)
 def configure_cloud_command(
         account_id: int,
         token: str,
         remote_url: str,
         project_name: str,
-        keyfile: Optional[str],
-        env: str,
+        keyfile: str,
+        dataset: str,
 ) -> None:
     client = DbtCloudApiClient(f"https://cloud.getdbt.com/api", account_id, token)
 
-    bigquery_config = read_bigquery_config(env)
-
-    if keyfile is None and not bigquery_config.get("method") == "service-account":
-        echo_info("dbt Cloud requires service account")
-        return
-
-    file = open(keyfile or bigquery_config["keyfile"])
+    file = open(keyfile)
     keyfile_data = json.load(file)
 
     project_id = client.create_project(project_name)
@@ -79,8 +68,8 @@ def configure_cloud_command(
               "This gives dbt Cloud permissions to read / write in the repository\n"
               f"{deploy_key}")
 
-    credentials_id = client.create_credentials(bigquery_config["dataset"], project_id)
-    client.create_development_environment(project_id, credentials_id)
+    client.create_credentials(dataset, project_id)
+    client.create_development_environment(project_id)
     connection_id = client.create_bigquery_connection(
         project_id=project_id,
         name="BQ Connection Name",
