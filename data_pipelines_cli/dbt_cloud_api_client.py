@@ -86,7 +86,9 @@ class DbtCloudApiClient:
 
     def create_development_environment(self, project_id):
         """
-        Create development environment
+        Create development environment. Environments encompass a collection of settings for how you want to run
+         your dbt project. This includes: dbt version, git branch, data location (target schema).
+
 
         :param project_id: ID of the project
         :return: ID of created environment

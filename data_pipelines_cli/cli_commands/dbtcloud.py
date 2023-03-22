@@ -11,17 +11,16 @@ from ..cli_utils import echo_info
     "--account_id",
     type=int,
     required=True,
-    help="""dbt Cloud Account identifier To find your user ID in dbt Cloud, read the following steps:
-        1. Go to Account Settings, Team, and then Users,
-        2. Select your user,
-        3. In the address bar, the number after /users is your user ID.""",
+    help="""dbt Cloud Account identifier To obtain your dbt Cloud account ID, sign into dbt Cloud in your browser.
+     Take note of the number directly following the accounts path component of the URL - this is your account ID""",
 )
 @click.option(
     "--token",
     type=str,
     required=True,
-    help="API token for your DBT Cloud account.  "
-         "You can find your User API token in the Profile page under the API Access label",
+    help="API token for your DBT Cloud account."
+         "You can retrieve your User API token from your User Profile (top right icon) > API Access."
+         "You can also use Service Token. Retrieve it from Account Settings > Service Tokens > Create Service Token.",
 )
 @click.option(
     "--remote_url",
