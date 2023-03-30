@@ -64,7 +64,7 @@ integration of the created project with the `VS Code` plugin for **dbt** managem
 Airbyte
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-Under development
+`Data Pipelines CLI` can manage Airbyte connections and execute their syncs in Airflow tasks preceding dbt build.
 
 Looker
 ++++++++++++++++++++++++++++++++++++++++++++++

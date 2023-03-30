@@ -166,6 +166,143 @@ Data governance configuration
 **dp** can sends **dbt** metadata to DataHub. All related configuration is stored in ``config/<ENV>/datahub.yml`` file.
 More information about it can be found `here <https://datahubproject.io/docs/metadata-ingestion#recipes>`_ and `here <https://datahubproject.io/docs/generated/ingestion/sources/dbt>`_.
 
+Data ingestion configuration
+++++++++++++++++++++++++++++++
+
+Ingestion configuration is divided into two levels:
+
+- General: ``config/<ENV>/ingestion.yml``
+- Ingestion tool related: e.g. ``config/<ENV>/airbyte.yml``
+
+``config/<ENV>/ingestion.yml`` contains basic configuration of ingestion:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - enable
+     - bool
+     - Flag for enable/disable ingestion option in **dp**.
+   * - engine
+     - enum string
+     - Ingestion tool you would like to integrate with (currently the only supported value is ``airbyte``).
+
+``config/<ENV>/airbyte.yml`` must be present if engine of your choice is ``airbyte``. It consists of two parts:
+
+1. First part is required by `dbt-airflow-factory <https://github.com/getindata/dbt-airflow-factory>`_
+   and must be present in order to create ingestion tasks preceding dbt rebuild in Airflow. When you choose to manage
+   Airbyte connections with `dp` tool, ``connectionId`` is unknown at the time of coding however `dp` tool is ready to
+   handle this case. For detailed info reference example ``airbyte.yml`` at the end of this section.
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - airbyte_connection_id
+     - string
+     - Name of Airbyte connection in Airflow
+   * - tasks
+     - array<*task*>
+     - Configurations of Airflow tasks used by `dbt-airflow-factory <https://github.com/getindata/dbt-airflow-factory>`_.
+       Allowed *task* options are documented `here <https://dbt-airflow-factory.readthedocs.io/en/latest/configuration.html#id3>`_.
+
+2. Second part is used directly by `dp` tool to manage (insert or update) connections in Airbyte. It is **not** required
+   unless you would like to manage Airbyte connections with `dp` tool.
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - airbyte_url
+     - string
+     - Https address of Airbyte deployment that allows to connect to Airbyte API
+   * - connections
+     - array<*connection*>
+     - Configurations of Airbyte connections that should be upserted during CI/CD. Minimal connection schema is documented below.
+       These configurations are passed directly to Airbyte API to the `connections/create` or `connections/update` endpoint.
+       Please reference
+       `Airbyte API reference <https://airbyte-public-api-docs.s3.us-east-2.amazonaws.com/rapidoc-api-docs.html#post-/v1/connections/create>`_
+       for more detailed configuration.
+
+.. code-block:: text
+
+  YOUR_CONNECTION_NAME: string
+    name: string                              Optional name of the connection
+    sourceId: uuid                            UUID of Airbyte source used for this connection
+    destinationId: uuid                       UUID of Airbyte destination used for this connection
+    namespaceDefinition: enum                 Method used for computing final namespace in destination
+    namespaceFormat: string                   Used when namespaceDefinition is 'customformat'
+    status: enum                              `active` means that data is flowing through the connection. `inactive` means it is not
+    syncCatalog: object                       Describes the available schema (catalog).
+      streams: array
+      - stream: object
+          name: string                        Stream's name
+          jsonSchema: object                  Stream schema using Json Schema specs.
+        config:
+          syncMode: enum                      Allowed: full_refresh | incremental
+          destinationSyncMode: enum           Allowed: append | overwrite | append_dedup
+          aliasName: string                   Alias name to the stream to be used in the destination
+
+Example ``airbyte.yml`` might look like the following. Notice (highlighted lines) how connection name in ``connections``
+array has the same name as the environmental variable in `task[0].connection_id` attribute. During CI/CD, after the
+connection creation in Airbyte, variable ``${POSTGRES_BQ_CONNECTION}`` is substituted by the received Airbyte
+connection UUID and passed in config to dbt-airflow-factory tool.
+
+.. code-block:: yaml
+   :linenos:
+   :emphasize-lines: 6,13
+
+   # dbt-airflow-factory configuration properties:
+   airbyte_connection_id: airbyte_connection_id
+   tasks:
+     - api_version: v1
+       asyncronous: false
+       connection_id: ${POSTGRES_BQ_CONNECTION}
+       task_id: postgres_bq_connection_sync_task
+       timeout: 600
+       wait_seconds: 3
+   # Airbyte connection managing properties:
+   airbyte_url: https://airbyte-dev.company.com
+   connections:
+     POSTGRES_BQ_CONNECTION:
+       name: postgres_bq_connection
+       sourceId: c3aa49f0-90dd-4c8e-9641-505a2f6cb65c
+       destinationId: 3f47dbf1-11f3-41b0-945f-9463c82f711b
+       namespaceDefinition: customformat
+       namespaceFormat: ingestion_pg
+       status: active
+       syncCatalog:
+         streams:
+          - stream:
+              name: raw_orders
+              jsonSchema:
+                properties:
+                  id:
+                    airbyte_type: integer
+                    type: number
+                  order_date:
+                    format: date
+                    type: string
+                  status:
+                    type: string
+                  user_id:
+                    airbyte_type: integer
+                    type: number
+                type: object
+            config:
+              syncMode: full_refresh
+              destinationSyncMode: append
+              aliasName: raw_orders
+
 Business Intelligence configuration
 ++++++++++++++++++++++++++++++
 
@@ -226,3 +363,16 @@ BI configuration is divided into two levels:
    * - looker_instance_url
      - string
      - URL for you Looker instance
+
+Example ``looker.yml`` file might look like this:
+
+.. code-block:: yaml
+   :linenos:
+
+   looker_repository: git@gitlab.com:company/looker/pipeline-example-looker.git
+   looker_repository_username: "{{ env_var('LOOKER_REPO_USERNAME') }}"
+   looker_repository_email: name-surname@company.com
+   looker_project_id: my_looker_project
+   looker_webhook_secret: "{{ env_var('LOOKER_WEBHOOK_SECRET') }}"
+   looker_repository_branch: main
+   looker_instance_url: https://looker.company.com/
