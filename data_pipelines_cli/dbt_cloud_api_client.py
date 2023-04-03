@@ -84,26 +84,30 @@ class DbtCloudApiClient:
             new_repository_data)
         return response["data"]["id"], response["data"]["deploy_key"]["public_key"]
 
-    def create_development_environment(self, project_id):
+    def create_environment(self, project_id, env_type, name, dbt_version, credentials_id=None):
         """
-        Create development environment. Environments encompass a collection of settings for how you want to run
+        Create environment. Environments encompass a collection of settings for how you want to run
          your dbt project. This includes: dbt version, git branch, data location (target schema).
 
-
+        :param name: Name of the environment
+        :param env_type: type of environment (development/deployment)
         :param project_id: ID of the project
+        :param credentials_id: ID of credentials to be used by environment
+        :param dbt_version: dbt version that should be used by this environment
         :return: ID of created environment
         """
         new_env = {
             "id": None,
-            "type": "development",
-            "name": "Development",
+            "type": env_type,
+            "name": name,
             "account_id": self.account_id,
             "project_id": project_id,
             "state": 1,
             "use_custom_branch": False,
             "custom_branch": None,
-            "dbt_version": "1.0.0",
+            "dbt_version": dbt_version,
             "supports_docs": False,
+            "credentials_id": credentials_id
         }
 
         new_env_data = json.dumps(new_env)
@@ -139,7 +143,7 @@ class DbtCloudApiClient:
 
     def create_credentials(self, schema, project_id):
         """
-        Create credentials
+        Creates credentials - these are needed to create the environment.
 
         :param schema: Default deployment dataset
         :param project_id: ID of the project
@@ -222,5 +226,56 @@ class DbtCloudApiClient:
         new_connection_data = json.dumps(new_connection).encode()
         response = self.request(f"{self.host_url}/v3/accounts/{self.account_id}/projects/{project_id}/connections/",
                                 new_connection_data)
+
+        return response["data"]["id"]
+
+    def create_job(self, project_id, environment_id, schedule_cron, name):
+        """
+        Creates sample job for given project and environment. Job is triggered by the scheduler executes commands:
+        dbt seed, dbt test and dbt run.
+        :param project_id: ID of the project
+        :param environment_id: ID of the environment
+        :param schedule_cron: Schedule (cron syntax)
+        :param name: Name of the job
+        :return: ID of created job
+        """
+        job_details = {
+            "account_id": self.account_id,
+            "project_id": project_id,
+            "id": None,
+            "environment_id": environment_id,
+            "name": name,
+            "dbt_version": None,
+            "triggers": {
+                "schedule": True,
+                "github_webhook": False
+            },
+            "execute_steps": [
+                "dbt seed",
+                "dbt test",
+                "dbt run"
+            ],
+            "settings": {
+                "threads": 1,
+                "target_name": "default"
+            },
+            "execution": {
+                "timeout_seconds": 600
+            },
+            "state": 1,
+            "schedule": {
+                "cron": schedule_cron,
+                "date": {
+                    "type": "every_day"
+                },
+                "time": {
+                    "type": "every_hour",
+                    "interval": 1
+                }
+            }
+        }
+
+        job_details_data = json.dumps(job_details).encode()
+        response = self.request(f"{self.host_url}/v2/accounts/{self.account_id}/jobs/", job_details_data)
 
         return response["data"]["id"]
