@@ -67,7 +67,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.24.1",
+    version="0.24.2",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
