@@ -4,7 +4,13 @@
 
 ## [0.24.2] - 2023-04-14
 
+-   Added Airbyte integration documentation
+
 ## [0.24.1] - 2023-03-15
+
+### Fixed
+
+-   `dp` commands failing when BI config was missing.
 
 ## [0.24.0] - 2022-12-16
 
