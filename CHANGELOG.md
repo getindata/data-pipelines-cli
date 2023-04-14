@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
+## [0.24.2] - 2023-04-14
+
+-   Added Airbyte integration documentation
+
 ## [0.24.1] - 2023-03-15
+
+### Fixed
+
+-   `dp` commands failing when BI config was missing.
 
 ## [0.24.0] - 2022-12-16
 
@@ -235,7 +243,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.24.1...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.24.2...HEAD
+
+[0.24.2]: https://github.com/getindata/data-pipelines-cli/compare/0.24.1...0.24.2
 
 [0.24.1]: https://github.com/getindata/data-pipelines-cli/compare/0.24.0...0.24.1
 
