@@ -376,3 +376,69 @@ Example ``looker.yml`` file might look like this:
    looker_webhook_secret: "{{ env_var('LOOKER_WEBHOOK_SECRET') }}"
    looker_repository_branch: main
    looker_instance_url: https://looker.company.com/
+
+dbt Cloud configuration
+++++++++++++++++++++++++++++++
+
+``config/dbtcloud.yml`` contains configuration related to dbt Cloud:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - project_name
+     - string
+     - Name of the project to be created in dbt Cloud
+   * - schedule_interval
+     - string
+     - The cron expression with which the example job will be run
+   * - default_gcp_project
+     - string
+     - GCP project that will be used by default if a new environment is created in dbt Cloud
+   * - environments
+     - Array
+     - Details of the environments to be created in dbt Cloud
+
+Configuration of the environments:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - name
+     - string
+     - Name of the environment that will be created in dbt Cloud
+   * - dataset
+     - string
+     - Target dataset for this environment
+   * - dbt_version
+     - string
+     - The dbt version used in this environment
+   * - bq_config_dir
+     - string
+     - The name of the dp env directory where the bigquery configuration for the environment is located. The name of the project in GCP will be read from it.
+
+Example ``dbtcloud.yml`` file might look like this:
+
+.. code-block:: yaml
+
+    project_name: "Data Pipelines Project"
+    schedule_interval: "0 12 * * *"
+    default_gcp_project: "default-project"
+    environments:
+      - name: "Develop"
+        dataset: "dev"
+        dbt_version: "1.0.0"
+        type: "development"
+        bq_config_dir: "dev"
+      - name: "Production"
+        dataset: "prod"
+        dbt_version: "1.0.0"
+        type: "deployment"
+        bq_config_dir: "prod"

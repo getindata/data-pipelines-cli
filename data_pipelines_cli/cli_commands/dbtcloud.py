@@ -38,7 +38,7 @@ def read_bigquery_config(env: str) -> Dict[str, Any]:
     "--account_id",
     type=int,
     required=True,
-    help="""dbt Cloud Account identifier To obtain your dbt Cloud account ID, sign into dbt Cloud 
+    help="""dbt Cloud Account identifier To obtain your dbt Cloud account ID, sign into dbt Cloud
     in your browser. Take note of the number directly following the accounts path component of the
     URL - this is your account ID""",
 )
