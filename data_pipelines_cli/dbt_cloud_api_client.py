@@ -56,13 +56,15 @@ class DbtCloudApiClient:
 
         new_project_data = json.dumps(new_project)
 
-        response = self.request(f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/", new_project_data)
+        response = self.request(f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/",
+                                new_project_data)
         return response["data"]["id"]
 
     def create_repository(self, project_id, git_clone_url):
         """
-        Note: After creating  a dbt Cloud repository's SSH key, you will need to add the generated key text as
-         a deploy key to the target repository. This gives dbt Cloud permissions to read / write in the repository.
+        Note: After creating  a dbt Cloud repository's SSH key, you will need to add the generated
+        key text as a deploy key to the target repository. This gives dbt Cloud permissions to
+        read / write in the repository.
 
         :param git_clone_url: Repository remote url
         :param project_id: ID of the project
@@ -87,7 +89,7 @@ class DbtCloudApiClient:
     def create_environment(self, project_id, env_type, name, dbt_version, credentials_id=None):
         """
         Create environment. Environments encompass a collection of settings for how you want to run
-         your dbt project. This includes: dbt version, git branch, data location (target schema).
+        your dbt project. This includes: dbt version, git branch, data location (target schema).
 
         :param name: Name of the environment
         :param env_type: type of environment (development/deployment)
@@ -119,7 +121,8 @@ class DbtCloudApiClient:
 
     def create_environment_variable(self, project_id, default, environments):
         """
-        Create environment variable. Note: Environment variables must be prefixed with DBT_ or DBT_ENV_SECRET_ .
+        Create environment variable. Note: Environment variables must be prefixed with DBT_ or
+        DBT_ENV_SECRET_ .
 
         :param project_id: ID of the project
         :param environments: dict which contains the value of the variable for each environment
@@ -142,7 +145,8 @@ class DbtCloudApiClient:
             new_env_data)
         return response["data"]["new_var_ids"]
 
-    def associate_connection_repository(self, name, project_id, connection_id=None, repository_id=None):
+    def associate_connection_repository(self, name, project_id, connection_id=None,
+                                        repository_id=None):
         """
         Link connection and repository to project
 
@@ -161,8 +165,9 @@ class DbtCloudApiClient:
         }
 
         new_connection_data = json.dumps(new_connection)
-        response = self.request(f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}",
-                                new_connection_data)
+        response = self.request(
+            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}",
+            new_connection_data)
 
         return response["data"]["id"]
 
@@ -249,15 +254,16 @@ class DbtCloudApiClient:
         }
 
         new_connection_data = json.dumps(new_connection).encode()
-        response = self.request(f"{self.host_url}/v3/accounts/{self.account_id}/projects/{project_id}/connections/",
-                                new_connection_data)
+        response = self.request(
+            f"{self.host_url}/v3/accounts/{self.account_id}/projects/{project_id}/connections/",
+            new_connection_data)
 
         return response["data"]["id"]
 
     def create_job(self, project_id, environment_id, schedule_cron, name):
         """
-        Creates sample job for given project and environment. Job is triggered by the scheduler executes commands:
-        dbt seed, dbt test and dbt run.
+        Creates sample job for given project and environment. Job is triggered by the scheduler
+        executes commands: dbt seed, dbt test and dbt run.
         :param project_id: ID of the project
         :param environment_id: ID of the environment
         :param schedule_cron: Schedule (cron syntax)
@@ -301,6 +307,7 @@ class DbtCloudApiClient:
         }
 
         job_details_data = json.dumps(job_details).encode()
-        response = self.request(f"{self.host_url}/v2/accounts/{self.account_id}/jobs/", job_details_data)
+        response = self.request(f"{self.host_url}/v2/accounts/{self.account_id}/jobs/",
+                                job_details_data)
 
         return response["data"]["id"]
