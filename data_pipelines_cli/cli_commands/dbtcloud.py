@@ -18,7 +18,19 @@ def read_dbtcloud_config(env: str) -> Dict[str, Any]:
     :return: Compiled dictionary
     :rtype: Dict[str, Any]
     """
-    return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "dbtcloud.yml")
+    return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), ".", "dbtcloud.yml")
+
+
+def read_bigquery_config(env: str) -> Dict[str, Any]:
+    """
+    Read dbt Cloud configuration.
+
+    :param env: Name of the environment
+    :type env: str
+    :return: Compiled dictionary
+    :rtype: Dict[str, Any]
+    """
+    return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "bigquery.yml")
 
 
 @click.command(name="configure-cloud", help="Create dbt Cloud project")
@@ -75,22 +87,28 @@ def configure_cloud_command(
               "This gives dbt Cloud permissions to read / write in the repository\n"
               f"{deploy_key}")
 
+    environments_projects = {}
     for environment in dbtcloud_config["environments"]:
-        if environment["type"] == "deployment":
-            credentials_id = client.create_credentials(environment["dataset"], project_id)
-        else:
-            credentials_id = None
-        environment_id = client.create_environment(project_id, environment["type"], environment["name"],
-                                                   environment["dbt_version"], credentials_id)
+        environment_id = create_environment(client, environment, project_id)
         if environment["type"] == "deployment":
             client.create_job(project_id, environment_id, dbtcloud_config["schedule_interval"],
                               "Job - " + environment["name"])
+        bq_config = read_bigquery_config(environment["bq_config_dir"])
+        environments_projects[environment["name"]] = bq_config["project"]
 
-    connection_id = client.create_bigquery_connection(
+    client.create_environment_variable(project_id, dbtcloud_config["default_gcp_project"], environments_projects)
+
+    connection_id = create_bq_connection(client, keyfile_data, project_id)
+
+    client.associate_connection_repository(dbtcloud_config["project_name"], project_id, connection_id, repository_id)
+
+
+def create_bq_connection(client, keyfile_data, project_id):
+    return client.create_bigquery_connection(
         project_id=project_id,
         name="BQ Connection Name",
         is_active=True,
-        gcp_project_id=keyfile_data["project_id"],
+        gcp_project_id="{{ env_var(\"DBT_GCP_PROJECT\") }} ",
         timeout_seconds=100,
         private_key_id=keyfile_data["private_key_id"],
         private_key=keyfile_data["private_key"],
@@ -102,4 +120,12 @@ def configure_cloud_command(
         client_x509_cert_url=keyfile_data["client_x509_cert_url"]
     )
 
-    client.associate_connection_repository(dbtcloud_config["project_name"], project_id, connection_id, repository_id)
+
+def create_environment(client, environment, project_id):
+    if environment["type"] == "deployment":
+        credentials_id = client.create_credentials(environment["dataset"], project_id)
+    else:
+        credentials_id = None
+    environment_id = client.create_environment(project_id, environment["type"], environment["name"],
+                                               environment["dbt_version"], credentials_id)
+    return environment_id

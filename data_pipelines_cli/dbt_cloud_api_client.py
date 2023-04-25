@@ -117,6 +117,31 @@ class DbtCloudApiClient:
             new_env_data)
         return response["data"]["id"]
 
+    def create_environment_variable(self, project_id, default, environments):
+        """
+        Create environment variable. Note: Environment variables must be prefixed with DBT_ or DBT_ENV_SECRET_ .
+
+        :param project_id: ID of the project
+        :param environments: dict which contains the value of the variable for each environment
+        :param default: default environment variable value for project
+        :return: IDs of created environment variable
+        """
+        env_var = {
+            "new_name": "DBT_GCP_PROJECT",
+            "project": default
+        }
+        env_var.update(environments)
+        new_env = {
+            "env_var": env_var
+        }
+        print(new_env)
+        new_env_data = json.dumps(new_env)
+
+        response = self.request(
+            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}/environment-variables/bulk/",
+            new_env_data)
+        return response["data"]["new_var_ids"]
+
     def associate_connection_repository(self, name, project_id, connection_id=None, repository_id=None):
         """
         Link connection and repository to project
