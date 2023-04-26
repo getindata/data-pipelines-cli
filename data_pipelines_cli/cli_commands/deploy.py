@@ -204,7 +204,7 @@ class DeployCommand:
 @click.option(
     "--sync-bucket",
     is_flag=True,
-    default=True,
+    default=False,
     help="Whether to sync bucket with artefacts",
 )
 def deploy_command(
