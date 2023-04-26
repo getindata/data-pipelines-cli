@@ -40,6 +40,8 @@ class DeployCommand:
     bi_git_key_path: str
     auth_token: Optional[str]
     """Authorization OIDC ID token for a service account to communication with Airbyte instance"""
+    sync_bucket: bool
+    """Whether to sync bucket with artefacts"""
 
     def __init__(
         self,
@@ -50,6 +52,7 @@ class DeployCommand:
         datahub_ingest: bool,
         bi_git_key_path: str,
         auth_token: Optional[str],
+        sync_bucket: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
@@ -57,6 +60,7 @@ class DeployCommand:
         self.env = env
         self.bi_git_key_path = bi_git_key_path
         self.auth_token = auth_token
+        self.sync_bucket = sync_bucket
 
         try:
             self.blob_address_path = (
@@ -91,7 +95,8 @@ class DeployCommand:
 
         self._bi_push()
 
-        self._sync_bucket()
+        if self.sync_bucket:
+            self._sync_bucket()
 
     def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
@@ -196,6 +201,12 @@ class DeployCommand:
     required=False,
     help="Authorization OIDC ID token for a service account to communication with cloud services",
 )
+@click.option(
+    "--sync-bucket",
+    is_flag=True,
+    default=True,
+    help="Whether to sync bucket with artefacts",
+)
 def deploy_command(
     env: str,
     dags_path: Optional[str],
@@ -204,6 +215,7 @@ def deploy_command(
     datahub_ingest: bool,
     bi_git_key_path: str,
     auth_token: Optional[str],
+    sync_bucket: bool,
 ) -> None:
     if blob_args:
         try:
@@ -222,4 +234,5 @@ def deploy_command(
         datahub_ingest,
         bi_git_key_path,
         auth_token,
+        sync_bucket,
     ).deploy()
