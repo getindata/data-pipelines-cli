@@ -122,7 +122,6 @@ class DeployCommandTestCase(unittest.TestCase):
                     self.storage_uri,
                     "--blob-args",
                     self.blob_json_filename,
-                    "--sync-bucket",
                 ],
             )
         self.assertEqual(0, result.exit_code, msg=result.exception)
@@ -145,6 +144,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     self.storage_uri,
                     "--blob-args",
                     self.blob_json_filename,
+                    "--disable-bucket-sync",
                 ],
             )
         self.assertEqual(0, result.exit_code, msg=result.exception)

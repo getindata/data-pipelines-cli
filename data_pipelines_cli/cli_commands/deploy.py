@@ -202,10 +202,10 @@ class DeployCommand:
     help="Authorization OIDC ID token for a service account to communication with cloud services",
 )
 @click.option(
-    "--sync-bucket",
+    "--disable-bucket-sync",
     is_flag=True,
-    default=False,
-    help="Whether to sync bucket with artefacts",
+    default=True,
+    help="Whether to disable bucket sync with artefacts",
 )
 def deploy_command(
     env: str,
@@ -215,7 +215,7 @@ def deploy_command(
     datahub_ingest: bool,
     bi_git_key_path: str,
     auth_token: Optional[str],
-    sync_bucket: bool,
+    disable_bucket_sync: bool,
 ) -> None:
     if blob_args:
         try:
@@ -234,5 +234,5 @@ def deploy_command(
         datahub_ingest,
         bi_git_key_path,
         auth_token,
-        sync_bucket,
+        disable_bucket_sync,
     ).deploy()
