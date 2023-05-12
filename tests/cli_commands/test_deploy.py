@@ -89,7 +89,7 @@ class DeployCommandTestCase(unittest.TestCase):
                     _datahub_ingest,
                     _bi_git_key_path,
                     _auth_token,
-                    _sync_bucket,
+                    _disable_bucket_sync,
                 ):
                     nonlocal result_provider_kwargs
                     result_provider_kwargs = provider_kwargs_dict
@@ -106,7 +106,7 @@ class DeployCommandTestCase(unittest.TestCase):
                 self.assertDictEqual(self.provider_args, result_provider_kwargs)
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
-    def test_sync_bucket_enabled(self):
+    def test_disable_bucket_sync_disabled(self):
         # Worth noting: we are not extensively testing
         # 'filesystem_utils.LocalRemoteSync' here. It gets tested in
         # a dedicated 'test_filesystem_utils' file.
@@ -131,7 +131,7 @@ class DeployCommandTestCase(unittest.TestCase):
         )
 
     @patch("data_pipelines_cli.cli_commands.deploy.BUILD_DIR", goldens_dir_path)
-    def test_sync_bucket_disabled(self):
+    def test_disable_bucket_sync_enabled(self):
         runner = CliRunner()
         with patch("pathlib.Path.cwd", lambda: self.dbt_project_config_dir), patch(
             "data_pipelines_cli.cli_commands.deploy.bi"

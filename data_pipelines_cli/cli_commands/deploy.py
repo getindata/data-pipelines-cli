@@ -40,8 +40,8 @@ class DeployCommand:
     bi_git_key_path: str
     auth_token: Optional[str]
     """Authorization OIDC ID token for a service account to communication with Airbyte instance"""
-    sync_bucket: bool
-    """Whether to sync bucket with artefacts"""
+    disable_bucket_sync: bool
+    """Whether to disable bucket sync with artefacts"""
 
     def __init__(
         self,
@@ -52,7 +52,7 @@ class DeployCommand:
         datahub_ingest: bool,
         bi_git_key_path: str,
         auth_token: Optional[str],
-        sync_bucket: bool,
+        disable_bucket_sync: bool,
     ) -> None:
         self.docker_args = DockerArgs(env, None, {}) if docker_push else None
         self.datahub_ingest = datahub_ingest
@@ -60,7 +60,7 @@ class DeployCommand:
         self.env = env
         self.bi_git_key_path = bi_git_key_path
         self.auth_token = auth_token
-        self.sync_bucket = sync_bucket
+        self.disable_bucket_sync = disable_bucket_sync
 
         try:
             self.blob_address_path = (
@@ -95,8 +95,8 @@ class DeployCommand:
 
         self._bi_push()
 
-        if self.sync_bucket:
-            self._sync_bucket()
+        if not self.disable_bucket_sync:
+            self._disable_bucket_sync()
 
     def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
@@ -156,7 +156,7 @@ class DeployCommand:
             airbyte_config_path=airbyte_config_path, auth_token=self.auth_token
         ).create_update_connections()
 
-    def _sync_bucket(self) -> None:
+    def _disable_bucket_sync(self) -> None:
         echo_info("Syncing Bucket")
         LocalRemoteSync(
             BUILD_DIR.joinpath("dag"), self.blob_address_path, self.provider_kwargs_dict
@@ -204,7 +204,7 @@ class DeployCommand:
 @click.option(
     "--disable-bucket-sync",
     is_flag=True,
-    default=True,
+    default=False,
     help="Whether to disable bucket sync with artefacts",
 )
 def deploy_command(
