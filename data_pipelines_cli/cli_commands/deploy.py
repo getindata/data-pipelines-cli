@@ -96,7 +96,7 @@ class DeployCommand:
         self._bi_push()
 
         if not self.disable_bucket_sync:
-            self._disable_bucket_sync()
+            self._bucket_sync()
 
     def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
@@ -156,7 +156,7 @@ class DeployCommand:
             airbyte_config_path=airbyte_config_path, auth_token=self.auth_token
         ).create_update_connections()
 
-    def _disable_bucket_sync(self) -> None:
+    def _bucket_sync(self) -> None:
         echo_info("Syncing Bucket")
         LocalRemoteSync(
             BUILD_DIR.joinpath("dag"), self.blob_address_path, self.provider_kwargs_dict
