@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [0.25.0] - 2023-05-15
+
 ### Added
 
-- Ability to apply `disable_bucket_sync` due to limitations of the fsspec package [#101](https://github.com/getindata/data-pipelines-cli/issues/101) using `--disable-bucket-sync` flag
+-   Ability to apply `disable_bucket_sync` due to limitations of the fsspec package [#101](https://github.com/getindata/data-pipelines-cli/issues/101) using `--disable-bucket-sync` flag
 
 ## [0.24.2] - 2023-04-14
 
@@ -247,7 +249,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.24.2...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.0...HEAD
+
+[0.25.0]: https://github.com/getindata/data-pipelines-cli/compare/0.24.2...0.25.0
 
 [0.24.2]: https://github.com/getindata/data-pipelines-cli/compare/0.24.1...0.24.2
 
