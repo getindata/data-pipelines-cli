@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+-   Failing readthedocs documentations build resulting in empty pages`
+
 ## [0.25.0] - 2023-05-15
 
 ### Added
