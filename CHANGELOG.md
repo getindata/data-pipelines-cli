@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ability to apply `disable_bucket_sync` due to limitations of the fsspec package [#101](https://github.com/getindata/data-pipelines-cli/issues/101) using `--disable-bucket-sync` flag
+
 ## [0.24.2] - 2023-04-14
 
 -   Added Airbyte integration documentation
