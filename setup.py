@@ -61,6 +61,7 @@ EXTRA_REQUIRE = {
         "myst-parser==0.18.1",
         "GitPython==3.1.29",
         "colorama==0.4.5",
+        "pytz==2023.3",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }

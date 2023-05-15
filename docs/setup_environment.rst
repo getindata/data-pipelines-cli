@@ -29,8 +29,8 @@ The repository should contain ``dp.yml.tmpl`` file looking similar to this:
 
 .. code-block:: yaml
 
-_templates_suffix: ".tmpl"
-_envops:
+  _templates_suffix: ".tmpl"
+  _envops:
     autoescape: false
     block_end_string: "%]"
     block_start_string: "[%"
