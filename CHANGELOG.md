@@ -6,7 +6,7 @@
 
 ### Fixed
 
--   Failing readthedocs documentations build resulting in empty pages\`
+-   Failing readthedocs documentation build resulting in empty pages
 
 ## [0.25.0] - 2023-05-15
 
