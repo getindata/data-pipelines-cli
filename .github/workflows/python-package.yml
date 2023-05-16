@@ -42,7 +42,7 @@ jobs:
           tox
 
       - name: Report coverage
-        uses: paambaati/codeclimate-action@v2.7.5
+        uses: paambaati/codeclimate-action@v4.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE }}
         with:
