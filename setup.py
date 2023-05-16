@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.1.1",
-    "Werkzeug==2.2.2",
+    "Werkzeug==2.2.3",
     "click==8.1.3",
     "pyyaml==6.0",
     "types-PyYAML==6.0.12.2",
