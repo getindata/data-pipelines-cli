@@ -36,11 +36,6 @@ jobs:
         uses: thomaseizinger/keep-a-changelog-new-release@v1
         with:
           version: ${{ steps.bump_version.outputs.package_version }}
-      - name: Ensure source docs are updated
-        uses: ammaraskar/sphinx-action@master
-        with:
-          docs-folder: "docs/"
-          build-command: "make apidoc html"
       - name: Create a new release branch
         run: |
           git config user.name github-actions
