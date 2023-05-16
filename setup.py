@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.1.1",
-    "Werkzeug==2.2.2",
+    "Werkzeug==2.2.3",
     "click==8.1.3",
     "pyyaml==6.0",
     "types-PyYAML==6.0.12.2",
@@ -61,13 +61,14 @@ EXTRA_REQUIRE = {
         "myst-parser==0.18.1",
         "GitPython==3.1.29",
         "colorama==0.4.5",
+        "pytz==2023.3",
     ],
     **EXTRA_FILESYSTEMS_REQUIRE,
 }
 
 setup(
     name="data_pipelines_cli",
-    version="0.25.0",
+    version="0.25.1",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

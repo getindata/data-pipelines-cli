@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.25.1] - 2023-05-16
+
+### Fixed
+
+-   Failing readthedocs documentation build resulting in empty pages
+
 ## [0.25.0] - 2023-05-15
 
 ### Added
@@ -249,7 +255,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.1...HEAD
+
+[0.25.1]: https://github.com/getindata/data-pipelines-cli/compare/0.25.0...0.25.1
 
 [0.25.0]: https://github.com/getindata/data-pipelines-cli/compare/0.24.2...0.25.0
 
