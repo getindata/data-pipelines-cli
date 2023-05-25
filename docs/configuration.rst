@@ -392,12 +392,6 @@ dbt Cloud configuration
    * - project_name
      - string
      - Name of the project to be created in dbt Cloud
-   * - schedule_interval
-     - string
-     - The cron expression with which the example job will be run
-   * - default_gcp_project
-     - string
-     - GCP project that will be used by default if a new environment is created in dbt Cloud
    * - environments
      - Array
      - Details of the environments to be created in dbt Cloud
@@ -414,31 +408,31 @@ Configuration of the environments:
    * - name
      - string
      - Name of the environment that will be created in dbt Cloud
-   * - dataset
+   * - type
      - string
-     - Target dataset for this environment
+     - In dbt Cloud, there are two types of environments: deployment and development. Deployment environments determine the settings used when jobs created within that environment are executed. Development environments determine the settings used in the dbt Cloud IDE for that particular dbt Cloud Project. Each dbt Cloud project can only have a single development environment but can have any number of deployment environments.
    * - dbt_version
      - string
      - The dbt version used in this environment
-   * - bq_config_dir
+   * - schedule_interval
      - string
-     - The name of the dp env directory where the bigquery configuration for the environment is located. The name of the project in GCP will be read from it.
+     - The cron expression with which the example job will be run. This setting is only needed for the deployment environment.
+   * - config_dir
+     - string
+     - The name of the dp env directory where the bigquery configuration for the environment is located. The name of the project in GCP and target dataset will be read from it.
 
 Example ``dbtcloud.yml`` file might look like this:
 
 .. code-block:: yaml
 
     project_name: "Data Pipelines Project"
-    schedule_interval: "0 12 * * *"
-    default_gcp_project: "default-project"
     environments:
       - name: "Develop"
-        dataset: "dev"
         dbt_version: "1.0.0"
         type: "development"
-        bq_config_dir: "dev"
+        config_dir: "dev"
       - name: "Production"
-        dataset: "prod"
         dbt_version: "1.0.0"
         type: "deployment"
-        bq_config_dir: "prod"
+        config_dir: "prod"
+        schedule_interval: "0 12 * * *"

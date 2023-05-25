@@ -137,7 +137,6 @@ class DbtCloudApiClient:
         new_env = {
             "env_var": env_var
         }
-        print(new_env)
         new_env_data = json.dumps(new_env)
 
         response = self.request(
@@ -260,7 +259,7 @@ class DbtCloudApiClient:
 
         return response["data"]["id"]
 
-    def create_job(self, project_id, environment_id, schedule_cron, name):
+    def create_job(self, project_id, environment_id, schedule_cron, name, vars):
         """
         Creates sample job for given project and environment. Job is triggered by the scheduler
         executes commands: dbt seed, dbt test and dbt run.
@@ -268,8 +267,10 @@ class DbtCloudApiClient:
         :param environment_id: ID of the environment
         :param schedule_cron: Schedule (cron syntax)
         :param name: Name of the job
+        :param vars: Variables passed to commands
         :return: ID of created job
         """
+
         job_details = {
             "account_id": self.account_id,
             "project_id": project_id,
@@ -282,9 +283,9 @@ class DbtCloudApiClient:
                 "github_webhook": False
             },
             "execute_steps": [
-                "dbt seed",
-                "dbt test",
-                "dbt run"
+                "dbt seed --vars '" + vars + "'",
+                "dbt run --vars '" + vars + "'",
+                "dbt test --vars '" + vars + "'"
             ],
             "settings": {
                 "threads": 1,

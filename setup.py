@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
     "fsspec==2022.11.0",
     "packaging==21.3",
     "colorama==0.4.5",
-    "dbt-core==1.3.1",
+    "dbt-core==1.5.0",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
