@@ -1,5 +1,4 @@
 import json
-import sys
 from typing import Any, Dict
 
 import click
@@ -7,8 +6,8 @@ import click
 from data_pipelines_cli.dbt_cloud_api_client import DbtCloudApiClient
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info
-from ..config_generation import read_dictionary_from_config_directory, generate_profiles_yml
-from ..dbt_utils import _dump_dbt_vars_from_configs_to_string, run_dbt_command
+from ..config_generation import read_dictionary_from_config_directory
+from ..dbt_utils import _dump_dbt_vars_from_configs_to_string
 
 
 def read_dbtcloud_config() -> Dict[str, Any]:
@@ -33,26 +32,6 @@ def read_bigquery_config(env: str) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
     return read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "bigquery.yml")
-
-
-def resolve_env_var(unresolved_text, env):
-    """
-    Resolves environment variables and jinja in the given text using the dbt show command.
-    :param unresolved_text: Text to be resolved
-    :param env: Environment dir name
-    :return: Parsed text
-    """
-    profiles_path = generate_profiles_yml(env, False)
-    dbt_command_result_bytes = run_dbt_command(
-        ("show", "--inline", f"SELECT '{unresolved_text}' AS parsed", "--output", "json"),
-        env,
-        profiles_path,
-        log_format_json=True,
-        capture_output=True)
-    decoded_output = dbt_command_result_bytes.stdout.decode(encoding=sys.stdout.encoding or "utf-8")
-    for line in map(json.loads, decoded_output.splitlines()):
-        if line.get('data', {}).get('node_name') == "inline_query":
-            return json.loads(line["data"]["preview"])[0]["parsed"]
 
 
 @click.command(name="configure-cloud", help="Create dbt Cloud project")
@@ -106,8 +85,7 @@ def configure_cloud_command(
     environments_projects = {}
     for environment in dbtcloud_config["environments"]:
         bq_config = read_bigquery_config(environment["config_dir"])
-        environments_projects[environment["name"]] = resolve_env_var(bq_config["project"],
-                                                                     environment["config_dir"])
+        environments_projects[environment["name"]] = bq_config["project"]
         environment_id = create_environment(client, environment, bq_config["dataset"],
                                             dbtcloud_project_id)
         if environment["type"] == "deployment":
