@@ -1,5 +1,4 @@
 import copy
-import json
 import os
 import pathlib
 import tempfile
@@ -133,12 +132,12 @@ class AirbyteUtilsTest(unittest.TestCase):
                 call(
                     url=f"{self.airbyte_url}/api/v1/connections/search",
                     headers=headers,
-                    data=json.dumps(self.airbyte_config),
+                    json=self.airbyte_config,
                 ),
                 call(
                     url=f"{self.airbyte_url}/api/v1/connections/update",
                     headers=headers,
-                    data=json.dumps(self.airbyte_config),
+                    json=self.airbyte_config,
                 ),
             ],
             any_order=True,
@@ -204,10 +203,3 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         )
-
-
-#
-# "sourceId",
-# "destinationId",
-# "namespaceDefinition",
-# "namespaceFormat",
