@@ -153,6 +153,7 @@ class AirbyteUtilsTest(unittest.TestCase):
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_create_connection(self, mock_request_handler):
         mock_request_handler.side_effect = [
+            {"workspaces": [{"workspaceId": "6e832a27-a146-46b6-9d0b-ca2fad5e476f"}]},
             {"connections": []},
             {
                 "name": "POSTGRES_BQ_CONNECTION",
@@ -163,6 +164,10 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.test_airbyte_factory.create_update_connection(
             self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
         )
+
+        endpoint = mock_request_handler.call_args[0][0]
+        self.assertEqual("connections/create", endpoint)
+
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         )
@@ -170,7 +175,18 @@ class AirbyteUtilsTest(unittest.TestCase):
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_update_connection(self, mock_run):
         mock_run.side_effect = [
-            {"connections": [{"connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952"}]},
+            {"workspaces": [{"workspaceId": "6e832a27-a146-46b6-9d0b-ca2fad5e476f"}]},
+            {
+                "connections": [
+                    {
+                        "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
+                        "sourceId": "06a6f19f-b747-4672-a191-80b96f67c36e",
+                        "destinationId": "b3696ac3-93b2-4039-9021-e1f884b03a95",
+                        "namespaceFormat": "jaffle_shop",
+                        "namespaceDefinition": "customformat",
+                    }
+                ]
+            },
             {
                 "name": "POSTGRES_BQ_CONNECTION",
                 "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
@@ -181,6 +197,17 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.test_airbyte_factory.create_update_connection(
             self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
         )
+
+        endpoint = mock_run.call_args[0][0]
+        self.assertEqual("connections/update", endpoint)
+
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         )
+
+
+#
+# "sourceId",
+# "destinationId",
+# "namespaceDefinition",
+# "namespaceFormat",
