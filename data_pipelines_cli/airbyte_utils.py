@@ -127,7 +127,6 @@ class AirbyteFactory:
 
         try:
             response = requests.post(url=url, headers=headers, json=data)
-            echo_info(str(response.status_code))
             response.raise_for_status()
             data = response.json()
             return data
