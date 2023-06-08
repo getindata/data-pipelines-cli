@@ -15,7 +15,7 @@ class AirbyteError(Exception):
     pass
 
 
-class AirbyteNoWorkspaceConfiguredError(AirbyteError):
+class AirbyteConfigMissingWorkspaceIdError(AirbyteError):
     pass
 
 
@@ -47,24 +47,26 @@ class AirbyteFactory:
 
     def create_update_connections(self) -> None:
         """Create and update Airbyte connections defined in config yaml file"""
-        if self.airbyte_config["connections"]:
-            [
-                self.create_update_connection(self.airbyte_config["connections"][connection])
-                for connection in self.airbyte_config["connections"]
-            ]
-            [task.update(self.env_replacer(task)) for task in self.airbyte_config["tasks"]]
-            self.update_file(self.airbyte_config)
+        if not self.airbyte_config["connections"]:
+            return
 
-    def get_workspace_id(self) -> str:
-        workspaces = self.request_handler("workspaces/list").get("workspaces")
-        if not workspaces:
-            raise AirbyteNoWorkspaceConfiguredError(
-                f"No workspaces found in {self.airbyte_url} instance."
+        if not (workspace_id := self.airbyte_config.get("workspace_id")):
+            raise AirbyteConfigMissingWorkspaceIdError(
+                "Property workspace_id not found in Airbyte config."
             )
 
-        return workspaces[0].get("workspaceId")
+        for connection in self.airbyte_config["connections"]:
+            self.create_update_connection(
+                connection_config=self.airbyte_config["connections"][connection],
+                workspace_id=workspace_id,
+            )
 
-    def create_update_connection(self, connection_config: Dict[str, Any]) -> Any:
+        for task in self.airbyte_config["tasks"]:
+            task.update(self.env_replacer(task))
+
+        self.update_file(self.airbyte_config)
+
+    def create_update_connection(self, connection_config: Dict[str, Any], workspace_id: str) -> Any:
         def configs_equal(
             conf_a: Dict[str, Any], conf_b: Dict[str, Any], equality_fields: Iterable[str]
         ) -> bool:
@@ -73,9 +75,9 @@ class AirbyteFactory:
             return conn_a == conn_b
 
         connection_config_copy = copy.deepcopy(connection_config)
+
         response_search = self.request_handler(
-            "connections/list",
-            data={"workspaceId": self.get_workspace_id()},
+            "connections/list", data={"workspaceId": workspace_id}
         )
 
         equality_fields = [

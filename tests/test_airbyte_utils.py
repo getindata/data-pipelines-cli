@@ -57,8 +57,10 @@ class AirbyteUtilsTest(unittest.TestCase):
         connection_2_config = {"name": "connection_2_name"}
         task_1_config = {"api_version": "v1", "connection_id": "${CONNECTION_1_ID}"}
         task_2_config = {"api_version": "v2", "connection_id": "${CONNECTION_2_ID}"}
+        workspace_id = "35ac8060-b4da-4742-b5ba-16ce29dcf526"
         config = {
             "airbyte_url": self.airbyte_url,
+            "workspace_id": workspace_id,
             "connections": {
                 "connection_1": connection_1_config,
                 "connection_2": connection_2_config,
@@ -71,8 +73,8 @@ class AirbyteUtilsTest(unittest.TestCase):
             AirbyteFactory(pathlib.Path(tmp_file.name), None).create_update_connections()
             mock_create_update_connection.assert_has_calls(
                 [
-                    call(connection_1_config),
-                    call(connection_2_config),
+                    call(connection_config=connection_1_config, workspace_id=workspace_id),
+                    call(connection_config=connection_2_config, workspace_id=workspace_id),
                 ]
             )
             with open(tmp_file.name, "r") as f:
@@ -152,7 +154,6 @@ class AirbyteUtilsTest(unittest.TestCase):
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_create_connection(self, mock_request_handler):
         mock_request_handler.side_effect = [
-            {"workspaces": [{"workspaceId": "6e832a27-a146-46b6-9d0b-ca2fad5e476f"}]},
             {"connections": []},
             {
                 "name": "POSTGRES_BQ_CONNECTION",
@@ -161,7 +162,8 @@ class AirbyteUtilsTest(unittest.TestCase):
         ]
         # TODO
         self.test_airbyte_factory.create_update_connection(
-            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
+            connection_config=self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"],
+            workspace_id=self.airbyte_config["workspace_id"],
         )
 
         endpoint = mock_request_handler.call_args[0][0]
@@ -174,7 +176,6 @@ class AirbyteUtilsTest(unittest.TestCase):
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_update_connection(self, mock_run):
         mock_run.side_effect = [
-            {"workspaces": [{"workspaceId": "6e832a27-a146-46b6-9d0b-ca2fad5e476f"}]},
             {
                 "connections": [
                     {
@@ -194,7 +195,8 @@ class AirbyteUtilsTest(unittest.TestCase):
             },
         ]
         self.test_airbyte_factory.create_update_connection(
-            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
+            connection_config=self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"],
+            workspace_id=self.airbyte_config.get("workspace_id"),
         )
 
         endpoint = mock_run.call_args[0][0]

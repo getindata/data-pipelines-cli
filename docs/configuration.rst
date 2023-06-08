@@ -225,6 +225,9 @@ Ingestion configuration is divided into two levels:
    * - airbyte_url
      - string
      - Https address of Airbyte deployment that allows to connect to Airbyte API
+   * - workspace_id
+     - uuid
+     - Id of the workspace that contains connections defined in the config
    * - connections
      - array<*connection*>
      - Configurations of Airbyte connections that should be upserted during CI/CD. Minimal connection schema is documented below.
