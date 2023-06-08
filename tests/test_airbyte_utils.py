@@ -8,7 +8,10 @@ from unittest.mock import Mock, call, patch
 import yaml
 from requests import HTTPError
 
-from data_pipelines_cli.airbyte_utils import AirbyteFactory
+from data_pipelines_cli.airbyte_utils import (
+    AirbyteConfigMissingWorkspaceIdError,
+    AirbyteFactory,
+)
 
 
 def read_file(file_path: pathlib.Path):
@@ -205,3 +208,9 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         )
+
+    def test_missing_worskpace_id_error_is_raised(self):
+        self.test_airbyte_factory.airbyte_config.pop("workspace_id")
+
+        with self.assertRaises(AirbyteConfigMissingWorkspaceIdError):
+            self.test_airbyte_factory.create_update_connections()

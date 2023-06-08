@@ -50,7 +50,8 @@ class AirbyteFactory:
         if not self.airbyte_config["connections"]:
             return
 
-        if not (workspace_id := self.airbyte_config.get("workspace_id")):
+        workspace_id = self.airbyte_config.get("workspace_id")
+        if not workspace_id:
             raise AirbyteConfigMissingWorkspaceIdError(
                 "Property workspace_id not found in Airbyte config."
             )
