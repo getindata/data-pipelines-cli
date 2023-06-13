@@ -178,16 +178,24 @@ class AirbyteUtilsTest(unittest.TestCase):
 
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_update_connection(self, mock_run):
+        matching_connection_id = "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         mock_run.side_effect = [
             {
                 "connections": [
                     {
-                        "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
+                        "connectionId": "df1ac0ad-85c2-498e-a470-b4d106a0cdc7",
+                        "sourceId": "30f8c699-f7e3-4ac9-810f-639ffaec707e",
+                        "destinationId": "0ab4a08a-9467-43cc-b477-fb073c676cb5",
+                        "namespaceFormat": "public",
+                        "namespaceDefinition": "customformat",
+                    },
+                    {
+                        "connectionId": matching_connection_id,
                         "sourceId": "06a6f19f-b747-4672-a191-80b96f67c36e",
                         "destinationId": "b3696ac3-93b2-4039-9021-e1f884b03a95",
                         "namespaceFormat": "jaffle_shop",
                         "namespaceDefinition": "customformat",
-                    }
+                    },
                 ]
             },
             {
@@ -203,7 +211,9 @@ class AirbyteUtilsTest(unittest.TestCase):
         )
 
         endpoint = mock_run.call_args[0][0]
+        updated_connection_id = mock_run.call_args[0][1].get("connectionId")
         self.assertEqual("connections/update", endpoint)
+        self.assertEqual(matching_connection_id, updated_connection_id)
 
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"

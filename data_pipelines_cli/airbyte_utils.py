@@ -106,7 +106,7 @@ class AirbyteFactory:
         echo_info(f"Updating connection config for {connection_config_copy['name']}")
         connection_config_copy.pop("sourceId", None)
         connection_config_copy.pop("destinationId", None)
-        connection_config_copy["connectionId"] = response_search["connections"][0]["connectionId"]
+        connection_config_copy["connectionId"] = matching_connections[0]["connectionId"]
         response_update = self.request_handler(
             "connections/update",
             connection_config_copy,
