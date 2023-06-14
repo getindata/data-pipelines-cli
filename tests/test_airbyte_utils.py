@@ -215,11 +215,9 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.assertEqual("connections/update", endpoint)
         self.assertEqual(matching_connection_id, updated_connection_id)
 
-        self.assertEqual(
-            os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
-        )
+        self.assertEqual(os.environ["POSTGRES_BQ_CONNECTION"], matching_connection_id)
 
-    def test_missing_worskpace_id_error_is_raised(self):
+    def test_missing_workspace_id_error_is_raised(self):
         self.test_airbyte_factory.airbyte_config.pop("workspace_id")
 
         with self.assertRaises(AirbyteConfigMissingWorkspaceIdError):
