@@ -218,6 +218,15 @@ class AirbyteUtilsTest(unittest.TestCase):
         self.assertEqual(os.environ["POSTGRES_BQ_CONNECTION"], matching_connection_id)
 
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
+    def test_get_default_workspace_id(self, mock_handler):
+        mock_handler.side_effect = (
+            {"workspaces": [{"workspaceId": "foo"}, {"workspaceId": "bar"}]},
+        )
+        self.test_airbyte_factory.airbyte_config.pop("workspace_id")
+
+        self.assertEqual(self.test_airbyte_factory.get_default_workspace_id(), "foo")
+
+    @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_missing_workspace_id_error_is_raised(self, mock_handler):
         mock_handler.side_effect = ({"workspaces": []},)
         self.test_airbyte_factory.airbyte_config.pop("workspace_id")
