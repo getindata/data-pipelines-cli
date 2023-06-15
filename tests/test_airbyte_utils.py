@@ -9,8 +9,8 @@ import yaml
 from requests import HTTPError
 
 from data_pipelines_cli.airbyte_utils import (
-    AirbyteConfigMissingWorkspaceIdError,
     AirbyteFactory,
+    AirbyteNoWorkspaceConfiguredError,
 )
 
 
@@ -217,8 +217,10 @@ class AirbyteUtilsTest(unittest.TestCase):
 
         self.assertEqual(os.environ["POSTGRES_BQ_CONNECTION"], matching_connection_id)
 
-    def test_missing_workspace_id_error_is_raised(self):
+    @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
+    def test_missing_workspace_id_error_is_raised(self, mock_handler):
+        mock_handler.side_effect = ({"workspaces": []},)
         self.test_airbyte_factory.airbyte_config.pop("workspace_id")
 
-        with self.assertRaises(AirbyteConfigMissingWorkspaceIdError):
+        with self.assertRaises(AirbyteNoWorkspaceConfiguredError):
             self.test_airbyte_factory.create_update_connections()

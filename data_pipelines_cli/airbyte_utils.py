@@ -8,14 +8,14 @@ import requests
 import yaml
 
 from .cli_constants import BUILD_DIR
-from .cli_utils import echo_error, echo_info
+from .cli_utils import echo_error, echo_info, echo_warning
 
 
 class AirbyteError(Exception):
     pass
 
 
-class AirbyteConfigMissingWorkspaceIdError(AirbyteError):
+class AirbyteNoWorkspaceConfiguredError(AirbyteError):
     pass
 
 
@@ -45,16 +45,27 @@ class AirbyteFactory:
     def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
         return ast.literal_eval(os.path.expandvars(f"{config}"))
 
+    def get_default_workspace_id(self) -> str:
+        workspaces = self.request_handler("workspaces/list").get("workspaces")
+        if not workspaces:
+            raise AirbyteNoWorkspaceConfiguredError(
+                f"No workspaces found in {self.airbyte_url} instance."
+            )
+
+        return workspaces[0].get("workspaceId")
+
     def create_update_connections(self) -> None:
         """Create and update Airbyte connections defined in config yaml file"""
         if not self.airbyte_config["connections"]:
             return
 
         workspace_id = self.airbyte_config.get("workspace_id")
-        if not workspace_id:
-            raise AirbyteConfigMissingWorkspaceIdError(
-                "Property workspace_id not found in Airbyte config."
+        if workspace_id is None:
+            echo_warning(
+                "workspace_id was not provided in the configuration file - "
+                "fetching the default one from Airbyte deployment"
             )
+            workspace_id = self.get_default_workspace_id()
 
         for connection in self.airbyte_config["connections"]:
             self.create_update_connection(
