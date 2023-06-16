@@ -1,5 +1,6 @@
 airbyte_connection_id: airbyte_connection_id
 airbyte_url: https://airbyte.dataops-dev.getindata.dev
+workspace_id: 35ac8060-b4da-4742-b5ba-16ce29dcf526
 connections:
   POSTGRES_BQ_CONNECTION:
     destinationId: b3696ac3-93b2-4039-9021-e1f884b03a95
