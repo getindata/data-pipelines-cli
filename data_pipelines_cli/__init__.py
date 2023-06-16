@@ -5,4 +5,4 @@ dp helps data analysts to create, maintain and make full use of their data
 pipelines.
 """
 
-version = "0.25.1"
+version = "0.26.0"
