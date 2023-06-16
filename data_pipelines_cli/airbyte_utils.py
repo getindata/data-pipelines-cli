@@ -1,15 +1,22 @@
 import ast
 import copy
-import json
 import os
 import pathlib
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Iterable, Optional, Union
 
 import requests
 import yaml
 
 from .cli_constants import BUILD_DIR
-from .cli_utils import echo_error, echo_info
+from .cli_utils import echo_error, echo_info, echo_warning
+
+
+class AirbyteError(Exception):
+    pass
+
+
+class AirbyteNoWorkspaceConfiguredError(AirbyteError):
+    pass
 
 
 class AirbyteFactory:
@@ -38,52 +45,92 @@ class AirbyteFactory:
     def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
         return ast.literal_eval(os.path.expandvars(f"{config}"))
 
+    def get_default_workspace_id(self) -> str:
+        workspaces = self.request_handler("workspaces/list").get("workspaces")
+        if not workspaces:
+            raise AirbyteNoWorkspaceConfiguredError(
+                f"No workspaces found in {self.airbyte_url} instance."
+            )
+
+        return workspaces[0].get("workspaceId")
+
     def create_update_connections(self) -> None:
         """Create and update Airbyte connections defined in config yaml file"""
-        if self.airbyte_config["connections"]:
-            [
-                self.create_update_connection(self.airbyte_config["connections"][connection])
-                for connection in self.airbyte_config["connections"]
-            ]
-            [task.update(self.env_replacer(task)) for task in self.airbyte_config["tasks"]]
-            self.update_file(self.airbyte_config)
+        if not self.airbyte_config["connections"]:
+            return
 
-    def create_update_connection(self, connection_config: Dict[str, Any]) -> Any:
+        workspace_id = self.airbyte_config.get("workspace_id")
+        if workspace_id is None:
+            echo_warning(
+                "workspace_id was not provided in the configuration file - "
+                "fetching the default one from Airbyte deployment"
+            )
+            workspace_id = self.get_default_workspace_id()
+
+        for connection in self.airbyte_config["connections"]:
+            self.create_update_connection(
+                connection_config=self.airbyte_config["connections"][connection],
+                workspace_id=workspace_id,
+            )
+
+        for task in self.airbyte_config["tasks"]:
+            task.update(self.env_replacer(task))
+
+        self.update_file(self.airbyte_config)
+
+    def create_update_connection(self, connection_config: Dict[str, Any], workspace_id: str) -> Any:
+        def configs_equal(
+            conf_a: Dict[str, Any], conf_b: Dict[str, Any], equality_fields: Iterable[str]
+        ) -> bool:
+            conn_a = {k: v for k, v in conf_a.items() if k in equality_fields}
+            conn_b = {k: v for k, v in conf_b.items() if k in equality_fields}
+            return conn_a == conn_b
+
         connection_config_copy = copy.deepcopy(connection_config)
+
         response_search = self.request_handler(
-            "connections/search",
-            {
-                "sourceId": connection_config_copy["sourceId"],
-                "destinationId": connection_config_copy["destinationId"],
-                "namespaceDefinition": connection_config_copy["namespaceDefinition"],
-                "namespaceFormat": connection_config_copy["namespaceFormat"],
-            },
+            "connections/list", data={"workspaceId": workspace_id}
         )
-        if not response_search["connections"]:
+
+        equality_fields = [
+            "sourceId",
+            "destinationId",
+            "namespaceDefinition",
+            "namespaceFormat",
+        ]
+
+        matching_connections = [
+            connection
+            for connection in response_search["connections"]
+            if configs_equal(connection_config_copy, connection, equality_fields)
+        ]
+
+        if not matching_connections:
             echo_info(f"Creating connection config for {connection_config_copy['name']}")
             response_create = self.request_handler(
                 "connections/create",
                 connection_config_copy,
             )
             os.environ[response_create["name"]] = response_create["connectionId"]
-        else:
-            echo_info(f"Updating connection config for {connection_config_copy['name']}")
-            connection_config_copy.pop("sourceId", None)
-            connection_config_copy.pop("destinationId", None)
-            connection_config_copy["connectionId"] = response_search["connections"][0][
-                "connectionId"
-            ]
-            response_update = self.request_handler(
-                "connections/update",
-                connection_config_copy,
-            )
-            os.environ[response_update["name"]] = response_update["connectionId"]
+            return
+
+        echo_info(f"Updating connection config for {connection_config_copy['name']}")
+        connection_config_copy.pop("sourceId", None)
+        connection_config_copy.pop("destinationId", None)
+        connection_config_copy["connectionId"] = matching_connections[0]["connectionId"]
+        response_update = self.request_handler(
+            "connections/update",
+            connection_config_copy,
+        )
+        os.environ[response_update["name"]] = response_update["connectionId"]
 
     def update_file(self, updated_config: Dict[str, Any]) -> None:
         with open(self.airbyte_config_path, "w") as airbyte_config_file:
             yaml.safe_dump(updated_config, airbyte_config_file)
 
-    def request_handler(self, endpoint: str, config: Dict[str, Any]) -> Union[Dict[str, Any], Any]:
+    def request_handler(
+        self, endpoint: str, data: Optional[Dict[str, Any]] = None
+    ) -> Union[Dict[str, Any], Any]:
         url = f"{self.airbyte_url}/api/v1/{endpoint}"
         headers = {
             "Accept": "application/json",
@@ -93,7 +140,7 @@ class AirbyteFactory:
             headers["Authorization"] = f"Bearer {self.auth_token}"
 
         try:
-            response = requests.post(url=url, headers=headers, data=json.dumps(config))
+            response = requests.post(url=url, headers=headers, json=data)
             response.raise_for_status()
             data = response.json()
             return data

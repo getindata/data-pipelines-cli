@@ -1,5 +1,4 @@
 import copy
-import json
 import os
 import pathlib
 import tempfile
@@ -9,7 +8,10 @@ from unittest.mock import Mock, call, patch
 import yaml
 from requests import HTTPError
 
-from data_pipelines_cli.airbyte_utils import AirbyteFactory
+from data_pipelines_cli.airbyte_utils import (
+    AirbyteFactory,
+    AirbyteNoWorkspaceConfiguredError,
+)
 
 
 def read_file(file_path: pathlib.Path):
@@ -58,8 +60,10 @@ class AirbyteUtilsTest(unittest.TestCase):
         connection_2_config = {"name": "connection_2_name"}
         task_1_config = {"api_version": "v1", "connection_id": "${CONNECTION_1_ID}"}
         task_2_config = {"api_version": "v2", "connection_id": "${CONNECTION_2_ID}"}
+        workspace_id = "35ac8060-b4da-4742-b5ba-16ce29dcf526"
         config = {
             "airbyte_url": self.airbyte_url,
+            "workspace_id": workspace_id,
             "connections": {
                 "connection_1": connection_1_config,
                 "connection_2": connection_2_config,
@@ -72,8 +76,8 @@ class AirbyteUtilsTest(unittest.TestCase):
             AirbyteFactory(pathlib.Path(tmp_file.name), None).create_update_connections()
             mock_create_update_connection.assert_has_calls(
                 [
-                    call(connection_1_config),
-                    call(connection_2_config),
+                    call(connection_config=connection_1_config, workspace_id=workspace_id),
+                    call(connection_config=connection_2_config, workspace_id=workspace_id),
                 ]
             )
             with open(tmp_file.name, "r") as f:
@@ -133,12 +137,12 @@ class AirbyteUtilsTest(unittest.TestCase):
                 call(
                     url=f"{self.airbyte_url}/api/v1/connections/search",
                     headers=headers,
-                    data=json.dumps(self.airbyte_config),
+                    json=self.airbyte_config,
                 ),
                 call(
                     url=f"{self.airbyte_url}/api/v1/connections/update",
                     headers=headers,
-                    data=json.dumps(self.airbyte_config),
+                    json=self.airbyte_config,
                 ),
             ],
             any_order=True,
@@ -161,16 +165,39 @@ class AirbyteUtilsTest(unittest.TestCase):
         ]
         # TODO
         self.test_airbyte_factory.create_update_connection(
-            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
+            connection_config=self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"],
+            workspace_id=self.airbyte_config["workspace_id"],
         )
+
+        endpoint = mock_request_handler.call_args[0][0]
+        self.assertEqual("connections/create", endpoint)
+
         self.assertEqual(
             os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         )
 
     @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
     def test_update_connection(self, mock_run):
+        matching_connection_id = "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
         mock_run.side_effect = [
-            {"connections": [{"connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952"}]},
+            {
+                "connections": [
+                    {
+                        "connectionId": "df1ac0ad-85c2-498e-a470-b4d106a0cdc7",
+                        "sourceId": "30f8c699-f7e3-4ac9-810f-639ffaec707e",
+                        "destinationId": "0ab4a08a-9467-43cc-b477-fb073c676cb5",
+                        "namespaceFormat": "public",
+                        "namespaceDefinition": "customformat",
+                    },
+                    {
+                        "connectionId": matching_connection_id,
+                        "sourceId": "06a6f19f-b747-4672-a191-80b96f67c36e",
+                        "destinationId": "b3696ac3-93b2-4039-9021-e1f884b03a95",
+                        "namespaceFormat": "jaffle_shop",
+                        "namespaceDefinition": "customformat",
+                    },
+                ]
+            },
             {
                 "name": "POSTGRES_BQ_CONNECTION",
                 "connectionId": "7aa68945-3e4b-4e1c-b504-2c36e5be2952",
@@ -179,8 +206,30 @@ class AirbyteUtilsTest(unittest.TestCase):
             },
         ]
         self.test_airbyte_factory.create_update_connection(
-            self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"]
+            connection_config=self.airbyte_config["connections"]["POSTGRES_BQ_CONNECTION"],
+            workspace_id=self.airbyte_config.get("workspace_id"),
         )
-        self.assertEqual(
-            os.environ["POSTGRES_BQ_CONNECTION"], "7aa68945-3e4b-4e1c-b504-2c36e5be2952"
+
+        endpoint = mock_run.call_args[0][0]
+        updated_connection_id = mock_run.call_args[0][1].get("connectionId")
+        self.assertEqual("connections/update", endpoint)
+        self.assertEqual(matching_connection_id, updated_connection_id)
+
+        self.assertEqual(os.environ["POSTGRES_BQ_CONNECTION"], matching_connection_id)
+
+    @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
+    def test_get_default_workspace_id(self, mock_handler):
+        mock_handler.side_effect = (
+            {"workspaces": [{"workspaceId": "foo"}, {"workspaceId": "bar"}]},
         )
+        self.test_airbyte_factory.airbyte_config.pop("workspace_id")
+
+        self.assertEqual(self.test_airbyte_factory.get_default_workspace_id(), "foo")
+
+    @patch("data_pipelines_cli.airbyte_utils.AirbyteFactory.request_handler")
+    def test_missing_workspace_id_error_is_raised(self, mock_handler):
+        mock_handler.side_effect = ({"workspaces": []},)
+        self.test_airbyte_factory.airbyte_config.pop("workspace_id")
+
+        with self.assertRaises(AirbyteNoWorkspaceConfiguredError):
+            self.test_airbyte_factory.create_update_connections()

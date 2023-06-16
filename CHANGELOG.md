@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- AirbyteFactory creating duplicated connections
+
 ## [0.25.1] - 2023-05-16
 
 ### Fixed
