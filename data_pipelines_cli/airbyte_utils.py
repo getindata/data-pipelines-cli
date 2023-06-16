@@ -19,6 +19,12 @@ class AirbyteFactory:
     """Path to config yaml file containing connections definitions"""
     auth_token: Optional[str]
     """Authorization OIDC ID token for a service account to communication with Airbyte instance"""
+    connections: Dict[str, Any]
+    """List of workspace connections"""
+    sources: Dict[str, Any]
+    """List of workspace sources"""
+    destinations: Dict[str, Any]
+    """List of workspace destinations"""
 
     def __init__(self, airbyte_config_path: pathlib.Path, auth_token: Optional[str]) -> None:
         self.airbyte_config_path = airbyte_config_path
@@ -37,6 +43,37 @@ class AirbyteFactory:
     @staticmethod
     def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
         return ast.literal_eval(os.path.expandvars(f"{config}"))
+
+    def get_connections(self) -> None:
+        """List all Airbyte connections from a workspace"""
+        response_search = self.request_handler(
+            "connections/list",
+            data={"workspaceId": self.get_workspace_id()}
+        )
+        self.connections = response_search["connections"]
+        # TODO: optionally add workspace and connections collection as a parameter
+
+    def get_sources(self) -> None:
+        """List all Airbyte sources from a workspace"""
+        response_search = self.request_handler(
+            "sources/list",
+            data={"workspaceId": self.get_workspace_id()}
+        )
+        self.sources = response_search["sources"]
+        # TODO: optionally add workspace and sources collection as a parameter
+
+    def get_destinations(self) -> None:
+        """List all Airbyte destinations from a workspace"""
+        response_search = self.request_handler(
+            "destinations/list",
+            data={"workspaceId": self.get_workspace_id()}
+        )
+        self.sources = response_search["sources"]
+        # TODO: optionally add workspace and destinations collection as a parameter
+
+    def persist_airbyte_config(self) -> None:
+        """Save all the sources, destination and connections into a config file"""
+        pass
 
     def create_update_connections(self) -> None:
         """Create and update Airbyte connections defined in config yaml file"""
