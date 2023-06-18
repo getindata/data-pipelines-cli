@@ -1,11 +1,13 @@
 import json
+from typing import Any, Dict, Optional, Tuple
+
 import requests
 
 
 class DbtCloudApiClient:
     """A class used to create dbt Cloud project using API v3"""
 
-    def __init__(self, host_url, account_id, token):
+    def __init__(self, host_url: str, account_id: int, token: str) -> None:
         self.host_url = host_url
         """Base URL differs for Multi and Single-Tenant Deployments"""
 
@@ -17,26 +19,25 @@ class DbtCloudApiClient:
         3. In the address bar, the number after /users is your user ID.
         """
 
+        self.api_v3_url = f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects"
+        """Url of API v3 (used for managing resources in dbt Cloud)"""
+
         self.token = token
         """You can find your User API token in the Profile page under the API Access label"""
 
-    def request(self, url, data):
+    def request(self, url: str, data: Any) -> Any:
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Token {self.token}"
+            "Authorization": f"Token {self.token}",
         }
-        response = requests.post(
-            url=url,
-            data=data,
-            headers=headers
-        )
+        response = requests.post(url=url, data=data, headers=headers)
         res = json.loads(response.content)
         if not res["status"]["is_success"]:
             raise Exception(res["status"]["user_message"] + "\n" + res["data"])
         return res
 
-    def create_project(self, name):
+    def create_project(self, name: str) -> int:
         """
         Note: the dbt_project_subdirectory is an optional field which allows you to point
         dbt Cloud to a subdirectory that lives within the root folder of your target repository.
@@ -51,16 +52,15 @@ class DbtCloudApiClient:
             "name": name,
             "dbt_project_subdirectory": None,
             "connection_id": None,
-            "repository_id": None
+            "repository_id": None,
         }
 
         new_project_data = json.dumps(new_project)
 
-        response = self.request(f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/",
-                                new_project_data)
+        response = self.request(f"{self.api_v3_url}/", new_project_data)
         return response["data"]["id"]
 
-    def create_repository(self, project_id, git_clone_url):
+    def create_repository(self, project_id: int, git_clone_url: str) -> Tuple[int, str]:
         """
         Note: After creating  a dbt Cloud repository's SSH key, you will need to add the generated
         key text as a deploy key to the target repository. This gives dbt Cloud permissions to
@@ -76,17 +76,25 @@ class DbtCloudApiClient:
             "remote_url": git_clone_url,
             "git_clone_strategy": "deploy_key",
             "github_installation_id": None,
-            "token_str": None
+            "token_str": None,
         }
 
         new_repository_data = json.dumps(new_repository)
 
         response = self.request(
-            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}/repositories/",
-            new_repository_data)
+            f"{self.api_v3_url}/{str(project_id)}/repositories/",
+            new_repository_data,
+        )
         return response["data"]["id"], response["data"]["deploy_key"]["public_key"]
 
-    def create_environment(self, project_id, env_type, name, dbt_version, credentials_id=None):
+    def create_environment(
+        self,
+        project_id: int,
+        env_type: str,
+        name: str,
+        dbt_version: str,
+        credentials_id: Optional[int] = None,
+    ) -> int:
         """
         Create environment. Environments encompass a collection of settings for how you want to run
         your dbt project. This includes: dbt version, git branch, data location (target schema).
@@ -109,17 +117,20 @@ class DbtCloudApiClient:
             "custom_branch": None,
             "dbt_version": dbt_version,
             "supports_docs": False,
-            "credentials_id": credentials_id
+            "credentials_id": credentials_id,
         }
 
         new_env_data = json.dumps(new_env)
 
         response = self.request(
-            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}/environments/",
-            new_env_data)
+            f"{self.api_v3_url}/{str(project_id)}/environments/",
+            new_env_data,
+        )
         return response["data"]["id"]
 
-    def create_environment_variable(self, project_id, default, environments):
+    def create_environment_variable(
+        self, project_id: int, default: str, environments: Dict[str, str]
+    ) -> int:
         """
         Create environment variable. Note: Environment variables must be prefixed with DBT_ or
         DBT_ENV_SECRET_ .
@@ -129,23 +140,24 @@ class DbtCloudApiClient:
         :param default: default environment variable value for project
         :return: IDs of created environment variable
         """
-        env_var = {
-            "new_name": "DBT_GCP_PROJECT",
-            "project": default
-        }
+        env_var = {"new_name": "DBT_GCP_PROJECT", "project": default}
         env_var.update(environments)
-        new_env = {
-            "env_var": env_var
-        }
+        new_env = {"env_var": env_var}
         new_env_data = json.dumps(new_env)
 
         response = self.request(
-            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}/environment-variables/bulk/",
-            new_env_data)
+            f"{self.api_v3_url}/{str(project_id)}/environment-variables/bulk/",
+            new_env_data,
+        )
         return response["data"]["new_var_ids"]
 
-    def associate_connection_repository(self, name, project_id, connection_id=None,
-                                        repository_id=None):
+    def associate_connection_repository(
+        self,
+        name: str,
+        project_id: int,
+        connection_id: Optional[int] = None,
+        repository_id: Optional[int] = None,
+    ) -> int:
         """
         Link connection and repository to project
 
@@ -160,17 +172,18 @@ class DbtCloudApiClient:
             "account_id": self.account_id,
             "id": project_id,
             "connection_id": connection_id,
-            "repository_id": repository_id
+            "repository_id": repository_id,
         }
 
         new_connection_data = json.dumps(new_connection)
         response = self.request(
-            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}",
-            new_connection_data)
+            f"{self.api_v3_url}/{str(project_id)}",
+            new_connection_data,
+        )
 
         return response["data"]["id"]
 
-    def create_credentials(self, schema, project_id):
+    def create_credentials(self, schema: str, project_id: int) -> int:
         """
         Creates credentials - these are needed to create the environment.
 
@@ -190,35 +203,36 @@ class DbtCloudApiClient:
             "created_at": None,
             "updated_at": None,
             "username": None,
-            "has_refresh_token": False
+            "has_refresh_token": False,
         }
 
         new_credentials_data = json.dumps(new_credentials)
         response = self.request(
-            f"{self.host_url}/v3/accounts/{str(self.account_id)}/projects/{str(project_id)}/credentials/",
-            new_credentials_data)
+            f"{self.api_v3_url}/{str(project_id)}/credentials/",
+            new_credentials_data,
+        )
 
         return response["data"]["id"]
 
     def create_bigquery_connection(
-            self,
-            project_id,
-            name,
-            is_active,
-            gcp_project_id,
-            timeout_seconds,
-            private_key_id,
-            private_key,
-            client_email,
-            client_id,
-            auth_uri,
-            token_uri,
-            auth_provider_x509_cert_url,
-            client_x509_cert_url,
-            retries=1,
-            location=None,
-            maximum_bytes_billed=0
-    ):
+        self,
+        project_id: int,
+        name: str,
+        is_active: bool,
+        gcp_project_id: str,
+        timeout_seconds: int,
+        private_key_id: str,
+        private_key: str,
+        client_email: str,
+        client_id: str,
+        auth_uri: str,
+        token_uri: str,
+        auth_provider_x509_cert_url: str,
+        client_x509_cert_url: str,
+        retries: int = 1,
+        location: Optional[str] = None,
+        maximum_bytes_billed: int = 0,
+    ) -> int:
         """
         Creates dbtCloud connection to BigQuery
         :param project_id: Name of the project
@@ -239,7 +253,7 @@ class DbtCloudApiClient:
             "client_x509_cert_url": client_x509_cert_url,
             "retries": retries,
             "location": location,
-            "maximum_bytes_billed": maximum_bytes_billed
+            "maximum_bytes_billed": maximum_bytes_billed,
         }
 
         new_connection = {
@@ -254,12 +268,15 @@ class DbtCloudApiClient:
 
         new_connection_data = json.dumps(new_connection).encode()
         response = self.request(
-            f"{self.host_url}/v3/accounts/{self.account_id}/projects/{project_id}/connections/",
-            new_connection_data)
+            f"{self.api_v3_url}/{project_id}/connections/",
+            new_connection_data,
+        )
 
         return response["data"]["id"]
 
-    def create_job(self, project_id, environment_id, schedule_cron, name, vars):
+    def create_job(
+        self, project_id: int, environment_id: int, schedule_cron: str, name: str, vars: str
+    ) -> int:
         """
         Creates sample job for given project and environment. Job is triggered by the scheduler
         executes commands: dbt seed, dbt test and dbt run.
@@ -278,37 +295,25 @@ class DbtCloudApiClient:
             "environment_id": environment_id,
             "name": name,
             "dbt_version": None,
-            "triggers": {
-                "schedule": True,
-                "github_webhook": False
-            },
+            "triggers": {"schedule": True, "github_webhook": False},
             "execute_steps": [
                 "dbt seed --vars '" + vars + "'",
                 "dbt run --vars '" + vars + "'",
-                "dbt test --vars '" + vars + "'"
+                "dbt test --vars '" + vars + "'",
             ],
-            "settings": {
-                "threads": 1,
-                "target_name": "default"
-            },
-            "execution": {
-                "timeout_seconds": 600
-            },
+            "settings": {"threads": 1, "target_name": "default"},
+            "execution": {"timeout_seconds": 600},
             "state": 1,
             "schedule": {
                 "cron": schedule_cron,
-                "date": {
-                    "type": "every_day"
-                },
-                "time": {
-                    "type": "every_hour",
-                    "interval": 1
-                }
-            }
+                "date": {"type": "every_day"},
+                "time": {"type": "every_hour", "interval": 1},
+            },
         }
 
         job_details_data = json.dumps(job_details).encode()
-        response = self.request(f"{self.host_url}/v2/accounts/{self.account_id}/jobs/",
-                                job_details_data)
+        response = self.request(
+            f"{self.host_url}/v2/accounts/{self.account_id}/jobs/", job_details_data
+        )
 
         return response["data"]["id"]

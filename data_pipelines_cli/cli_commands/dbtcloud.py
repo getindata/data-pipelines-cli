@@ -4,6 +4,7 @@ from typing import Any, Dict
 import click
 
 from data_pipelines_cli.dbt_cloud_api_client import DbtCloudApiClient
+
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info
 from ..config_generation import read_dictionary_from_config_directory
@@ -57,20 +58,11 @@ def read_bigquery_config(env: str) -> Dict[str, Any]:
     required=True,
     help="""Git stores remote URL Note: After creating a dbt Cloud repository's SSH key, you will
     need to add the generated key text as a deploy key to the target repository. This gives dbt
-    Cloud permissions to read / write in the repository."""
+    Cloud permissions to read / write in the repository.""",
 )
-@click.option(
-    "--keyfile",
-    type=str,
-    required=True,
-    help="Bigquery keyfile"
-)
-def configure_cloud_command(
-        account_id: int,
-        token: str,
-        remote_url: str,
-        keyfile: str) -> None:
-    client = DbtCloudApiClient(f"https://cloud.getdbt.com/api", account_id, token)
+@click.option("--keyfile", type=str, required=True, help="Bigquery keyfile")
+def configure_cloud_command(account_id: int, token: str, remote_url: str, keyfile: str) -> None:
+    client = DbtCloudApiClient("https://cloud.getdbt.com/api", account_id, token)
 
     dbtcloud_config = read_dbtcloud_config()
     base_bq_config = read_bigquery_config("base")
@@ -78,31 +70,43 @@ def configure_cloud_command(
     keyfile_data = json.load(file)
     dbtcloud_project_id = client.create_project(dbtcloud_config["project_name"])
     (repository_id, deploy_key) = client.create_repository(dbtcloud_project_id, remote_url)
-    echo_info("You need to add the generated key text as a deploy key to the target repository.\n"
-              "This gives dbt Cloud permissions to read / write in the repository\n"
-              f"{deploy_key}")
+    echo_info(
+        "You need to add the generated key text as a deploy key to the target repository.\n"
+        "This gives dbt Cloud permissions to read / write in the repository\n"
+        f"{deploy_key}"
+    )
 
     environments_projects = {}
     for environment in dbtcloud_config["environments"]:
         bq_config = read_bigquery_config(environment["config_dir"])
         environments_projects[environment["name"]] = bq_config["project"]
-        environment_id = create_environment(client, environment, bq_config["dataset"],
-                                            dbtcloud_project_id)
+        environment_id = create_environment(
+            client, environment, bq_config["dataset"], dbtcloud_project_id
+        )
         if environment["type"] == "deployment":
             dbt_vars = _dump_dbt_vars_from_configs_to_string(environment["config_dir"]).strip()
-            client.create_job(dbtcloud_project_id, environment_id, environment["schedule_interval"],
-                              "Job - " + environment["name"], dbt_vars)
+            client.create_job(
+                dbtcloud_project_id,
+                environment_id,
+                environment["schedule_interval"],
+                "Job - " + environment["name"],
+                dbt_vars,
+            )
 
-    client.create_environment_variable(dbtcloud_project_id, base_bq_config["project"],
-                                       environments_projects)
+    client.create_environment_variable(
+        dbtcloud_project_id, base_bq_config["project"], environments_projects
+    )
 
     connection_id = create_bq_connection(client, keyfile_data, dbtcloud_project_id)
 
-    client.associate_connection_repository(dbtcloud_config["project_name"], dbtcloud_project_id,
-                                           connection_id, repository_id)
+    client.associate_connection_repository(
+        dbtcloud_config["project_name"], dbtcloud_project_id, connection_id, repository_id
+    )
 
 
-def create_bq_connection(client, keyfile_data, project_id):
+def create_bq_connection(
+    client: DbtCloudApiClient, keyfile_data: Dict[str, str], project_id: int
+) -> int:
     """
     Creates a connection to the bigquery warehouse in the dbt Cloud project.
 
@@ -115,7 +119,7 @@ def create_bq_connection(client, keyfile_data, project_id):
         project_id=project_id,
         name="BQ Connection Name",
         is_active=True,
-        gcp_project_id="{{ env_var(\"DBT_GCP_PROJECT\") }}",
+        gcp_project_id='{{ env_var("DBT_GCP_PROJECT") }}',
         timeout_seconds=100,
         private_key_id=keyfile_data["private_key_id"],
         private_key=keyfile_data["private_key"],
@@ -124,11 +128,13 @@ def create_bq_connection(client, keyfile_data, project_id):
         auth_uri=keyfile_data["auth_uri"],
         token_uri=keyfile_data["token_uri"],
         auth_provider_x509_cert_url=keyfile_data["auth_provider_x509_cert_url"],
-        client_x509_cert_url=keyfile_data["client_x509_cert_url"]
+        client_x509_cert_url=keyfile_data["client_x509_cert_url"],
     )
 
 
-def create_environment(client, environment, dataset, project_id):
+def create_environment(
+    client: DbtCloudApiClient, environment: Dict[str, str], dataset: str, project_id: int
+) -> int:
     """
     Creates a dbt Cloud environment with the specified configuration
 
@@ -142,6 +148,11 @@ def create_environment(client, environment, dataset, project_id):
         credentials_id = client.create_credentials(dataset, project_id)
     else:
         credentials_id = None
-    environment_id = client.create_environment(project_id, environment["type"], environment["name"],
-                                               environment["dbt_version"], credentials_id)
+    environment_id = client.create_environment(
+        project_id,
+        environment["type"],
+        environment["name"],
+        environment["dbt_version"],
+        credentials_id,
+    )
     return environment_id

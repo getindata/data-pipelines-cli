@@ -5,6 +5,7 @@ import click
 from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
+from .cli_commands.dbtcloud import configure_cloud_command
 from .cli_commands.deploy import deploy_command
 from .cli_commands.docs import docs_command
 from .cli_commands.generate.generate import generate_group
@@ -16,7 +17,6 @@ from .cli_commands.seed import seed_command
 from .cli_commands.template import list_templates_command
 from .cli_commands.test import test_command
 from .cli_commands.update import update_command
-from .cli_commands.dbtcloud import configure_cloud_command
 from .cli_utils import echo_error, echo_suberror
 from .errors import DataPipelinesError
 
