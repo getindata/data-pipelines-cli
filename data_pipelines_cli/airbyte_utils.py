@@ -51,37 +51,6 @@ class AirbyteFactory:
     def env_replacer(config: Dict[str, Any]) -> Dict[str, Any]:
         return ast.literal_eval(os.path.expandvars(f"{config}"))
 
-    def get_connections(self) -> None:
-        """List all Airbyte connections from a workspace"""
-        response_search = self.request_handler(
-            "connections/list",
-            data={"workspaceId": self.get_workspace_id()}
-        )
-        self.connections = response_search["connections"]
-        # TODO: optionally add workspace and connections collection as a parameter
-
-    def get_sources(self) -> None:
-        """List all Airbyte sources from a workspace"""
-        response_search = self.request_handler(
-            "sources/list",
-            data={"workspaceId": self.get_workspace_id()}
-        )
-        self.sources = response_search["sources"]
-        # TODO: optionally add workspace and sources collection as a parameter
-
-    def get_destinations(self) -> None:
-        """List all Airbyte destinations from a workspace"""
-        response_search = self.request_handler(
-            "destinations/list",
-            data={"workspaceId": self.get_workspace_id()}
-        )
-        self.sources = response_search["sources"]
-        # TODO: optionally add workspace and destinations collection as a parameter
-
-    def persist_airbyte_config(self) -> None:
-        """Save all the sources, destination and connections into a config file"""
-        pass
-
     def get_default_workspace_id(self) -> str:
         workspaces = self.request_handler("workspaces/list").get("workspaces")
         if not workspaces:
