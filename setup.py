@@ -17,6 +17,7 @@ INSTALL_REQUIREMENTS = [
     "packaging==21.3",
     "colorama==0.4.5",
     "dbt-core==1.3.1",
+    "pydantic<2",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
