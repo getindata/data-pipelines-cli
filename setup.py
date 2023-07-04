@@ -17,6 +17,7 @@ INSTALL_REQUIREMENTS = [
     "packaging==21.3",
     "colorama==0.4.5",
     "dbt-core==1.3.1",
+    "pydantic<2",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -68,7 +69,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.25.2",
+    version="0.25.3",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

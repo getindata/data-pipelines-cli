@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.25.3] - 2023-07-04
+
+-   Pinned Pydantic's version (transient dependency from Copier) as new major version breaks our CLI.
+
 ## [0.25.2] - 2023-06-16
 
 ### Fixed
@@ -261,7 +265,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.2...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.3...HEAD
+
+[0.25.3]: https://github.com/getindata/data-pipelines-cli/compare/0.25.2...0.25.3
 
 [0.25.2]: https://github.com/getindata/data-pipelines-cli/compare/0.25.1...0.25.2
 
