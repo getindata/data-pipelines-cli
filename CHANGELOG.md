@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   Pinned Pydantic's version (transient dependency from Copier) as new major version breaks our CLI.
+
 ## [0.25.2] - 2023-06-16
 
 ### Fixed
