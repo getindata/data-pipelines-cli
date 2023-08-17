@@ -23,7 +23,7 @@ class PublishCommandTestCase(unittest.TestCase):
         "sources": [
             {
                 "name": "my_test_project_1337",
-                "database": "example-project",
+                "database": "exampleproject",
                 "schema": "username_private_working_dataset",
                 "tags": ["project:my_test_project_1337"],
                 "meta": {"dag": "experimental-dag"},

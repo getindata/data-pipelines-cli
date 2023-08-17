@@ -19,7 +19,7 @@ class GenHomeProfilesCommandTestCase(unittest.TestCase):
             "outputs": {
                 "env_execution": {
                     "method": "service-account",
-                    "project": "example-project",
+                    "project": "exampleproject",
                     "dataset": "var21-dataset",
                     "keyfile": "/tmp/a/b/c/d.json",
                     "timeout_seconds": 150,

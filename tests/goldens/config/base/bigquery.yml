@@ -1,5 +1,5 @@
 method: service-account
-project: example-project
+project: exampleproject
 dataset: example-dataset
 threads: 1
 keyfile: /var/keyfile.json
