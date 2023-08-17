@@ -4,10 +4,10 @@ This document instructs how to generate `tests/goldens/manifest.json` for a part
 
 # Tutorial
 
-dbt version to manifest version mapping is documented here: https://docs.getdbt.com/reference/artifacts/manifest-json
+dbt version to Manifest version mapping is documented here: https://docs.getdbt.com/reference/artifacts/manifest-json
 
 
-## dbt Core v.5.4 (Manifest version v9)
+## dbt Core v.1.5.4 (Manifest version v9)
 
 ### 1. Prepare environment
 
@@ -57,8 +57,8 @@ job_execution_timeout_seconds [300]: 150
 [1] US
 [2] EU
 Desired location option (enter a number): 1
-15:07:20  Profile my_new_project written to /Users/your-user/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
-15:07:20
+Profile my_new_project written to /Users/your-user/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+
 Your new dbt project "my_new_project" was created!
 ```
 
@@ -75,6 +75,6 @@ You can find the generated `manifest.json` file in `target` folder.
 
 ### 4. Copy manifest to your data-pipelines-cli branch
 
-Overwrite `tests/goldens/manifest.json` on your local branch of `data-pipelines-cli` repository with the generated `manifest.json`. Verify if tests run successfully, if not - adjust the code to the new version of Manifest.
+Overwrite `tests/goldens/manifest.json` on your local branch of `data-pipelines-cli` repository with the generated `manifest.json`. Verify if tests run successfully, if not - adjust the code to the new version of Manifest schema.
 
 Navigate to folder my_new_project2p/target where manifest.json has just been generated
