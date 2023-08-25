@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Upgrade dbt to 1.5.4
+- Upgrade acryl-datahub to 0.10.4
+
 ## [0.25.3] - 2023-07-04
 
 -   Pinned Pydantic's version (transient dependency from Copier) as new major version breaks our CLI.

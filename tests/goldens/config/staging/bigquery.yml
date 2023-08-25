@@ -1,5 +1,5 @@
 method: service-account
-project: example-project
+project: exampleproject
 dataset: "{{ var('variable_2') }}-dataset"
 threads: "{{ var('variable_1') }}"
 keyfile: "{{ env_var('BIGQUERY_KEYFILE') }}"

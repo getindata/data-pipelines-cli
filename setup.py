@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
     "fsspec==2022.11.0",
     "packaging==21.3",
     "colorama==0.4.5",
-    "dbt-core==1.3.1",
+    "dbt-core==1.5.4",
     "pydantic<2",
 ]
 
@@ -27,19 +27,19 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.3.0"],
-    "postgres": ["dbt-postgres==1.3.1"],
-    "snowflake": ["dbt-snowflake==1.3.0"],
-    "redshift": ["dbt-redshift==1.3.0"],
+    "bigquery": ["dbt-bigquery==1.5.5"],
+    "postgres": ["dbt-postgres==1.5.4"],
+    "snowflake": ["dbt-snowflake==1.5.2"],
+    "redshift": ["dbt-redshift==1.5.9"],
     "dbt-all": [
-        "dbt-bigquery==1.3.0",
-        "dbt-postgres==1.3.1",
-        "dbt-snowflake==1.3.0",
-        "dbt-redshift==1.3.0",
+        "dbt-bigquery==1.5.5",
+        "dbt-postgres==1.5.4",
+        "dbt-snowflake==1.5.2",
+        "dbt-redshift==1.5.9",
     ],
     # ---
     "docker": ["docker==6.0.1"],
-    "datahub": ["acryl-datahub[dbt]==0.9.3.2"],
+    "datahub": ["acryl-datahub[dbt]==0.10.4"],
     "git": ["GitPython==3.1.29"],
     "looker": ["dbt2looker==0.11.0"],
     "tests": [
