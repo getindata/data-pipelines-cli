@@ -2,8 +2,10 @@
 
 ## [Unreleased]
 
-- Upgrade dbt to 1.5.4
-- Upgrade acryl-datahub to 0.10.4
+## [0.26.0] - 2023-08-25
+
+-   Upgrade dbt to 1.5.4
+-   Upgrade acryl-datahub to 0.10.4
 
 ## [0.25.3] - 2023-07-04
 
@@ -268,7 +270,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.25.3...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.26.0...HEAD
+
+[0.26.0]: https://github.com/getindata/data-pipelines-cli/compare/0.25.3...0.26.0
 
 [0.25.3]: https://github.com/getindata/data-pipelines-cli/compare/0.25.2...0.25.3
 
