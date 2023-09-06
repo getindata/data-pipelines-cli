@@ -18,6 +18,7 @@ INSTALL_REQUIREMENTS = [
     "colorama==0.4.5",
     "dbt-core==1.5.4",
     "pydantic<2",
+    "dbt-databricks-factory>=0.1.1",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
