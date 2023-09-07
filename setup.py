@@ -38,7 +38,7 @@ EXTRA_REQUIRE = {
         "dbt-snowflake==1.5.2",
         "dbt-redshift==1.5.9",
         "dbt-databricks-factory>=0.1.1",
-     ],
+    ],
     # ---
     "docker": ["docker==6.0.1"],
     "datahub": ["acryl-datahub[dbt]==0.10.4"],
