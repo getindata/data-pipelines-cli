@@ -1,4 +1,3 @@
-"""Generate a Databricks job module."""
 from __future__ import annotations
 
 import click
