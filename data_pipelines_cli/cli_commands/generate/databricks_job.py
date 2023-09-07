@@ -12,7 +12,12 @@ from dbt_databricks_factory.config import GitProvider
 @click.option("--project-dir", required=True, help="Path to dbt project directory.")
 @click.option("--profiles-dir", required=True, help="Path to dbt profiles directory.")
 @click.option("--cron-schedule", help="Cron schedule for the job.")
-@click.option("--job-cluster", multiple=True, type=click.Tuple([str, str]), help="Job cluster config.")
+@click.option(
+    "--job-cluster",
+    multiple=True,
+    type=click.Tuple([str, str]),
+    help="Job cluster config."
+)
 @click.option(
     "--task-cluster",
     multiple=True,
@@ -32,7 +37,11 @@ from dbt_databricks_factory.config import GitProvider
     type=click.Choice([provider.value for provider in GitProvider]),
 )
 @click.option("--pretty", is_flag=True, help="Pretty print the output.")
-@click.option("--output-file", help="Output file path.", type=click.Path(file_okay=True, dir_okay=False, writable=True))
+@click.option(
+    "--output-file",
+    help="Output file path.",
+    type=click.Path(file_okay=True, dir_okay=False, writable=True)
+)
 def generate_databricks_job_command(
     job_name: str,
     manifest_file: str,
