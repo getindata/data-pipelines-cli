@@ -1,3 +1,5 @@
+"""Generate a Databricks job module."""
+from __future__ import annotations
 import click
 from dbt_databricks_factory.cli import create_job_cli
 from dbt_databricks_factory.config import GitProvider
@@ -57,6 +59,7 @@ def generate_databricks_job_command(
     pretty: bool,
     output_file: str,
 ) -> None:
+    """Generate a Databricks job."""
     create_job_cli(
         job_name,
         manifest_file,
