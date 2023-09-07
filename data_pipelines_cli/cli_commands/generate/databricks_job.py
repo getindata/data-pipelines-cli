@@ -1,7 +1,7 @@
 import click
-
 from dbt_databricks_factory.cli import create_job_cli
 from dbt_databricks_factory.config import GitProvider
+
 
 @click.command("databricks-job", help="Generate a Databricks job")
 @click.argument(
@@ -13,10 +13,7 @@ from dbt_databricks_factory.config import GitProvider
 @click.option("--profiles-dir", required=True, help="Path to dbt profiles directory.")
 @click.option("--cron-schedule", help="Cron schedule for the job.")
 @click.option(
-    "--job-cluster",
-    multiple=True,
-    type=click.Tuple([str, str]),
-    help="Job cluster config."
+    "--job-cluster", multiple=True, type=click.Tuple([str, str]), help="Job cluster config."
 )
 @click.option(
     "--task-cluster",
@@ -40,7 +37,7 @@ from dbt_databricks_factory.config import GitProvider
 @click.option(
     "--output-file",
     help="Output file path.",
-    type=click.Path(file_okay=True, dir_okay=False, writable=True)
+    type=click.Path(file_okay=True, dir_okay=False, writable=True),
 )
 def generate_databricks_job_command(
     job_name: str,
