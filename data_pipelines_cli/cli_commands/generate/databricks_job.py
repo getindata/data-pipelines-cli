@@ -1,5 +1,6 @@
 """Generate a Databricks job module."""
 from __future__ import annotations
+
 import click
 from dbt_databricks_factory.cli import create_job_cli
 from dbt_databricks_factory.config import GitProvider
