@@ -1,7 +1,7 @@
 ``Data Pipelines CLI``: CLI for data platform
 ==============================================
 
-.. image:: https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg
+.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.10-blue.svg
    :target: https://github.com/getindata/data-pipelines-cli
    :alt: Python Version
 

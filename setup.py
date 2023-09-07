@@ -31,11 +31,13 @@ EXTRA_REQUIRE = {
     "postgres": ["dbt-postgres==1.5.4"],
     "snowflake": ["dbt-snowflake==1.5.2"],
     "redshift": ["dbt-redshift==1.5.9"],
+    "databricks": ["dbt-databricks-factory>=0.1.1"],
     "dbt-all": [
         "dbt-bigquery==1.5.5",
         "dbt-postgres==1.5.4",
         "dbt-snowflake==1.5.2",
         "dbt-redshift==1.5.9",
+        "dbt-databricks-factory>=0.1.1",
     ],
     # ---
     "docker": ["docker==6.0.1"],
@@ -75,10 +77,9 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache Software License (Apache 2.0)",
     license_files=("LICENSE",),
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
