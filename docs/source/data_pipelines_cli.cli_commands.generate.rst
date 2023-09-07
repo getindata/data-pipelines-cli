@@ -41,6 +41,14 @@ data\_pipelines\_cli.cli\_commands.generate.source\_yaml module
    :undoc-members:
    :show-inheritance:
 
+data\_pipelines\_cli.cli\_commands.generate.databricks\_job module
+---------------------------------------------------------------
+
+.. automodule:: data_pipelines_cli.cli_commands.generate.source_yaml
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 data\_pipelines\_cli.cli\_commands.generate.utils module
 --------------------------------------------------------
 
@@ -48,4 +56,3 @@ data\_pipelines\_cli.cli\_commands.generate.utils module
    :members:
    :undoc-members:
    :show-inheritance:
-
