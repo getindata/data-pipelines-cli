@@ -9,7 +9,7 @@ INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.1.1",
     "Werkzeug==2.2.3",
     "click==8.1.3",
-    "pyyaml==6.0",
+    "pyyaml==6.0.1",
     "types-PyYAML==6.0.12.2",
     "copier==7.0.1",
     "Jinja2==3.1.2",
