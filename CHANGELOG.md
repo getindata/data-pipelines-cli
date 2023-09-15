@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.26.1] - 2023-09-15
+
 -   Upgrade pyyaml to 6.0.1
 
 ## [0.26.0] - 2023-08-25
@@ -272,7 +274,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.26.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.26.1...HEAD
+
+[0.26.1]: https://github.com/getindata/data-pipelines-cli/compare/0.26.0...0.26.1
 
 [0.26.0]: https://github.com/getindata/data-pipelines-cli/compare/0.25.3...0.26.0
 
