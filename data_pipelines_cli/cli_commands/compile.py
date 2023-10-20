@@ -22,6 +22,15 @@ from ..errors import DockerErrorResponseError, DockerNotInstalledError
 from ..io_utils import replace
 from ..jinja import replace_vars_with_values
 
+import click
+from dbt_databricks_factory.cli import create_job_cli
+
+from git import Repo
+
+from ..cli_constants import BUILD_DIR
+from ..config_generation import read_dictionary_from_config_directory
+import pathlib
+
 
 def _docker_build(docker_args: DockerArgs) -> None:
     """
@@ -90,6 +99,32 @@ def _replace_datahub_with_jinja_vars(env: str) -> None:
         yaml.dump(updated_config, datahub_config_file)
 
 
+def _generate_databricks(env: str):
+    databricks_config = read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), env, "databricks.yml")
+    echo_info("Generating Databricks jobs")
+    if databricks_config.get("enable", False):
+        repo = Repo(pathlib.Path.cwd())
+        git_url = repo.config_reader().get_value("remote \"origin\"", "url")
+        create_job_cli(
+            databricks_config.get("workflows").get("job_name"),
+            pathlib.Path.cwd().joinpath("target", "manifest.json"),
+            "",
+            databricks_config.get("profiles_file_path"),
+            databricks_config.get("workflows").get("cron_schedule"),
+            list(),
+            list(),
+            databricks_config.get("cluster"),
+            databricks_config.get("libraries"),
+            git_url,
+            databricks_config.get("workflows").get("git").get("branch"),
+            None,
+            None,
+            databricks_config.get("workflows").get("git").get("provider"),
+            True,
+            BUILD_DIR.joinpath("dag/databricks-jobs.json"),
+        )
+
+
 def compile_project(
     env: str,
     docker_tag: Optional[str] = None,
@@ -124,6 +159,8 @@ def compile_project(
         _docker_build(docker_args)
 
     bi(env, BiAction.COMPILE)
+
+    _generate_databricks(env)
 
 
 @click.command(

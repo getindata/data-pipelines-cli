@@ -31,7 +31,7 @@ EXTRA_REQUIRE = {
     "postgres": ["dbt-postgres==1.5.4"],
     "snowflake": ["dbt-snowflake==1.5.2"],
     "redshift": ["dbt-redshift==1.5.9"],
-    "databricks": ["dbt-databricks-factory>=0.1.1"],
+    "databricks": ["dbt-databricks-factory>=0.1.1", "databricks-client==0.0.3"],
     "dbt-all": [
         "dbt-bigquery==1.5.5",
         "dbt-postgres==1.5.4",

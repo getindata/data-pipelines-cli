@@ -1,6 +1,8 @@
 import io
+import os
 import json
 from typing import Any, Dict, Optional, cast
+import databricks_client
 
 import click
 import yaml
@@ -62,20 +64,24 @@ class DeployCommand:
         self.auth_token = auth_token
         self.disable_bucket_sync = disable_bucket_sync
 
-        try:
-            self.blob_address_path = (
-                dags_path
-                or read_dictionary_from_config_directory(
-                    BUILD_DIR.joinpath("dag"),
-                    env,
-                    "airflow.yml",
-                )["dags_path"]
-            )
-        except KeyError as key_error:
-            raise AirflowDagsPathKeyError from key_error
+        # try:
+        #     self.blob_address_path = (
+        #         dags_path
+        #         or read_dictionary_from_config_directory(
+        #             BUILD_DIR.joinpath("dag"),
+        #             env,
+        #             "airflow.yml",
+        #         )["dags_path"]
+        #     )
+        # except KeyError as key_error:
+        #     raise AirflowDagsPathKeyError from key_error
 
         self.enable_ingest = read_dictionary_from_config_directory(
             BUILD_DIR.joinpath("dag"), env, "ingestion.yml"
+        ).get("enable", False)
+
+        self.databricks_integration_enabled = read_dictionary_from_config_directory(
+            BUILD_DIR.joinpath("dag"), env, "databricks.yml"
         ).get("enable", False)
 
     def deploy(self) -> None:
@@ -97,6 +103,9 @@ class DeployCommand:
 
         if not self.disable_bucket_sync:
             self._bucket_sync()
+            
+        if self.databricks_integration_enabled:
+            self._send_to_databricks()
 
     def _bi_push(self) -> None:
         bi(self.env, BiAction.DEPLOY, self.bi_git_key_path)
@@ -162,6 +171,13 @@ class DeployCommand:
             BUILD_DIR.joinpath("dag"), self.blob_address_path, self.provider_kwargs_dict
         ).sync(delete=True)
 
+    def _send_to_databricks(self):
+        workspace_url = read_dictionary_from_config_directory(BUILD_DIR.joinpath("dag"), "dev", "databricks.yml").get("workspace_url")
+        client = databricks_client.create(workspace_url + "api/2.1")
+        client.auth_pat_token(os.environ["DATABRICKS_PAT_TOKEN"])
+        with open(BUILD_DIR.joinpath("dag", "databricks-jobs.json"), 'r') as job_definition_file:
+            job_definition = job_definition_file.read()
+            client.post('jobs/create', json=json.loads(job_definition))
 
 @click.command(
     name="deploy",
@@ -234,5 +250,5 @@ def deploy_command(
         datahub_ingest,
         bi_git_key_path,
         auth_token,
-        disable_bucket_sync,
+        True,
     ).deploy()
