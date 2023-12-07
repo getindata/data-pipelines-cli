@@ -31,7 +31,7 @@ EXTRA_REQUIRE = {
     "postgres": ["dbt-postgres==1.5.4"],
     "snowflake": ["dbt-snowflake==1.5.2"],
     "redshift": ["dbt-redshift==1.5.9"],
-    "glue": ["dbt-glue==1.7.0"],
+    "glue": ["dbt-glue==1.5.3"],
     "dbt-all": [
         "dbt-bigquery==1.5.5",
         "dbt-postgres==1.5.4",
