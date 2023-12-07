@@ -323,3 +323,97 @@ class GenerateCommandTestCase(unittest.TestCase):
         self.assertFalse(_is_ephemeral_model(example_dict, "c"))
         with self.assertRaises(DataPipelinesError):
             _is_ephemeral_model(example_dict, "d")
+
+
+def test_generate_databricks_job() -> None:
+    runner = CliRunner()
+    result = runner.invoke(
+        _cli,
+        [
+            "generate",
+            "databricks-job",
+            "--project-dir",
+            "/project/dir",
+            "--profiles-dir",
+            "/dbfs/profiles",
+            "--job-name",
+            "my-job",
+            "--library",
+            "my-library==1.0.0",
+            "--git-url",
+            "https://my-git.url.com",
+            "--git-provider",
+            "gitHub",
+            "--git-branch",
+            "my-branch",
+            "--default-task-cluster",
+            "my-cluster",
+            "--pretty",
+            str(GOLDENS_DIR_PATH / "target" / "manifest.json"),
+        ],
+    )
+    expected = {
+        "name": "my-job",
+        "tasks": [
+            {
+                "task_key": "model_my_new_project_my_first_dbt_model-run",
+                "dbt_task": {
+                    "project_directory": "/project/dir",
+                    "commands": [
+                        "dbt deps",
+                        "dbt run --profiles-dir /dbfs/profiles --select my_first_dbt_model",
+                    ],
+                },
+                "libraries": [{"pypi": {"package": "my-library==1.0.0"}}],
+                "existing_cluster_id": "my-cluster",
+            },
+            {
+                "task_key": "model_my_new_project_my_first_dbt_model-test",
+                "dbt_task": {
+                    "project_directory": "/project/dir",
+                    "commands": [
+                        "dbt deps",
+                        "dbt test --profiles-dir /dbfs/profiles --select my_first_dbt_model",
+                    ],
+                },
+                "depends_on": [{"task_key": "model_my_new_project_my_first_dbt_model-run"}],
+                "libraries": [{"pypi": {"package": "my-library==1.0.0"}}],
+                "existing_cluster_id": "my-cluster",
+            },
+            {
+                "task_key": "model_my_new_project_my_second_dbt_model-run",
+                "dbt_task": {
+                    "project_directory": "/project/dir",
+                    "commands": [
+                        "dbt deps",
+                        "dbt run --profiles-dir /dbfs/profiles --select my_second_dbt_model",
+                    ],
+                },
+                "depends_on": [{"task_key": "model_my_new_project_my_first_dbt_model-test"}],
+                "libraries": [{"pypi": {"package": "my-library==1.0.0"}}],
+                "existing_cluster_id": "my-cluster",
+            },
+            {
+                "task_key": "model_my_new_project_my_second_dbt_model-test",
+                "dbt_task": {
+                    "project_directory": "/project/dir",
+                    "commands": [
+                        "dbt deps",
+                        "dbt test --profiles-dir /dbfs/profiles --select my_second_dbt_model",
+                    ],
+                },
+                "depends_on": [{"task_key": "model_my_new_project_my_second_dbt_model-run"}],
+                "libraries": [{"pypi": {"package": "my-library==1.0.0"}}],
+                "existing_cluster_id": "my-cluster",
+            },
+        ],
+        "job_clusters": [],
+        "git_source": {
+            "git_url": "https://my-git.url.com",
+            "git_provider": "gitHub",
+            "git_branch": "my-branch",
+        },
+        "format": "MULTI_TASK",
+    }
+    assert result.output == json.dumps(expected, indent=2) + "\n"
+    assert result.exit_code == 0

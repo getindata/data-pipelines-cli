@@ -9,7 +9,7 @@ INSTALL_REQUIREMENTS = [
     "MarkupSafe==2.1.1",
     "Werkzeug==2.2.3",
     "click==8.1.3",
-    "pyyaml==6.0",
+    "pyyaml==6.0.1",
     "types-PyYAML==6.0.12.2",
     "copier==7.0.1",
     "Jinja2==3.1.2",
@@ -31,11 +31,14 @@ EXTRA_REQUIRE = {
     "postgres": ["dbt-postgres==1.5.4"],
     "snowflake": ["dbt-snowflake==1.5.2"],
     "redshift": ["dbt-redshift==1.5.9"],
+    "glue": ["dbt-glue==1.5.3"],
+    "databricks": ["dbt-databricks-factory>=0.1.1"],
     "dbt-all": [
         "dbt-bigquery==1.5.5",
         "dbt-postgres==1.5.4",
         "dbt-snowflake==1.5.2",
         "dbt-redshift==1.5.9",
+        "dbt-glue==1.5.3",
     ],
     # ---
     "docker": ["docker==6.0.1"],
@@ -69,16 +72,15 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.26.0",
+    version="0.27.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
     license="Apache Software License (Apache 2.0)",
     license_files=("LICENSE",),
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
