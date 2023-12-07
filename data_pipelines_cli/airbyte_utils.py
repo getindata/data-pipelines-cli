@@ -145,5 +145,5 @@ class AirbyteFactory:
             data = response.json()
             return data
         except requests.exceptions.HTTPError as e:
-            echo_error("Error with airbyte request: " + str(e.response))
+            echo_error(e.response.text)  # type: ignore
             return None
