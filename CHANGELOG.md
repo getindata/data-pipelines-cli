@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   Upgrade pyyaml to 6.0.1
+
 ## [0.26.0] - 2023-08-25
 
 -   Upgrade dbt to 1.5.4
