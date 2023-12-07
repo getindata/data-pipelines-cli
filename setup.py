@@ -38,7 +38,7 @@ EXTRA_REQUIRE = {
         "dbt-postgres==1.5.4",
         "dbt-snowflake==1.5.2",
         "dbt-redshift==1.5.9",
-        "dbt-glue==1.5.3"
+        "dbt-glue==1.5.3",
     ],
     # ---
     "docker": ["docker==6.0.1"],
