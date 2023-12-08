@@ -16,7 +16,7 @@ INSTALL_REQUIREMENTS = [
     "fsspec==2022.11.0",
     "packaging==21.3",
     "colorama==0.4.5",
-    "dbt-core==1.5.4",
+    "dbt-core==1.7.3",
     "pydantic<2",
 ]
 
@@ -27,18 +27,18 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 
 EXTRA_REQUIRE = {
     # DBT adapters
-    "bigquery": ["dbt-bigquery==1.5.5"],
-    "postgres": ["dbt-postgres==1.5.4"],
-    "snowflake": ["dbt-snowflake==1.5.2"],
-    "redshift": ["dbt-redshift==1.5.9"],
-    "glue": ["dbt-glue==1.5.3", "dbt-spark[session]==1.5.2"],
+    "bigquery": ["dbt-bigquery==1.7.2"],
+    "postgres": ["dbt-postgres==1.7.3"],
+    "snowflake": ["dbt-snowflake==1.7.1"],
+    "redshift": ["dbt-redshift==1.7.1"],
+    "glue": ["dbt-glue==1.7.0", "dbt-spark[session]==1.7.1"],
     "databricks": ["dbt-databricks-factory>=0.1.1"],
     "dbt-all": [
-        "dbt-bigquery==1.5.5",
-        "dbt-postgres==1.5.4",
-        "dbt-snowflake==1.5.2",
-        "dbt-redshift==1.5.9",
-        "dbt-glue==1.5.3",
+        "dbt-bigquery==1.7.2",
+        "dbt-postgres==1.7.3",
+        "dbt-snowflake==1.7.1",
+        "dbt-redshift==1.7.1",
+        "dbt-glue==1.7.0",
     ],
     # ---
     "docker": ["docker==6.0.1"],
@@ -72,7 +72,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.28.0",
+    version="0.29.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
