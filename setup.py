@@ -55,8 +55,8 @@ EXTRA_REQUIRE = {
         "gcp-storage-emulator==2022.6.11",
         "GitPython==3.1.29",
         "types-requests==2.28.11.5",
-        "gcsfs==2022.11.0",
-        "s3fs==2022.11.0",
+        "gcsfs==2023.12.1",
+        "s3fs==2023.12.1",
     ],
     "docs": [
         "sphinx==5.3.0",
