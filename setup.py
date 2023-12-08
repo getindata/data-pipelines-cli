@@ -13,7 +13,7 @@ INSTALL_REQUIREMENTS = [
     "types-PyYAML==6.0.12.2",
     "copier==7.0.1",
     "Jinja2==3.1.2",
-    "fsspec==2022.11.0",
+    "fsspec==2023.12.1",
     "packaging==21.3",
     "colorama==0.4.5",
     "dbt-core==1.7.3",
@@ -21,8 +21,8 @@ INSTALL_REQUIREMENTS = [
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcs": ["gcsfs==2022.11.0"],
-    "s3": ["s3fs==2022.11.0"],
+    "gcs": ["gcsfs==2023.12.1"],
+    "s3": ["s3fs==2023.12.1"],
 }
 
 EXTRA_REQUIRE = {
@@ -42,7 +42,7 @@ EXTRA_REQUIRE = {
     ],
     # ---
     "docker": ["docker==6.0.1"],
-    "datahub": ["acryl-datahub[dbt]==0.10.4"],
+    "datahub": ["acryl-datahub[dbt]==0.12.0.5"],
     "git": ["GitPython==3.1.29"],
     "looker": ["dbt2looker==0.11.0"],
     "tests": [
