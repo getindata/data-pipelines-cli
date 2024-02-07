@@ -379,3 +379,63 @@ Example ``looker.yml`` file might look like this:
    looker_webhook_secret: "{{ env_var('LOOKER_WEBHOOK_SECRET') }}"
    looker_repository_branch: main
    looker_instance_url: https://looker.company.com/
+
+dbt Cloud configuration
+++++++++++++++++++++++++++++++
+
+``config/dbtcloud.yml`` contains configuration related to dbt Cloud:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - project_name
+     - string
+     - Name of the project to be created in dbt Cloud
+   * - environments
+     - Array
+     - Details of the environments to be created in dbt Cloud
+
+Configuration of the environments:
+
+.. list-table::
+   :widths: 25 20 55
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Description
+   * - name
+     - string
+     - Name of the environment that will be created in dbt Cloud
+   * - type
+     - string
+     - In dbt Cloud, there are two types of environments: deployment and development. Deployment environments determine the settings used when jobs created within that environment are executed. Development environments determine the settings used in the dbt Cloud IDE for that particular dbt Cloud Project. Each dbt Cloud project can only have a single development environment but can have any number of deployment environments.
+   * - dbt_version
+     - string
+     - The dbt version used in this environment
+   * - schedule_interval
+     - string
+     - The cron expression with which the example job will be run. This setting is only needed for the deployment environment.
+   * - config_dir
+     - string
+     - The name of the dp env directory where the bigquery configuration for the environment is located. The name of the project in GCP and target dataset will be read from it.
+
+Example ``dbtcloud.yml`` file might look like this:
+
+.. code-block:: yaml
+
+    project_name: "Data Pipelines Project"
+    environments:
+      - name: "Develop"
+        dbt_version: "1.0.0"
+        type: "development"
+        config_dir: "dev"
+      - name: "Production"
+        dbt_version: "1.0.0"
+        type: "deployment"
+        config_dir: "prod"
+        schedule_interval: "0 12 * * *"

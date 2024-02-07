@@ -5,6 +5,7 @@ import click
 from .cli_commands.clean import clean_command
 from .cli_commands.compile import compile_project_command
 from .cli_commands.create import create_command
+from .cli_commands.dbtcloud import configure_cloud_command
 from .cli_commands.deploy import deploy_command
 from .cli_commands.docs import docs_command
 from .cli_commands.generate.generate import generate_group
@@ -50,3 +51,4 @@ _cli.add_command(run_command)
 _cli.add_command(seed_command)
 _cli.add_command(test_command)
 _cli.add_command(update_command)
+_cli.add_command(configure_cloud_command)
