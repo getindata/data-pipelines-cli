@@ -1,11 +1,41 @@
+# Contibution guide
+
+## Development Setup
+
+Requires Python 3.9-3.12.
+
+```bash
+pip install -e .[tests,bigquery,docker,datahub,gcs,s3]
+pip install -r requirements-dev.txt
+pre-commit install
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+pytest --cov data_pipelines_cli --cov-report term-missing --ignore=venv
+
+# Run specific test
+pytest tests/test_dbt_utils.py::test_specific_function
+
+# Test all Python versions with tox
+tox
+
+# Test specific Python version
+tox -e py310
+```
+
 ## PR Guidelines
+
 1. Fork branch from `develop`.
 2. Ensure to provide unit tests for new functionality.
 3. Install dev requirements: `pip install -r requirements-dev.txt` and setup a hook: `pre-commit install`.
-4. Update documentation accordingly.
-5. Update [changelog](CHANGELOG.md) according to ["Keep a changelog"](https://keepachangelog.com/en/1.0.0/) guidelines.
-6. Squash changes with a single commit as much as possible and ensure verbose PR name.
-7. Open a PR against the `develop` branch.
+4. Run `tox` to verify all Python versions pass.
+5. Update documentation accordingly.
+6. Update [changelog](CHANGELOG.md) according to ["Keep a changelog"](https://keepachangelog.com/en/1.0.0/) guidelines.
+7. Squash changes with a single commit as much as possible and ensure verbose PR name.
+8. Open a PR against the `develop` branch.
 
 *We reserve the right to take over and modify or abandon PRs that do not match the workflow or are abandoned.*
 

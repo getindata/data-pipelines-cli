@@ -12,17 +12,18 @@ INSTALL_REQUIREMENTS = [
     "pyyaml==6.0.1",
     "types-PyYAML==6.0.12.2",
     "copier==7.0.1",
+    "pyyaml-include<2",  # copier 7.0.1 requires pyyaml-include 1.x
+    "pydantic<2",  # copier 7.0.1 requires pydantic 1.x
     "Jinja2==3.1.2",
-    "fsspec==2023.12.1",
-    "packaging==21.3",
+    "fsspec>=2024.6.0,<2025.0.0",
+    "packaging>=23.0",
     "colorama==0.4.5",
     "dbt-core==1.7.3",
-    "pydantic<2",
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
-    "gcs": ["gcsfs==2023.12.1"],
-    "s3": ["s3fs==2023.12.1"],
+    "gcs": ["gcsfs>=2024.6.0,<2025.0.0"],
+    "s3": ["s3fs>=2024.6.0,<2025.0.0"],
 }
 
 EXTRA_REQUIRE = {
@@ -51,12 +52,12 @@ EXTRA_REQUIRE = {
         "pre-commit==2.20.0",
         "tox==3.27.1",
         "tox-gh-actions==2.12.0",
-        "moto[s3]==4.0.11",
+        "moto[server,s3]>=4.2.0,<5.0.0",
         "gcp-storage-emulator==2022.6.11",
         "GitPython==3.1.29",
         "types-requests==2.28.11.5",
-        "gcsfs==2023.12.1",
-        "s3fs==2023.12.1",
+        "gcsfs>=2024.6.0,<2025.0.0",
+        "s3fs>=2024.6.0,<2025.0.0",
     ],
     "docs": [
         "sphinx==5.3.0",
@@ -72,7 +73,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.30.0",
+    version="0.31.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -83,6 +84,8 @@ setup(
         "Development Status :: 1 - Planning",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     keywords="dbt airflow cli",
     author="Andrzej Swatowski",

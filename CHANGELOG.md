@@ -1,6 +1,22 @@
 # Changelog
 
-## [Unreleased]
+## [0.31.0] - 2025-11-03
+
+### Added
+
+-   Python 3.11 and 3.12 support
+-   Deprecation warning for Python 3.9 users (support ends April 2026)
+-   Comprehensive local testing guide in CONTRIBUTING.md with pyenv/asdf setup instructions
+
+### Changed
+
+-   Updated GitHub Actions CI to test on Python 3.9, 3.10, 3.11, and 3.12
+-   Updated Python version badge in README to reflect 3.9-3.12 support
+-   Added `pyyaml-include<2` dependency constraint for copier 7.0.1 compatibility
+
+### Fixed
+
+-   Resolved pyyaml-include version compatibility issue with copier 7.0.1
 
 ## [0.30.0] - 2023-12-08
 
