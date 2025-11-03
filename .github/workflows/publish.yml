@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to push to develop, create releases and tags
     strategy:
       matrix:
         python-version: ["3.9"]
