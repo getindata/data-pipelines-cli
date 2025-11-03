@@ -3,46 +3,14 @@ import random
 import string
 import unittest
 
-import aiobotocore
-import aiobotocore.endpoint
 import boto3
-import botocore
 import fsspec
-from botocore.awsrequest import AWSResponse
-from moto import mock_s3
+from botocore.exceptions import ClientError
+from moto.server import ThreadedMotoServer
 
 from data_pipelines_cli.errors import DataPipelinesError
 
 MY_BUCKET = "my_bucket"
-
-
-# According to
-# https://github.com/aio-libs/aiobotocore/issues/755#issuecomment-844273191
-# aiobotocore problems can be fixed by creating an AWSResponse with fixed
-# `raw_headers` field
-# Patch `aiobotocore.endpoint.convert_to_response_dict` to work with moto.
-class MockedAWSResponse:
-    def __init__(self, response: AWSResponse):
-        self._response = response
-        self.status_code = response.status_code
-        self.raw = response.raw
-        self.raw.raw_headers = {}
-
-    @property
-    async def content(self):
-        return self._response.content
-
-
-def factory(original):
-    def patched_convert_to_response_dict(http_response, operation_model):
-        return original(MockedAWSResponse(http_response), operation_model)
-
-    return patched_convert_to_response_dict
-
-
-aiobotocore.endpoint.convert_to_response_dict = factory(
-    aiobotocore.endpoint.convert_to_response_dict
-)
 
 
 class TestError(unittest.TestCase):
@@ -109,51 +77,74 @@ class TestSynchronize(unittest.TestCase):
         )
 
 
-@mock_s3
 class TestS3Synchronize(TestSynchronize):
+    """
+    S3 tests using moto server mode for aiobotocore compatibility.
+    The @mock_s3 decorator doesn't work with aiobotocore's async operations.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        # Start moto server on localhost for aiobotocore compatibility
+        cls.server = ThreadedMotoServer(port="5555", verbose=False)
+        cls.server.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.stop()
+
     def setUp(self) -> None:
+        # Create S3 client pointing to moto server
+        self.endpoint_url = "http://127.0.0.1:5555"
         client = boto3.client(
             "s3",
-            region_name="eu-west-1",
+            region_name="us-east-1",
             aws_access_key_id="testing",
             aws_secret_access_key="testing",
+            endpoint_url=self.endpoint_url,
         )
-        try:
-            s3 = boto3.resource(
-                "s3",
-                region_name="eu-west-1",
-                aws_access_key_id="testing",
-                aws_secret_access_key="testing",
-            )
-            s3.meta.client.head_bucket(Bucket=MY_BUCKET)
-        except botocore.exceptions.ClientError:
-            pass
-        else:
-            err = "{bucket} should not exist.".format(bucket=MY_BUCKET)
-            raise EnvironmentError(err)
 
-        client.create_bucket(
-            Bucket=MY_BUCKET,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-1"},
-        )
+        # Create bucket
+        try:
+            client.create_bucket(Bucket=MY_BUCKET)
+        except client.exceptions.BucketAlreadyExists:
+            pass
 
     def tearDown(self):
-        s3 = boto3.resource(
+        # Clean up bucket contents
+        client = boto3.client(
             "s3",
-            region_name="eu-west-1",
+            region_name="us-east-1",
             aws_access_key_id="testing",
             aws_secret_access_key="testing",
+            endpoint_url=self.endpoint_url,
         )
-        bucket = s3.Bucket(MY_BUCKET)
-        for key in bucket.objects.all():
-            key.delete()
-        bucket.delete()
+        try:
+            # Delete all objects
+            response = client.list_objects_v2(Bucket=MY_BUCKET)
+            if "Contents" in response:
+                for obj in response["Contents"]:
+                    client.delete_object(Bucket=MY_BUCKET, Key=obj["Key"])
+            # Delete bucket
+            client.delete_bucket(Bucket=MY_BUCKET)
+        except ClientError:
+            pass
 
     def test_synchronize(self):
-        self._test_synchronize("s3", key="testing", password="testing")
+        self._test_synchronize(
+            "s3",
+            key="testing",
+            secret="testing",
+            client_kwargs={"endpoint_url": self.endpoint_url},
+        )
 
     def test_synchronize_with_delete(self):
-        self._test_synchronize_with_delete("s3", key="testing", password="testing")
+        self._test_synchronize_with_delete(
+            "s3",
+            key="testing",
+            secret="testing",
+            client_kwargs={"endpoint_url": self.endpoint_url},
+        )
 
 
 class TestGoogleStorageSynchronize(TestSynchronize):

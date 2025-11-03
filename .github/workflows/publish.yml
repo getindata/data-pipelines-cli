@@ -8,9 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to push to develop, create releases and tags
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: ["3.9"]
     env:
       PYTHON_PACKAGE: data_pipelines_cli
     steps:

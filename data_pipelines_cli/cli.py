@@ -1,4 +1,5 @@
 import sys
+import warnings
 
 import click
 
@@ -27,6 +28,15 @@ def _cli() -> None:
 
 
 def cli() -> None:
+    # Warn users about Python 3.9 deprecation
+    if sys.version_info[:2] == (3, 9):
+        warnings.warn(
+            "Python 3.9 support will be removed in a future release after April 2026. "
+            "Please upgrade to Python 3.10 or later.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     try:
         _cli()
     except DataPipelinesError as err:
