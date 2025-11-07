@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import os
 import pathlib
@@ -6,10 +8,17 @@ from typing import Any, Dict, Tuple
 
 import requests
 import yaml
-from git import Repo
 
 from .cli_constants import BUILD_DIR
-from .cli_utils import echo_info, subprocess_run
+from .cli_utils import echo_info, echo_warning, subprocess_run
+
+try:
+    from git import Repo
+
+    GIT_EXISTS = True
+except ImportError:
+    echo_warning("Git support not installed.")
+    GIT_EXISTS = False
 from .config_generation import (
     generate_profiles_yml,
     read_dictionary_from_config_directory,
@@ -48,6 +57,11 @@ def deploy_lookML_model(key_path: str, env: str) -> None:
     :param env: Name of the environment
     :type env: str
     """
+    if not GIT_EXISTS:
+        from .errors import DependencyNotInstalledError
+
+        raise DependencyNotInstalledError("git")
+
     profiles_path = generate_profiles_yml(env, False)
     run_dbt_command(("docs", "generate"), env, profiles_path)
 

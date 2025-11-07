@@ -139,3 +139,13 @@ class LookerUtilsTestCase(unittest.TestCase):
 
         _clear_repo_before_writing_lookml(local_repo_dir)
         self.assertFalse(os.path.isfile(f"{local_repo_dir}/test.dp.model.lkml"))
+
+    def test_deploy_lookML_model_raises_when_git_not_installed(self):
+        """Test that deploy_lookML_model raises DependencyNotInstalledError when GitPython not installed."""
+        from data_pipelines_cli.errors import DependencyNotInstalledError
+
+        with patch("data_pipelines_cli.looker_utils.GIT_EXISTS", False):
+            with self.assertRaises(DependencyNotInstalledError) as context:
+                deploy_lookML_model("/tmp/key", "prod")
+
+            self.assertIn("git", str(context.exception.message))
