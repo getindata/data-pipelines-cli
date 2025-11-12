@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.32.0] - 2025-11-12
+
 ### Changed
 
 -   Expanded all dbt adapter version ranges to `>=1.7.x,<2.0.0` (Snowflake, BigQuery, Postgres, Redshift, Glue)
@@ -299,7 +301,9 @@
 -   Draft of `dp init`, `dp create`, `dp template new`, `dp template list` and `dp dbt`
 -   Draft of `dp compile` and `dp deploy`
 
-[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.31.0...HEAD
+[Unreleased]: https://github.com/getindata/data-pipelines-cli/compare/0.32.0...HEAD
+
+[0.32.0]: https://github.com/getindata/data-pipelines-cli/compare/0.31.0...0.32.0
 
 [0.31.0]: https://github.com/getindata/data-pipelines-cli/compare/0.30.0...0.31.0
 
