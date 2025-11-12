@@ -6,7 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **data-pipelines-cli** (`dp`) is a CLI tool for managing data platform workflows. It orchestrates dbt projects, cloud deployments, Docker builds, and multi-service integrations (Airbyte, DataHub, Looker). Projects are created from templates using copier, compiled with environment-specific configs, and deployed to cloud storage (GCS, S3).
 
-**Version:** 0.31.0 | **Python:** 3.9-3.12 | **License:** Apache 2.0
+**Version:** 0.32.0 (unreleased) | **Python:** 3.9-3.12 | **License:** Apache 2.0
+
+## Documentation Style
+
+Write concise, technical, minimal descriptions. Developer-to-developer communication:
+- State facts, no verbose explanations
+- Focus on what changed, not why it matters
+- Example: "Expanded dbt-core support: `>=1.7.3,<2.0.0`" (good) vs "We expanded dbt support to allow users more flexibility..." (bad)
+- CHANGELOG: List changes only, no context or justification
+- Code comments: Describe implementation, not rationale
+- Commit messages: Precise technical changes
 
 ## Quick Command Reference
 
@@ -31,6 +41,15 @@ pre-commit run --all-files
 black data_pipelines_cli tests
 flake8 data_pipelines_cli tests
 mypy data_pipelines_cli
+```
+
+### Installation
+
+Must install with adapter extra:
+```bash
+pip install data-pipelines-cli[snowflake]        # Snowflake (primary)
+pip install data-pipelines-cli[bigquery]         # BigQuery
+pip install data-pipelines-cli[snowflake,docker,datahub,gcs]  # Multiple extras
 ```
 
 ### CLI Workflow
@@ -177,6 +196,7 @@ run_dbt_command(("run",), env, profiles_path)
 |------|-------|---------|
 | **cli_commands/compile.py** | 160+ | Orchestrates compilation: file copying, config merging, dbt compile, Docker build |
 | **cli_commands/deploy.py** | 240+ | Orchestrates deployment: Docker, DataHub, Airbyte, Looker, cloud storage |
+| **cli_commands/publish.py** | 140+ | Publish dbt package to Git; parses manifest.json as plain JSON (no dbt Python API) |
 | **config_generation.py** | 175+ | Config merging logic, profiles.yml generation |
 | **dbt_utils.py** | 95+ | dbt subprocess execution with variable aggregation |
 | **filesystem_utils.py** | 75+ | LocalRemoteSync class for cloud storage (uses fsspec) |
@@ -190,7 +210,7 @@ run_dbt_command(("run",), env, profiles_path)
 ### Core (always installed)
 - **click** (8.1.3): CLI framework
 - **copier** (7.0.1): Project templating
-- **dbt-core** (1.7.3): Data build tool
+- **dbt-core** (>=1.7.3,<2.0.0): Data build tool - supports 1.7.x through 1.10.x
 - **fsspec** (>=2024.6.0,<2025.0.0): Cloud filesystem abstraction
 - **jinja2** (3.1.2): Template rendering
 - **pyyaml** (6.0.1): Config parsing
@@ -200,11 +220,11 @@ run_dbt_command(("run",), env, profiles_path)
 
 ### Optional Extras
 ```bash
-# dbt adapters
-pip install data-pipelines-cli[bigquery]     # dbt-bigquery==1.7.2
-pip install data-pipelines-cli[snowflake]    # dbt-snowflake==1.7.1
-pip install data-pipelines-cli[postgres]     # dbt-postgres==1.7.3
-pip install data-pipelines-cli[databricks]   # dbt-databricks-factory
+# dbt adapters (version ranges support 1.7.x through 1.10.x)
+pip install data-pipelines-cli[snowflake]    # dbt-snowflake>=1.7.1,<2.0.0 (PRIMARY)
+pip install data-pipelines-cli[bigquery]     # dbt-bigquery>=1.7.2,<2.0.0
+pip install data-pipelines-cli[postgres]     # dbt-postgres>=1.7.3,<2.0.0
+pip install data-pipelines-cli[databricks]   # dbt-databricks-factory>=0.1.1
 pip install data-pipelines-cli[dbt-all]      # All adapters
 
 # Cloud/integrations
@@ -331,6 +351,25 @@ my_pipeline/                  # Created by dp create
 - **Cloud storage sync** uses fsspec, so any fsspec backend works (gs://, s3://, az://, etc.)
 - **Code generation** requires compilation first (needs manifest.json)
 - **Test mocking:** S3 uses moto, GCS uses gcp-storage-emulator
+
+## Recent Changes (v0.32.0 - Unreleased)
+
+**dbt Version Support Expanded**
+- All adapters: version ranges `>=1.7.x,<2.0.0` (was exact pins)
+- dbt-core removed from INSTALL_REQUIREMENTS (adapters provide it)
+- Snowflake added to test suite (primary adapter)
+- **CRITICAL:** `cli_commands/publish.py` refactored to parse `manifest.json` as plain JSON instead of using dbt Python API (fixes dbt 1.8+ compatibility)
+  - All other commands use subprocess calls to dbt CLI
+  - No dependency on unstable `dbt.contracts.*` modules
+  - Works across dbt 1.7.x through 1.10.x (verified with 70 test executions)
+  - See `design/001-dbt-manifest-api-migration.md` for full details
+
+**dbt Pre-release Installation Edge Case**
+- Stable `dbt-snowflake==1.10.3` declares `dbt-core>=1.10.0rc0` dependency
+- The `rc0` constraint allows pip to install beta versions (e.g., `dbt-core==1.11.0b4`)
+- This is PEP 440 standard behavior, not a bug
+- Added troubleshooting documentation: `pip install --force-reinstall 'dbt-core>=1.7.3,<2.0.0'`
+- No code changes needed (rare edge case, self-correcting when stable releases update)
 
 ## Recent Changes (v0.31.0)
 

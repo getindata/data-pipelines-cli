@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Changed
+
+-   Expanded all dbt adapter version ranges to `>=1.7.x,<2.0.0` (Snowflake, BigQuery, Postgres, Redshift, Glue)
+-   Added Snowflake adapter to test suite (tox.ini)
+-   Removed dbt-core from base requirements (all adapters provide it as dependency)
+-   Jinja2 version constraint: `==3.1.2` → `>=3.1.3,<4`
+
+### Fixed
+
+-   `dp publish` compatibility with dbt 1.8+ (removed dependency on unstable Python API)
+-   CLI import failure when GitPython not installed
+
+### Removed
+
+-   MarkupSafe pin (managed by Jinja2)
+-   Werkzeug dependency (unused)
+
 ## [0.31.0] - 2025-11-03
 
 ## [0.30.0] - 2023-12-08

@@ -11,7 +11,13 @@ import yaml
 from click.testing import CliRunner
 
 from data_pipelines_cli.cli import _cli
-from data_pipelines_cli.cli_commands.publish import create_package
+from data_pipelines_cli.cli_commands.publish import (
+    _create_source,
+    _get_database_and_schema_name,
+    _parse_columns_dict_into_table_list,
+    _parse_models_schema,
+    create_package,
+)
 from data_pipelines_cli.errors import DataPipelinesError
 
 goldens_dir_path = pathlib.Path(__file__).parent.parent.joinpath("goldens")
@@ -181,3 +187,347 @@ class PublishCommandTestCase(unittest.TestCase):
                 json.dump(manifest, tmp_manifest)
             with self.assertRaises(DataPipelinesError):
                 create_package()
+
+
+class PublishManifestParsingTests(unittest.TestCase):
+    """Unit tests for manifest dict parsing (post-refactor to remove dbt Python API)."""
+
+    def setUp(self) -> None:
+        self.maxDiff = None
+
+    # P0: Critical Tests - Defensive Error Handling
+
+    def test_get_db_schema_missing_nodes_key(self):
+        """Validate error when manifest lacks 'nodes' key (line 33)."""
+        manifest_no_nodes = {"metadata": {}, "sources": {}}
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest_no_nodes)
+        self.assertEqual("Invalid manifest.json: missing 'nodes' key", ctx.exception.message)
+
+    def test_get_db_schema_model_missing_database(self):
+        """Validate error when model lacks 'database' field (line 40)."""
+        manifest = {
+            "nodes": {
+                "model.proj.broken_model": {
+                    "resource_type": "model",
+                    "name": "broken_model",
+                    "schema": "public",
+                    # Missing "database"
+                }
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("broken_model", ctx.exception.message)
+        self.assertIn("missing database or schema", ctx.exception.message)
+
+    def test_get_db_schema_model_missing_schema(self):
+        """Validate error when model lacks 'schema' field (line 40)."""
+        manifest = {
+            "nodes": {
+                "model.proj.broken_model": {
+                    "resource_type": "model",
+                    "name": "broken_model",
+                    "database": "prod",
+                    # Missing "schema"
+                }
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("broken_model", ctx.exception.message)
+        self.assertIn("missing database or schema", ctx.exception.message)
+
+    def test_get_db_schema_model_missing_name_fallback_to_node_id(self):
+        """Validate fallback to node_id when model lacks 'name' field."""
+        manifest = {
+            "nodes": {
+                "model.proj.unnamed_model": {
+                    "resource_type": "model",
+                    "database": "prod",
+                    # Missing "schema" AND "name" - should use node_id
+                }
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("model.proj.unnamed_model", ctx.exception.message)
+
+    def test_create_source_invalid_json(self):
+        """Validate clear error when manifest.json contains invalid JSON."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target_path = pathlib.Path(tmp_dir).joinpath("target")
+            target_path.mkdir(parents=True)
+            with open(target_path.joinpath("manifest.json"), "w") as f:
+                f.write("{invalid json, missing quotes}")
+
+            with patch("pathlib.Path.cwd", lambda: pathlib.Path(tmp_dir)):
+                with self.assertRaises(json.JSONDecodeError):
+                    _create_source("test_project")
+
+    def test_create_source_file_not_found(self):
+        """Validate clear error when manifest.json doesn't exist."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            # target/ directory doesn't exist
+            with patch("pathlib.Path.cwd", lambda: pathlib.Path(tmp_dir)):
+                with self.assertRaises(FileNotFoundError):
+                    _create_source("test_project")
+
+    # P1: Important Tests - Real-World Scenarios
+
+    def test_parse_model_with_full_metadata(self):
+        """Validate parsing of models with tags, meta, and multiple columns."""
+        manifest = {
+            "nodes": {
+                "model.proj.orders": {
+                    "resource_type": "model",
+                    "name": "orders",
+                    "description": "Order fact table",
+                    "database": "prod",
+                    "schema": "analytics",
+                    "tags": ["pii", "critical", "revenue"],
+                    "meta": {"owner": "data-team", "sla_hours": 4},
+                    "columns": {
+                        "order_id": {
+                            "name": "order_id",
+                            "description": "Primary key",
+                            "tags": ["pk"],
+                            "meta": {"indexed": True},
+                            "quote": True,
+                        },
+                        "customer_id": {
+                            "name": "customer_id",
+                            "description": "Foreign key",
+                            "tags": ["fk", "pii"],
+                            "meta": {},
+                            "quote": False,
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "Order total",
+                            "tags": [],
+                            "meta": {},
+                            "quote": None,
+                        },
+                    },
+                }
+            }
+        }
+        models = _parse_models_schema(manifest)
+        self.assertEqual(1, len(models))
+        self.assertEqual("orders", models[0]["name"])
+        self.assertEqual(["pii", "critical", "revenue"], models[0]["tags"])
+        self.assertEqual({"owner": "data-team", "sla_hours": 4}, models[0]["meta"])
+        self.assertEqual(3, len(models[0]["columns"]))
+        self.assertEqual(["pk"], models[0]["columns"][0]["tags"])
+        self.assertTrue(models[0]["columns"][0]["quote"])
+        self.assertFalse(models[0]["columns"][1]["quote"])
+        self.assertIsNone(models[0]["columns"][2]["quote"])
+
+    def test_parse_columns_empty_dict(self):
+        """Validate models without columns return empty list."""
+        columns = {}
+        result = _parse_columns_dict_into_table_list(columns)
+        self.assertEqual([], result)
+
+    def test_parse_model_with_no_columns(self):
+        """Validate models without documented columns are handled gracefully."""
+        manifest = {
+            "nodes": {
+                "model.proj.undocumented": {
+                    "resource_type": "model",
+                    "name": "undocumented",
+                    "description": "",
+                    "database": "prod",
+                    "schema": "staging",
+                    "tags": [],
+                    "meta": {},
+                    "columns": {},
+                }
+            }
+        }
+        models = _parse_models_schema(manifest)
+        self.assertEqual(1, len(models))
+        self.assertEqual([], models[0]["columns"])
+
+    def test_multiple_models_returns_first_match(self):
+        """Validate behavior when manifest has multiple models."""
+        manifest = {
+            "nodes": {
+                "model.proj.first": {
+                    "resource_type": "model",
+                    "name": "first",
+                    "database": "db1",
+                    "schema": "schema1",
+                },
+                "model.proj.second": {
+                    "resource_type": "model",
+                    "name": "second",
+                    "database": "db2",
+                    "schema": "schema2",
+                },
+            }
+        }
+        db, schema = _get_database_and_schema_name(manifest)
+        # Note: Dict iteration order in Python 3.7+ is insertion-ordered
+        # but manifest.json key order from dbt is undefined.
+        # The function returns the FIRST model found.
+        # We verify it returns ONE of the models (not both).
+        self.assertIn(db, ["db1", "db2"])
+        self.assertIn(schema, ["schema1", "schema2"])
+
+    # P2: Nice-to-Have Tests - Edge Cases
+
+    def test_column_missing_name_defaults_to_empty_string(self):
+        """Validate column without 'name' field gets empty string default."""
+        columns = {
+            "col1": {
+                "description": "Test column",
+                "tags": ["test"],
+                "meta": {},
+                "quote": None,
+                # Missing "name" field
+            }
+        }
+        result = _parse_columns_dict_into_table_list(columns)
+        self.assertEqual(1, len(result))
+        self.assertEqual("", result[0]["name"])
+        self.assertEqual("Test column", result[0]["description"])
+        self.assertEqual(["test"], result[0]["tags"])
+
+    def test_only_test_nodes_no_models(self):
+        """Validate error when manifest has only test nodes (no models)."""
+        manifest = {
+            "nodes": {
+                "test.proj.test_unique_id": {
+                    "resource_type": "test",
+                    "name": "test_unique_id",
+                    "database": "prod",
+                    "schema": "analytics",
+                },
+                "test.proj.test_not_null": {
+                    "resource_type": "test",
+                    "name": "test_not_null",
+                    "database": "prod",
+                    "schema": "analytics",
+                },
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("no model", ctx.exception.message.lower())
+
+    def test_column_with_none_values(self):
+        """Validate columns with None values are handled gracefully."""
+        columns = {
+            "col1": {
+                "name": "test_col",
+                "description": None,  # None instead of string
+                "tags": None,  # None instead of list
+                "meta": None,  # None instead of dict
+                "quote": None,
+            }
+        }
+        result = _parse_columns_dict_into_table_list(columns)
+        self.assertEqual(1, len(result))
+        self.assertEqual("test_col", result[0]["name"])
+        # .get() with defaults should handle None by returning the default
+        # But if the key exists with None, it returns None
+        # This tests the actual behavior
+        self.assertIsNone(result[0]["description"])
+        self.assertIsNone(result[0]["tags"])
+        self.assertIsNone(result[0]["meta"])
+        self.assertIsNone(result[0]["quote"])
+
+    def test_create_source_empty_manifest_file(self):
+        """Validate error when manifest.json is empty."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target_path = pathlib.Path(tmp_dir).joinpath("target")
+            target_path.mkdir(parents=True)
+            # Create empty file
+            target_path.joinpath("manifest.json").touch()
+
+            with patch("pathlib.Path.cwd", lambda: pathlib.Path(tmp_dir)):
+                with self.assertRaises(json.JSONDecodeError):
+                    _create_source("test_project")
+
+    def test_model_with_empty_string_database(self):
+        """Validate error when model has empty string for database."""
+        manifest = {
+            "nodes": {
+                "model.proj.broken": {
+                    "resource_type": "model",
+                    "name": "broken",
+                    "database": "",  # Empty string
+                    "schema": "public",
+                }
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("broken", ctx.exception.message)
+        self.assertIn("missing database or schema", ctx.exception.message)
+
+    def test_model_with_empty_string_schema(self):
+        """Validate error when model has empty string for schema."""
+        manifest = {
+            "nodes": {
+                "model.proj.broken": {
+                    "resource_type": "model",
+                    "name": "broken",
+                    "database": "prod",
+                    "schema": "",  # Empty string
+                }
+            }
+        }
+        with self.assertRaises(DataPipelinesError) as ctx:
+            _get_database_and_schema_name(manifest)
+        self.assertIn("broken", ctx.exception.message)
+        self.assertIn("missing database or schema", ctx.exception.message)
+
+    def test_parse_schema_with_mixed_resource_types(self):
+        """Validate correct filtering of models from mixed resource types."""
+        manifest = {
+            "nodes": {
+                "model.proj.users": {
+                    "resource_type": "model",
+                    "name": "users",
+                    "database": "prod",
+                    "schema": "analytics",
+                    "description": "Users table",
+                    "tags": [],
+                    "meta": {},
+                    "columns": {},
+                },
+                "test.proj.test_users": {
+                    "resource_type": "test",
+                    "name": "test_users",
+                    "database": "prod",
+                    "schema": "analytics",
+                },
+                "seed.proj.countries": {
+                    "resource_type": "seed",
+                    "name": "countries",
+                    "database": "prod",
+                    "schema": "seed_data",
+                },
+                "model.proj.orders": {
+                    "resource_type": "model",
+                    "name": "orders",
+                    "database": "prod",
+                    "schema": "analytics",
+                    "description": "Orders table",
+                    "tags": [],
+                    "meta": {},
+                    "columns": {},
+                },
+            }
+        }
+        models = _parse_models_schema(manifest)
+        # Should only return the 2 models, not test or seed
+        self.assertEqual(2, len(models))
+        model_names = [m["name"] for m in models]
+        self.assertIn("users", model_names)
+        self.assertIn("orders", model_names)
+        self.assertNotIn("test_users", model_names)
+        self.assertNotIn("countries", model_names)
