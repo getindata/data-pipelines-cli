@@ -6,19 +6,19 @@ with open("README.md") as f:
     README = f.read()
 
 INSTALL_REQUIREMENTS = [
-    "MarkupSafe==2.1.1",
-    "Werkzeug==2.2.3",
     "click==8.1.3",
     "pyyaml==6.0.1",
     "types-PyYAML==6.0.12.2",
     "copier==7.0.1",
     "pyyaml-include<2",  # copier 7.0.1 requires pyyaml-include 1.x
     "pydantic<2",  # copier 7.0.1 requires pydantic 1.x
-    "Jinja2==3.1.2",
+    "Jinja2>=3.1.3,<4",
     "fsspec>=2024.6.0,<2025.0.0",
     "packaging>=23.0",
     "colorama==0.4.5",
-    "dbt-core==1.7.3",
+    # dbt-core removed: all adapters provide it as dependency, no valid workflow
+    # exists without adapter. Users must install with adapter extra, e.g.:
+    # pip install data-pipelines-cli[snowflake]
 ]
 
 EXTRA_FILESYSTEMS_REQUIRE = {
@@ -27,19 +27,19 @@ EXTRA_FILESYSTEMS_REQUIRE = {
 }
 
 EXTRA_REQUIRE = {
-    # DBT adapters
-    "bigquery": ["dbt-bigquery==1.7.2"],
-    "postgres": ["dbt-postgres==1.7.3"],
-    "snowflake": ["dbt-snowflake==1.7.1"],
-    "redshift": ["dbt-redshift==1.7.1"],
-    "glue": ["dbt-glue==1.7.0", "dbt-spark[session]==1.7.1"],
+    # DBT adapters - version ranges support dbt 1.7.x through 1.10.x
+    "bigquery": ["dbt-bigquery>=1.7.2,<2.0.0"],
+    "postgres": ["dbt-postgres>=1.7.3,<2.0.0"],
+    "snowflake": ["dbt-snowflake>=1.7.1,<2.0.0"],  # Primary adapter
+    "redshift": ["dbt-redshift>=1.7.1,<2.0.0"],
+    "glue": ["dbt-glue>=1.7.0,<2.0.0", "dbt-spark[session]>=1.7.1,<2.0.0"],
     "databricks": ["dbt-databricks-factory>=0.1.1"],
     "dbt-all": [
-        "dbt-bigquery==1.7.2",
-        "dbt-postgres==1.7.3",
-        "dbt-snowflake==1.7.1",
-        "dbt-redshift==1.7.1",
-        "dbt-glue==1.7.0",
+        "dbt-bigquery>=1.7.2,<2.0.0",
+        "dbt-postgres>=1.7.3,<2.0.0",
+        "dbt-snowflake>=1.7.1,<2.0.0",
+        "dbt-redshift>=1.7.1,<2.0.0",
+        "dbt-glue>=1.7.0,<2.0.0",
     ],
     # ---
     "docker": ["docker==6.0.1"],
@@ -73,7 +73,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="data_pipelines_cli",
-    version="0.31.0",
+    version="0.32.0",
     description="CLI for data platform",
     long_description=README,
     long_description_content_type="text/markdown",

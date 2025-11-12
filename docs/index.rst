@@ -1,7 +1,7 @@
 ``Data Pipelines CLI``: CLI for data platform
 ==============================================
 
-.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.10-blue.svg
+.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg
    :target: https://github.com/getindata/data-pipelines-cli
    :alt: Python Version
 
@@ -17,8 +17,8 @@
    :target: https://codeclimate.com/github/getindata/data-pipelines-cli/maintainability
    :alt: Maintainability
 
-.. image:: https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/test_coverage
-   :target: https://codeclimate.com/github/getindata/data-pipelines-cli/test_coverage
+.. image:: https://img.shields.io/badge/test%20coverage-95%25-brightgreen.svg
+   :target: https://github.com/getindata/data-pipelines-cli
    :alt: Test Coverage
 
 Introduction

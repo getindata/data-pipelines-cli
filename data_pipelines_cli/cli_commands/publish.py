@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import json
 import pathlib
 import shutil
-from typing import Any, Dict, List, Tuple, cast
+from typing import Any, Dict, List, Tuple
 
 import click
 import yaml
-from dbt.contracts.graph.manifest import Manifest
-from dbt.contracts.graph.nodes import ColumnInfo, ManifestNode
 
 from ..cli_constants import BUILD_DIR
 from ..cli_utils import echo_info, echo_warning
@@ -29,43 +29,52 @@ def _get_project_name_and_version() -> Tuple[str, str]:
         return dbt_project_config["name"], dbt_project_config["version"]
 
 
-def _get_database_and_schema_name(manifest: Manifest) -> Tuple[str, str]:
-    try:
-        model = next(
-            node
-            for node in (cast(ManifestNode, n) for n in manifest.nodes.values())
-            if node.resource_type == "model"
-        )
-        return model.database, model.schema
-    except StopIteration:
-        raise DataPipelinesError("There is no model in 'manifest.json' file.")
+def _get_database_and_schema_name(manifest_dict: Dict[str, Any]) -> Tuple[str, str]:
+    nodes = manifest_dict.get("nodes")
+    if not nodes:
+        raise DataPipelinesError("Invalid manifest.json: missing 'nodes' key")
+
+    for node_id, node in nodes.items():
+        if node.get("resource_type") == "model":
+            database = node.get("database")
+            schema = node.get("schema")
+            if not database or not schema:
+                raise DataPipelinesError(
+                    f"Model {node.get('name', node_id)} missing database or schema"
+                )
+            return database, schema
+
+    raise DataPipelinesError("There is no model in 'manifest.json' file.")
 
 
-def _parse_columns_dict_into_table_list(columns: Dict[str, ColumnInfo]) -> List[DbtTableColumn]:
+def _parse_columns_dict_into_table_list(columns: Dict[str, Any]) -> List[DbtTableColumn]:
     return [
         DbtTableColumn(
-            name=column.name,
-            description=column.description,
-            meta=column.meta,
-            quote=column.quote,
-            tags=column.tags,
+            name=col_data.get("name", ""),
+            description=col_data.get("description", ""),
+            meta=col_data.get("meta", {}),
+            quote=col_data.get("quote"),
+            tags=col_data.get("tags", []),
         )
-        for column in columns.values()
+        for col_data in columns.values()
     ]
 
 
-def _parse_models_schema(manifest: Manifest) -> List[DbtModel]:
-    return [
-        DbtModel(
-            name=node.name,
-            description=node.description,
-            tags=node.tags,
-            meta=node.meta,
-            columns=_parse_columns_dict_into_table_list(node.columns),
-        )
-        for node in (cast(ManifestNode, n) for n in manifest.nodes.values())
-        if node.resource_type == "model"
-    ]
+def _parse_models_schema(manifest_dict: Dict[str, Any]) -> List[DbtModel]:
+    nodes = manifest_dict.get("nodes", {})
+    models = []
+    for node_id, node in nodes.items():
+        if node.get("resource_type") == "model":
+            models.append(
+                DbtModel(
+                    name=node.get("name", ""),
+                    description=node.get("description", ""),
+                    tags=node.get("tags", []),
+                    meta=node.get("meta", {}),
+                    columns=_parse_columns_dict_into_table_list(node.get("columns", {})),
+                )
+            )
+    return models
 
 
 def _get_dag_id() -> str:
@@ -76,15 +85,14 @@ def _get_dag_id() -> str:
 def _create_source(project_name: str) -> DbtSource:
     with open(pathlib.Path.cwd().joinpath("target", "manifest.json"), "r") as manifest_json:
         manifest_dict = json.load(manifest_json)
-        manifest = Manifest.from_dict(manifest_dict)
 
-    database_name, schema_name = _get_database_and_schema_name(manifest)
+    database_name, schema_name = _get_database_and_schema_name(manifest_dict)
 
     return DbtSource(
         name=project_name,
         database=database_name,
         schema=schema_name,
-        tables=_parse_models_schema(manifest),
+        tables=_parse_models_schema(manifest_dict),
         meta={"dag": _get_dag_id()},
         tags=[f"project:{project_name}"],
     )

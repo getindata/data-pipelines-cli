@@ -4,7 +4,7 @@
 [![PyPI Version](https://badge.fury.io/py/data-pipelines-cli.svg)](https://pypi.org/project/data-pipelines-cli/)
 [![Downloads](https://pepy.tech/badge/data-pipelines-cli)](https://pepy.tech/project/data-pipelines-cli)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/maintainability)](https://codeclimate.com/github/getindata/data-pipelines-cli/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/e44ed9383a42b59984f6/test_coverage)](https://codeclimate.com/github/getindata/data-pipelines-cli/test_coverage)
+[![Test Coverage](https://img.shields.io/badge/test%20coverage-95%25-brightgreen.svg)](https://github.com/getindata/data-pipelines-cli)
 [![Documentation Status](https://readthedocs.org/projects/data-pipelines-cli/badge/?version=latest)](https://data-pipelines-cli.readthedocs.io/en/latest/?badge=latest)
 
 CLI for data platform
@@ -14,10 +14,42 @@ CLI for data platform
 Read the full documentation at [https://data-pipelines-cli.readthedocs.io/](https://data-pipelines-cli.readthedocs.io/en/latest/index.html)
 
 ## Installation
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [dp (data-pipelines-cli)](https://pypi.org/project/data-pipelines-cli/):
+
+**Requirements:** Python 3.9-3.12
+
+### Required
+
+A dbt adapter extra must be installed:
+
+```bash
+pip install data-pipelines-cli[snowflake]    # Snowflake
+pip install data-pipelines-cli[bigquery]     # BigQuery
+pip install data-pipelines-cli[postgres]     # PostgreSQL
+pip install data-pipelines-cli[databricks]   # Databricks
+```
+
+To pin a specific dbt-core version:
+
+```bash
+pip install data-pipelines-cli[snowflake] 'dbt-core>=1.8.0,<1.9.0'
+```
+
+### Optional
+
+Additional integrations: `docker`, `datahub`, `looker`, `gcs`, `s3`, `git`
+
+### Example
 
 ```bash
 pip install data-pipelines-cli[bigquery,docker,datahub,gcs]
+```
+
+### Troubleshooting
+
+**Pre-release dbt versions**: data-pipelines-cli requires stable dbt-core releases. If you encounter errors with beta or RC versions, reinstall with stable versions:
+
+```bash
+pip install --force-reinstall 'dbt-core>=1.7.3,<2.0.0'
 ```
 
 ## Usage

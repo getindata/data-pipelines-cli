@@ -10,6 +10,8 @@ pip install -r requirements-dev.txt
 pre-commit install
 ```
 
+**Note:** A dbt adapter extra (e.g., `bigquery`, `snowflake`) is required because dbt-core is provided as a transitive dependency. Any adapter can be used for development.
+
 ## Running Tests
 
 ```bash
