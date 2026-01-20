@@ -71,3 +71,13 @@ Looker
 
 **dp** can generate lookML codes for your models and views, publish and deploy your `Looker <https://www.looker.com/>`_ project
 
+dbt Cloud
+++++++++++++++++++++++++++++++++++++++++++++++
+
+The `Data Pipelines CLI` can configure a project in dbt Cloud. The following functions are supported:
+
+- creation of a project
+- adding a repository
+- adding a connection to BigQuery
+- creation of environments
+- creation of sample jobs
